@@ -3,12 +3,11 @@
 import sys
 import os
 
-# source_files = Glob('*.cpp')
-# source_files.extend(Glob('*.hpp'))
-
 env = Environment(parse_flags='-lboost_thread.a -std=c++17')
+server_source_files = env.Glob('*.cpp', exclude=['main.cpp'])
+
 env['ENV']['TERM'] = os.environ['TERM']
 # env.Append(CCFLAGS='-O3')
 env.Append(LIBS=['pthread'])
 
-env.Program('main', 'main.cpp')
+env.Program('server', server_source_files)
