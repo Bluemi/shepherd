@@ -1,2 +1,2 @@
-# cube_racing
+# cube racing
 little game for testing concepts
