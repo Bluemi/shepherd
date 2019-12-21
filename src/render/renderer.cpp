@@ -10,7 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shape_initializer.hpp"
+#include "shape/shape_initializer.hpp"
 #include "controller/mouse_manager.hpp"
 #include "controller/resize_manager.hpp"
 #include "shaders/shaders.hpp"
