@@ -4,6 +4,8 @@ import os
 import shutil
 import hashlib
 
+DRY=False
+
 SRC_DIRECTORY = 'src'
 BUILD_DIRECTORY = 'build'
 OBJ_DIRECTORY = os.path.join(BUILD_DIRECTORY, 'obj')
@@ -28,44 +30,62 @@ def copy_tree(src_directory, destination_directory, dry=False):
     Copies the given src directory to the destination directory.
     Files that already exists with the same version at the destination directory are ignored.
     """
-    for root, directories, files in os.walk(src_directory):
-        build_root = os.path.join(destination_directory, root[len(src_directory)+1:])
+    for src_root, directories, files in os.walk(src_directory):
+        build_root = os.path.join(destination_directory, src_root[len(src_directory)+1:])
         if dry:
-            print('makedir {}'.format(build_root))
+            if not os.path.isdir(build_root):
+                print('mkdir {}'.format(build_root))
         else:
             os.makedirs(build_root, exist_ok=True)
+
+        # create directories
         for d in directories:
-            current_src_dir = os.path.join(root, d)
+            current_src_dir = os.path.join(src_root, d)
             current_dest_dir = os.path.join(build_root, d)
 
             if dry:
                 if not os.path.isdir(current_dest_dir):
-                    print('makedir {}'.format(current_dest_dir))
+                    print('mkdir {}'.format(current_dest_dir))
             else:
-                os.makedirs(current_dest_dir, exist_ok=True)
+                if not os.path.isdir(current_dest_dir):
+                    os.makedirs(current_dest_dir)
 
+        # copy files
         for f in files:
-            current_src_file = os.path.join(root, f)
+            current_src_file = os.path.join(src_root, f)
             current_dest_file = os.path.join(build_root, f)
 
             if not file_exists(current_src_file, current_dest_file):
                 if dry:
-                    print('copyfile {} {}'.format(current_src_file, current_dest_file))
+                    print('cp {} -> {}'.format(current_src_file, current_dest_file))
                 else:
                     shutil.copy2(current_src_file, current_dest_file)
 
 
-copy_tree(SRC_DIRECTORY, OBJ_DIRECTORY, dry=False)
+        # remove files
+        build_files = [f for f in os.listdir(build_root) if os.path.isfile(os.path.join(build_root, f))]
+        src_files = [f for f in os.listdir(src_root) if os.path.isfile(os.path.join(build_root, f))]
+        for build_file in build_files:
+            if not (build_file.endswith('.cpp') or build_file.endswith('.hpp')):
+                continue
+            if build_file not in src_files:
+                if dry:
+                    print('rm {}'.format(os.path.join(build_root, build_file)))
+                else:
+                    os.remove(os.path.join(build_root, build_file))
+
+copy_tree(SRC_DIRECTORY, OBJ_DIRECTORY, dry=DRY)
 
 
-def get_server_source_files(env):
+def get_server_source_files(env, exclude=[]):
     dirs = []
     for root, _, _ in os.walk(OBJ_DIRECTORY):
         dirs.append(root)
 
     source_files = []
     for d in dirs:
-        source_files.extend(env.Glob(os.path.join(d, '*.cpp'), exclude=['main.cpp']))
+        excludes = [os.path.join(d, e) for e in exclude]
+        source_files.extend(env.Glob(os.path.join(d, '*.cpp'), exclude=excludes))
 
     return source_files
 
@@ -75,6 +95,15 @@ env['ENV']['TERM'] = os.environ['TERM']
 env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
 # env.Append(CCFLAGS='-O3')
 
-server_source_files = get_server_source_files(env)
-
-env.Program(os.path.join(BIN_DIRECTORY, 'server'), server_source_files)
+server_source_files = get_server_source_files(env, exclude=['client.cpp'])
+client_source_files = get_server_source_files(env, exclude=['server.cpp'])
+if DRY:
+    print('server source files:')
+    for server_source_file in server_source_files:
+        print('\t{}'.format(server_source_file.name))
+    print('client source files:')
+    for client_source_file in client_source_files:
+        print('\t{}'.format(client_source_file.name))
+else:
+    env.Program(os.path.join(BIN_DIRECTORY, 'server'), server_source_files)
+    env.Program(os.path.join(BIN_DIRECTORY, 'client'), client_source_files)
