@@ -9,6 +9,8 @@
 class client {
 	public:
 		client();
+		void init();
+		void run();
 	private:
 		frame _current_frame;
 		netsi::client_network_manager _network_manager;
