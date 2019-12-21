@@ -4,8 +4,10 @@
 #include "controller/controller.hpp"
 #include "camera/camera.hpp"
 #include "shader_program.hpp"
+#include "shape/shape_heap.hpp"
 
 struct GLFWwindow;
+class frame;
 
 class renderer {
 	public:
@@ -17,7 +19,7 @@ class renderer {
 		static std::optional<renderer> create(unsigned int window_width, unsigned int window_height, const std::string& window_name);
 
 		void tick();
-		void render();
+		void render(frame& f);
 		void close();
 		bool should_close() const;
 

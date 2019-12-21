@@ -1,5 +1,6 @@
 #include "shape.hpp"
 
+#include <iostream>
 #include <glad/glad.h>
 
 #include "shape_specification.hpp"
@@ -63,9 +64,13 @@ void shape::unbind()
 
 unsigned int shape::create_vao()
 {
+	std::cout << "create vao()" << std::endl;
 	unsigned int vao;
+	std::cout << "glGenVertexArrays(1, &vao)" << std::endl;
 	glGenVertexArrays(1, &vao);
+	std::cout << "glBindVertexArray(vao)" << std::endl;
 	glBindVertexArray(vao);
+	std::cout << "done" << std::endl;
 	return vao;
 }
 

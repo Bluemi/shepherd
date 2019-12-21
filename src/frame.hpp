@@ -8,8 +8,10 @@
 class frame {
 	public:
 		frame();
-	private:
-		std::vector<player> _players;
+
+		void add_player(const shape& shape);
+
+		std::vector<player> players;
 };
 
 #endif

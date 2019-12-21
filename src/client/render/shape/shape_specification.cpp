@@ -14,7 +14,7 @@ unsigned int sphere_specification::get_fineness() const {
 	return _fineness;
 }
 
-class shapeExtractor {
+class {
 	public:
 		shape operator()(const cube_specification&) {
 			return initialize::cube();
@@ -23,10 +23,10 @@ class shapeExtractor {
 		shape operator()(const sphere_specification& spec) {
 			return initialize::sphere(spec.get_fineness());
 		}
-} shape_extractor;
+} _shape_extractor;
 
 namespace initialize {
 	shape create_shape(const shape_specification& spec) {
-		return std::visit(shape_extractor, spec);
+		return std::visit(_shape_extractor, spec);
 	}
 }

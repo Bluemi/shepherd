@@ -14,6 +14,7 @@
 #include "controller/mouse_manager.hpp"
 #include "controller/resize_manager.hpp"
 #include "shaders/shaders.hpp"
+#include "../../frame.hpp"
 
 const static std::string VERTEX_SHADER_PATH = "src/shaders/vertex_shader.vs";
 const static std::string FRAGMENT_SHADER_PATH = "src/shaders/fragment_shader.fs";
@@ -62,6 +63,7 @@ void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
 
 void renderer::init()
 {
+	std::cout << "glfwInit" << std::endl;
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -71,6 +73,7 @@ void renderer::init()
 
 std::optional<renderer> renderer::create(unsigned int window_width, unsigned int window_height, const std::string& window_name)
 {
+	std::cout << "create renderer" << std::endl;
 	GLFWwindow* window = glfwCreateWindow(window_width, window_height, window_name.c_str(), NULL, NULL);
 	if (window == NULL)
 	{
@@ -118,34 +121,26 @@ double renderer::get_delta_time()
 
 void renderer::tick()
 {
-	/*
 	const double speed = get_delta_time() * DEFAULT_SPEED;
 
 	_controller.process_user_input(_window, &_camera);
 	_camera.tick(speed);
-
-	for (Movable& m : *this)
-	{
-		m.tick(speed);
-	}
-	*/
 }
 
-void renderer::render()
+void renderer::render(frame& f)
 {
 	clear_window();
 	_shader_program.set_4fv("view", _camera.get_look_at());
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-											_window_width/static_cast<float>(_window_height),
-											0.1f, 600.f);
+	glm::mat4 projection = glm::perspective(
+		glm::radians(45.0f),
+		_window_width/static_cast<float>(_window_height),
+		0.1f, 600.f
+	);
 	_shader_program.set_4fv("projection", projection);
 
-	/*
-	for (const Movable& m : *this)
-	{
-		m.render(_shader_program);
+	for (player& p : f.players) {
+		p.render(_shader_program);
 	}
-	*/
 
 	glfwSwapBuffers(_window);
 	glfwPollEvents();

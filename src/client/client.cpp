@@ -15,8 +15,11 @@ void client::run() {
 
 	_renderer = std::make_unique<renderer>(*opt_renderer);
 
+	_current_frame.add_player(_shape_heap.get_shape(cube_specification()));
+
 	while (!_renderer->should_close()) {
-		_renderer->render();
+		_renderer->tick();
+		_renderer->render(_current_frame);
 	}
 
 	_renderer->close();

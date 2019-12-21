@@ -1,6 +1,7 @@
 #include "resize_manager.hpp"
 
 #include <vector>
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 
@@ -11,6 +12,7 @@ namespace resize_manager
 	std::vector<renderer*> _renderers;
 
 	void init(GLFWwindow* window) {
+		std::cout << "framebuffer resize callback" << std::endl;
 		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	}
 
