@@ -25,6 +25,10 @@ def file_exists(src_file, dest_file):
     return md5(src_file) == md5(dest_file)
 
 
+def is_source_file(f):
+    return os.path.splitext(f)[1] in ['.hpp', '.cpp', '.fs', '.vs']
+
+
 def copy_tree(src_directory, destination_directory, dry=False):
     """
     Copies the given src directory to the destination directory.
@@ -66,7 +70,7 @@ def copy_tree(src_directory, destination_directory, dry=False):
         build_files = [f for f in os.listdir(build_root) if os.path.isfile(os.path.join(build_root, f))]
         src_files = [f for f in os.listdir(src_root) if os.path.isfile(os.path.join(build_root, f))]
         for build_file in build_files:
-            if not (build_file.endswith('.cpp') or build_file.endswith('.hpp')):
+            if not is_source_file(build_file):
                 continue
             if build_file not in src_files:
                 if dry:
