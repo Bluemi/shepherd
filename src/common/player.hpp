@@ -4,21 +4,21 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "client/render/shape/shape.hpp"
-
 class shader_program;
 
 class player {
 	public:
-		player(unsigned int id, const std::string& name, const shape& shape);
+		player(unsigned int id, const std::string& name);
 
-		void render(const shader_program& shader_program);
+		unsigned int get_id() const;
+		const std::string& get_name() const;
+		const glm::vec3& get_position() const;
+		const glm::vec3& get_speed() const;
 	private:
 		unsigned int _id;
 		std::string _name;
 		glm::vec3 _position;
 		glm::vec3 _speed;
-		shape _shape;
 };
 
 #endif

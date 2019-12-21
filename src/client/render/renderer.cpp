@@ -14,10 +14,10 @@
 #include "controller/mouse_manager.hpp"
 #include "controller/resize_manager.hpp"
 #include "shaders/shaders.hpp"
-#include "../../frame.hpp"
+#include "../../common/frame.hpp"
 
-const static std::string VERTEX_SHADER_PATH = "src/shaders/vertex_shader.vs";
-const static std::string FRAGMENT_SHADER_PATH = "src/shaders/fragment_shader.fs";
+const static std::string VERTEX_SHADER_PATH = "src/client/render/shaders/vertex_shader.vs";
+const static std::string FRAGMENT_SHADER_PATH = "src/client/render/shaders/fragment_shader.fs";
 const static double DEFAULT_SPEED = 59.54188473881952259316;
 
 renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned int window_width, unsigned int window_height)
@@ -33,13 +33,15 @@ renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned i
 
 	mouse_manager::init(_window);
 	mouse_manager::add_controller(&_controller);
+
+	_player_shape = initialize::create_shape(sphere_specification(2));
 }
 
 renderer::renderer(const renderer& v)
 	: _controller(v._controller),
 	  _camera(v._camera),
 	  _shader_program(v._shader_program),
-	  // _entities(v._entities),
+	  _player_shape(v._player_shape),
 	  _window(v._window),
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
@@ -117,16 +119,14 @@ double renderer::get_delta_time()
 	return delta_time;
 }
 
-void renderer::tick()
-{
+void renderer::tick() {
 	const double speed = get_delta_time() * DEFAULT_SPEED;
 
 	_controller.process_user_input(_window, &_camera);
 	_camera.tick(speed);
 }
 
-void renderer::render(frame& f)
-{
+void renderer::render(frame& f) {
 	clear_window();
 	_shader_program.set_4fv("view", _camera.get_look_at());
 	glm::mat4 projection = glm::perspective(
@@ -136,34 +136,39 @@ void renderer::render(frame& f)
 	);
 	_shader_program.set_4fv("projection", projection);
 
+	_shader_program.use();
+	_player_shape.bind();
+
 	for (player& p : f.players) {
-		p.render(_shader_program);
+		glm::mat4 model = glm::mat4(1.f);
+		model = glm::translate(model, p.get_position());
+		_shader_program.set_4fv("model", model);
+
+		_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.5));
+
+		glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
 	}
 
 	glfwSwapBuffers(_window);
 	glfwPollEvents();
 }
 
-void renderer::close()
-{
+void renderer::close() {
 	mouse_manager::clear();
 	resize_manager::clear_renderers();
 
 	glfwTerminate();
 }
 
-bool renderer::should_close() const
-{
+bool renderer::should_close() const {
 	return glfwWindowShouldClose(_window);
 }
 
-double renderer::get_time() const
-{
+double renderer::get_time() const {
 	return glfwGetTime();
 }
 
-void renderer::clear_window()
-{
+void renderer::clear_window() {
 		glClearColor(0.05f, 0.07f, 0.08f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

@@ -49,6 +49,8 @@ struct attribute
  */
 class shape {
 	public:
+		shape() {}
+
 		/**
 		 * Deletes all used buffers of this shape.
 		 * After calling this function this shape cant be used for rendering.
@@ -93,6 +95,7 @@ class shape {
 		static const attribute color_attribute;
 		static const attribute texture_coordinate_attribute;
 		static const attribute normale_attribute;
+
 	private:
 		/**
 		 * Creates a new shape

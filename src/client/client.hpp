@@ -3,9 +3,8 @@
 
 #include <netsi/client/client_network_manager.hpp>
 
-#include "../frame.hpp"
+#include "../common/frame.hpp"
 #include "render/renderer.hpp"
-#include "render/shape/shape_heap.hpp"
 
 class client {
 	public:
@@ -16,7 +15,6 @@ class client {
 		frame _current_frame;
 		netsi::client_network_manager _network_manager;
 		std::unique_ptr<renderer> _renderer;
-		shape_heap _shape_heap;
 };
 
 #endif

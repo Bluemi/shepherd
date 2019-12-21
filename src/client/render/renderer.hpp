@@ -34,12 +34,15 @@ class renderer {
 		camera _camera;
 		shader_program _shader_program;
 
+		shape _player_shape;
+
 		GLFWwindow* _window;
 
 		double _last_frame_time;
 
 		unsigned int _window_width;
 		unsigned int _window_height;
+
 };
 
 #endif

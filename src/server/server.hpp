@@ -4,7 +4,7 @@
 #include <netsi/util/cycle.hpp>
 #include <netsi/server/server_network_manager.hpp>
 
-#include "frame.hpp"
+#include "../common/frame.hpp"
 
 class server {
 	public:

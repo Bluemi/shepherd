@@ -3,10 +3,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
 
-#include "client/render/shader_program.hpp"
+player::player(unsigned int id, const std::string& name): _id(id), _name(name) {}
 
-player::player(unsigned int id, const std::string& name, const shape& shape): _id(id), _name(name), _shape(shape) {}
-
+/*
 void player::render(const shader_program& shader_program) {
 	shader_program.use();
 	_shape.bind();
@@ -18,4 +17,21 @@ void player::render(const shader_program& shader_program) {
 	shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.5));
 
 	glDrawArrays(GL_TRIANGLES, 0, _shape.get_number_vertices());
+}
+*/
+
+unsigned int player::get_id() const {
+	return _id;
+}
+
+const std::string& player::get_name() const {
+	return _name;
+}
+
+const glm::vec3& player::get_position() const {
+	return _position;
+}
+
+const glm::vec3& player::get_speed() const {
+	return _speed;
 }

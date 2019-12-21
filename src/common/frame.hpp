@@ -9,7 +9,7 @@ class frame {
 	public:
 		frame();
 
-		void add_player(const shape& shape);
+		void add_player();
 
 		std::vector<player> players;
 };
