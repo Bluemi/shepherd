@@ -1,7 +1,5 @@
 #include "mouse_manager.hpp"
 
-#include <iostream>
-
 #include "controller.hpp"
 
 namespace mouse_manager
@@ -12,7 +10,6 @@ namespace mouse_manager
 
 	void mouse_callback(GLFWwindow*, double x, double y)
 	{
-		std::cout << "mouse callback" << std::endl;
 		double x_diff, y_diff;
 		if (_first_callback)
 		{

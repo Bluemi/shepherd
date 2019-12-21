@@ -1,10 +1,12 @@
 VISUALIZER_SHADER_STRINGIFY(
 out vec4 FragColor;
 
+in vec3 norm;
+
 uniform vec3 color;
 
 void main()
 {
-	FragColor = vec4(color, 1.0);
+	FragColor = vec4(color*norm, 1.0);
 }
 )

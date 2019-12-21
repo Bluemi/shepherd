@@ -63,7 +63,6 @@ void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
 
 void renderer::init()
 {
-	std::cout << "glfwInit" << std::endl;
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -73,11 +72,10 @@ void renderer::init()
 
 std::optional<renderer> renderer::create(unsigned int window_width, unsigned int window_height, const std::string& window_name)
 {
-	std::cout << "create renderer" << std::endl;
 	GLFWwindow* window = glfwCreateWindow(window_width, window_height, window_name.c_str(), NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "failed to create window" << std::endl;
+		std::cerr << "failed to create window" << std::endl;
 		glfwTerminate();
 		return {};
 	}
@@ -86,7 +84,7 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		std::cerr << "Failed to initialize GLAD" << std::endl;
 		return {};
 	}
 

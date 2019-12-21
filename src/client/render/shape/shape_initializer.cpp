@@ -1,6 +1,5 @@
 #include "shape_initializer.hpp"
 
-#include <iostream>
 #include <cstring>
 #include <glm/glm.hpp>
 

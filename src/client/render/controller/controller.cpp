@@ -1,7 +1,5 @@
 #include "controller.hpp"
 
-#include <iostream>
-
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
@@ -30,13 +28,11 @@ controller::controller() {
 }
 
 void controller::mouse_callback(double x, double y) {
-	std::cout << "controller::mouse_callback()" << std::endl;
 	x_change += x;
 	y_change += y;
 }
 
 void controller::process_user_input(GLFWwindow* window, camera* camera) {
-	std::cout << "controller::process_user_input()" << std::endl;
 	for (auto it = _is_pressed.begin(); it != _is_pressed.end(); ++it) {
 		const bool key_pressed = glfwGetKey(window, it->first) == GLFW_PRESS;
 		if (key_pressed != it->second) {
