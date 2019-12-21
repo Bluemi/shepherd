@@ -5,7 +5,6 @@
 #include <netsi/server/server_network_manager.hpp>
 
 #include "frame.hpp"
-#include "render/renderer.hpp"
 
 class server {
 	public:
@@ -19,7 +18,6 @@ class server {
 
 		netsi::server_network_manager _server_network_manager;
 		std::vector<std::shared_ptr<netsi::peer>> _peers;
-		std::unique_ptr<renderer> _renderer;
 		frame _current_frame;
 };
 
