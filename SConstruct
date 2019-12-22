@@ -5,11 +5,17 @@ import shutil
 import hashlib
 
 DRY=False
+TESTS=True
 
 SRC_DIRECTORY = 'src'
 BUILD_DIRECTORY = 'build'
 OBJ_DIRECTORY = os.path.join(BUILD_DIRECTORY, 'obj')
 BIN_DIRECTORY = os.path.join(BUILD_DIRECTORY, 'bin')
+
+TESTS_SRC_DIRECTORY = 'tests'
+TESTS_BUILD_DIRECTORY = os.path.join(BUILD_DIRECTORY, 'tests')
+TESTS_OBJ_DIRECTORY = os.path.join(TESTS_BUILD_DIRECTORY, 'obj')
+TESTS_BIN_DIRECTORY = os.path.join(TESTS_BUILD_DIRECTORY, 'bin')
 
 def md5(fname):
     hash_md5 = hashlib.md5()
@@ -81,9 +87,9 @@ def copy_tree(src_directory, destination_directory, dry=False):
 copy_tree(SRC_DIRECTORY, OBJ_DIRECTORY, dry=DRY)
 
 
-def get_server_source_files(env, exclude=[]):
+def get_source_files(env, home, exclude=[]):
     dirs = []
-    for root, _, _ in os.walk(OBJ_DIRECTORY):
+    for root, _, _ in os.walk(home):
         dirs.append(root)
 
     source_files = []
@@ -94,13 +100,15 @@ def get_server_source_files(env, exclude=[]):
     return source_files
 
 
+
 env = Environment(parse_flags='-lboost_thread.a -std=c++17')
 env['ENV']['TERM'] = os.environ['TERM']
 env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
 # env.Append(CCFLAGS='-O3')
 
-server_source_files = get_server_source_files(env, exclude=['client.cpp'])
-client_source_files = get_server_source_files(env, exclude=['server.cpp'])
+server_source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['client.cpp'])
+client_source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['server.cpp'])
+
 if DRY:
     print('server source files:')
     for server_source_file in server_source_files:
@@ -111,3 +119,17 @@ if DRY:
 else:
     env.Program(os.path.join(BIN_DIRECTORY, 'server'), server_source_files)
     env.Program(os.path.join(BIN_DIRECTORY, 'client'), client_source_files)
+
+
+if TESTS:
+    copy_tree(TESTS_SRC_DIRECTORY, TESTS_OBJ_DIRECTORY, dry=DRY)
+
+    def create_tests():
+        source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['client.cpp', 'server.cpp'])
+        test_source_files = get_source_files(env, TESTS_OBJ_DIRECTORY)
+
+        for test_file in test_source_files:
+            name = os.path.splitext(test_file.name)[0]
+            env.Program(os.path.join(TESTS_BIN_DIRECTORY, name), source_files+[test_file])
+
+    create_tests()
