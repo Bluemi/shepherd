@@ -9,12 +9,15 @@
 class client {
 	public:
 		client();
-		void init();
+		void init(const std::string& player_name);
 		void run();
 	private:
+		void send_login(const std::string& player_name);
+
 		frame _current_frame;
 		netsi::client_network_manager _network_manager;
 		std::unique_ptr<renderer> _renderer;
+		std::shared_ptr<netsi::peer> _peer;
 };
 
 #endif

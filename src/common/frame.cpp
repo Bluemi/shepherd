@@ -2,6 +2,6 @@
 
 frame::frame() {}
 
-void frame::add_player() {
-	players.push_back(player(0, "klaus"));
+void frame::add_player(const std::string& player_name) {
+	players.push_back(player(0, player_name));
 }

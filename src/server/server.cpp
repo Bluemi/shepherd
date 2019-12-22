@@ -1,5 +1,7 @@
 #include "server.hpp"
 
+#include "../common/networking/login_packet.hpp"
+
 server::server() {}
 
 void server::init() {
@@ -11,7 +13,7 @@ void server::run() {
 
 	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40));; c.next()) {
 		check_new_peers();
-		handle_to_clients();
+		handle_clients();
 	}
 
 	std::cout << "server is offline" << std::endl;
@@ -28,20 +30,25 @@ void server::check_new_peers() {
 	}
 }
 
-void server::handle_to_clients() {
-	unsigned char client_id = 0;
+void server::handle_login(const std::vector<char>& login_message) {
+	login_packet p = login_packet::from_message(login_message);
+	_current_frame.add_player(p.get_player_name());
+}
+
+void server::handle_message(const std::vector<char>& message) {
+	if (message[0] == 0) {
+		handle_login(message);
+	} else {
+		std::cerr << "cant handle message with id: " << message[0] << std::endl;
+	}
+}
+
+void server::handle_clients() {
 	for (const std::shared_ptr<netsi::peer>& p : _peers) {
 		if (!p->messages().empty()) {
 			std::vector<char> m = p->messages().pop();
-			m.push_back(' ');
-			m.push_back('0' + client_id);
-
-			for (std::shared_ptr<netsi::peer>& prs : _peers) {
-				prs->async_send(m);
-			}
+			handle_message(m);
 		}
-
-		client_id++;
 	}
 }
 

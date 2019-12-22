@@ -15,7 +15,7 @@ class player {
 		const glm::vec3& get_position() const;
 		const glm::vec3& get_speed() const;
 	private:
-		unsigned int _id;
+		char _id;
 		std::string _name;
 		glm::vec3 _position;
 		glm::vec3 _speed;
