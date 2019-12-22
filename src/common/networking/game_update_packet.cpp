@@ -1,6 +1,6 @@
 #include "game_update_packet.hpp"
 
-#include "../frame.hpp"
+#include "../player.hpp"
 #include "packet_helper.hpp"
 
 namespace packet_helper {
@@ -26,29 +26,11 @@ game_update_packet::player_info::player_info(const player& p)
 	: id(p.get_id()), position(p.get_position()), name(p.get_name())
 {}
 
-/*
-void game_update_packet::player_info::write_to(std::vector<char>* buffer) const {
-	packet_helper::write_to_buffer(id, buffer);
-	packet_helper::write_to_buffer(position, buffer);
-	packet_helper::write_to_buffer(name, buffer);
-}
-
-game_update_packet::player_info game_update_packet::player_info::read_from_message(const char** message) {
-	game_update_packet::player_info pi;
-
-	packet_helper::read_from_buffer(&pi.id, message);
-	packet_helper::read_from_buffer(&pi.position, message);
-	packet_helper::read_from_buffer(&pi.name, message);
-
-	return pi;
-}
-*/
-
 game_update_packet::game_update_packet() {}
 
-game_update_packet game_update_packet::from_frame(const frame& f) {
+game_update_packet game_update_packet::from_players(const std::vector<player>& players) {
 	game_update_packet packet;
-	for (const player& p : f.players) {
+	for (const player& p : players) {
 		packet._player_infos.push_back(game_update_packet::player_info(p));
 	}
 	return packet;

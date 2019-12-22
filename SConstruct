@@ -122,14 +122,20 @@ else:
 
 
 if TESTS:
+    # test_env = Environment(parse_flags='-std=c++17 -I./build/obj')
+    # test_env['ENV']['TERM'] = os.environ['TERM']
+    # test_env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
+    env.Append(CPPPATH='-I./build/obj')
+
     copy_tree(TESTS_SRC_DIRECTORY, TESTS_OBJ_DIRECTORY, dry=DRY)
 
     def create_tests():
         source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['client.cpp', 'server.cpp'])
         test_source_files = get_source_files(env, TESTS_OBJ_DIRECTORY)
-
+        
         for test_file in test_source_files:
+            srcs = source_files+[test_file]
             name = os.path.splitext(test_file.name)[0]
-            env.Program(os.path.join(TESTS_BIN_DIRECTORY, name), source_files+[test_file])
+            env.Program(os.path.join(TESTS_BIN_DIRECTORY, name), srcs)
 
     create_tests()
