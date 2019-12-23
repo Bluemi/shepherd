@@ -69,7 +69,8 @@ glm::vec3 player::get_direction() const {
 	return glm::normalize(glm::vec3(
 				cos(glm::radians(_pitch)) * cos(glm::radians(_yaw)),
 				sin(glm::radians(_pitch)),
-				cos(glm::radians(_pitch)) * sin(glm::radians(_yaw))));
+				cos(glm::radians(_pitch)) * sin(glm::radians(_yaw))
+			));
 }
 
 glm::vec3 player::get_top() const {

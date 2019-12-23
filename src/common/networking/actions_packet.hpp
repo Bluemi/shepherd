@@ -15,6 +15,7 @@ constexpr std::uint8_t BOTTOM_ACTION = 		0b100000;
 
 class actions_packet {
 	public:
+		actions_packet();
 		actions_packet(std::uint8_t actions, const glm::vec2& mouse_changes);
 		static actions_packet from_message(const std::vector<char>& buffer);
 

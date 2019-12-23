@@ -13,7 +13,7 @@ int main() {
 	players.push_back(player(0, "peter"));
 	players.push_back(player(1, "klaus"));
 
-	game_update_packet packet = game_update_packet::from_players(players);
+	game_update_packet packet = game_update_packet::from_players(players, 42);
 	std::vector<char> message;
 
 	packet.write_to(&message);
@@ -23,6 +23,7 @@ int main() {
 	for (unsigned int i = 0; i < packet_copy.get_player_infos().size(); i++) {
 		std::cout << packet.get_player_infos()[i] << "\n" << packet_copy.get_player_infos()[i] << '\n' << std::endl;
 	}
+	std::cout << "local player ids: " << (int)packet.get_local_player_id() << " <-> " << (int)packet_copy.get_local_player_id() << std::endl;
 
 	return 0;
 }

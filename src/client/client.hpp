@@ -26,6 +26,7 @@ class client {
 		std::unique_ptr<renderer> _renderer;
 		std::shared_ptr<netsi::peer> _peer;
 		std::uint8_t _last_actions;
+		char _local_player_id;
 };
 
 #endif

@@ -8,7 +8,7 @@
 #include "../common/networking/game_update_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
-server::server() {}
+server::server() : _next_player_id(0) {}
 
 void server::init() {
 	_server_network_manager.run(1350);
@@ -96,10 +96,11 @@ void server::handle_clients() {
 }
 
 void server::send_game_update() const {
-	game_update_packet gup = game_update_packet::from_players(_current_frame.players);
-	std::vector<char> buffer;
-	gup.write_to(&buffer);
+	game_update_packet gup = game_update_packet::from_players(_current_frame.players, -1);
 	for (const server::peer_wrapper& p : _peers) {
+		std::vector<char> buffer;
+		gup.set_local_player_id(p.player_id);
+		gup.write_to(&buffer);
 		p.peer->async_send(buffer);
 	}
 }

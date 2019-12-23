@@ -21,8 +21,7 @@ const static std::string FRAGMENT_SHADER_PATH = "src/client/render/shaders/fragm
 const static double DEFAULT_SPEED = 59.54188473881952259316;
 
 renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned int window_width, unsigned int window_height)
-	: _camera(glm::vec3(-5.f, 0.f, 0.f), 0.f, 0.f),
-	  _shader_program(shader_program),
+	: _shader_program(shader_program),
 	  _window(window),
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
@@ -39,7 +38,6 @@ renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned i
 
 renderer::renderer(const renderer& v)
 	: _controller(v._controller),
-	  _camera(v._camera),
 	  _shader_program(v._shader_program),
 	  _player_shape(v._player_shape),
 	  _window(v._window),
@@ -122,13 +120,17 @@ double renderer::get_delta_time()
 void renderer::tick() {
 	const double speed = get_delta_time() * DEFAULT_SPEED;
 
-	_controller.process_user_input(_window, &_camera);
-	_camera.tick(speed);
+	_controller.process_user_input(_window);
 }
 
-void renderer::render(frame& f) {
+void renderer::render(frame& f, char local_player_id) {
 	clear_window();
-	_shader_program.set_4fv("view", _camera.get_look_at());
+	player* local_player = f.get_player(local_player_id);
+	if (local_player == nullptr) {
+		std::cerr << "local player is nullptr" << (int)local_player_id << std::endl;
+		return;
+	}
+	_shader_program.set_4fv("view", local_player->get_look_at());
 	glm::mat4 projection = glm::perspective(
 		glm::radians(45.0f),
 		_window_width/static_cast<float>(_window_height),
@@ -140,6 +142,10 @@ void renderer::render(frame& f) {
 	_player_shape.bind();
 
 	for (player& p : f.players) {
+		// dont render local player
+		if (p.get_id() == local_player_id) {
+			continue;
+		}
 		glm::mat4 model = glm::mat4(1.f);
 		model = glm::translate(model, p.get_position());
 		_shader_program.set_4fv("model", model);

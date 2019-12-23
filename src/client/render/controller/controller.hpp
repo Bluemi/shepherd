@@ -17,7 +17,7 @@ class controller {
 
 		void mouse_callback(double x, double y);
 
-		void process_user_input(GLFWwindow* window, camera* camera);
+		void process_user_input(GLFWwindow* window);
 
 		void key_pressed(GLFWwindow* window, Key key);
 		void key_released(GLFWwindow* window, Key key);

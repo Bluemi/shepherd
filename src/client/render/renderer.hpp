@@ -2,7 +2,6 @@
 #define __RENDERER_CLASS__
 
 #include "controller/controller.hpp"
-#include "camera/camera.hpp"
 #include "shader_program.hpp"
 #include "shape/shape_heap.hpp"
 
@@ -19,7 +18,7 @@ class renderer {
 		static std::optional<renderer> create(unsigned int window_width, unsigned int window_height, const std::string& window_name);
 
 		void tick();
-		void render(frame& f);
+		void render(frame& f, char player_id);
 		void close();
 		bool should_close() const;
 
@@ -34,7 +33,6 @@ class renderer {
 		void clear_window();
 
 		controller _controller;
-		camera _camera;
 		shader_program _shader_program;
 
 		shape _player_shape;

@@ -53,7 +53,6 @@ namespace packet_helper {
 			read_from_buffer(&t, buffer);
 			vec->push_back(t);
 		}
-		(*buffer) += sizeof(T) * num_elements;
 	}
 }
 

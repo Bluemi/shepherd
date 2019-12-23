@@ -4,7 +4,7 @@
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
-client::client() {}
+client::client() : _local_player_id(-1) {}
 
 void client::init(const std::string& player_name) {
 	renderer::init();
@@ -28,7 +28,9 @@ void client::init(const std::string& player_name) {
 void client::run() {
 	while (!_renderer->should_close()) {
 		_renderer->tick();
-		_renderer->render(_current_frame);
+		if (_local_player_id != -1) {
+			_renderer->render(_current_frame, _local_player_id); // TODO
+		}
 
 		while (!_peer->messages().empty()) {
 			const std::vector<char> msg = _peer->messages().pop();
@@ -115,6 +117,8 @@ void client::handle_game_update(const std::vector<char>& buffer) {
 		apply_player_info(pi);
 		current_player_ids.push_back(pi.id);
 	}
+
+	_local_player_id = packet.get_local_player_id();
 
 	_current_frame.players.erase(
 		std::remove_if(

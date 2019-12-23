@@ -31,7 +31,7 @@ void controller::mouse_callback(double x, double y) {
 	y_change += y;
 }
 
-void controller::process_user_input(GLFWwindow* window, camera* camera) {
+void controller::process_user_input(GLFWwindow* window) {
 	for (auto it = _is_pressed.begin(); it != _is_pressed.end(); ++it) {
 		const bool key_pressed = glfwGetKey(window, it->first) == GLFW_PRESS;
 		if (key_pressed != it->second) {
