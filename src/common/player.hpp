@@ -14,11 +14,13 @@ class player {
 		unsigned int get_id() const;
 		const std::string& get_name() const;
 		const glm::vec3& get_position() const;
+		const glm::vec2& get_view_angles() const;
 		const glm::vec3& get_speed() const;
 		std::uint8_t get_actions() const;
 
 		void set_name(const std::string& name);
 		void set_position(const glm::vec3& position);
+		void set_view_angles(const glm::vec2& view_angles);
 		void set_speed(const glm::vec3& speed);
 		void set_actions(const std::uint8_t actions);
 		void update_direction(const glm::vec2& direction_update);
@@ -34,11 +36,10 @@ class player {
 		char _id;
 		std::string _name;
 		glm::vec3 _position;
+		glm::vec2 _view_angles;
 		glm::vec3 _speed;
 		std::uint8_t _actions;
 
-		float _pitch;
-		float _yaw;
 };
 
 #endif

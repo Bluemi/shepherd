@@ -100,6 +100,7 @@ void client::apply_player_info(const game_update_packet::player_info& pi) {
 		if (p.get_id() == pi.id) {
 			p.set_name(pi.name);
 			p.set_position(pi.position);
+			p.set_view_angles(pi.view_angles);
 			new_player = false;
 			break;
 		}

@@ -27,6 +27,10 @@ const glm::vec3& player::get_position() const {
 	return _position;
 }
 
+const glm::vec2& player::get_view_angles() const {
+	return _view_angles;
+}
+
 const glm::vec3& player::get_speed() const {
 	return _speed;
 }
@@ -43,6 +47,10 @@ void player::set_position(const glm::vec3& position) {
 	_position = position;
 }
 
+void player::set_view_angles(const glm::vec2& view_angles) {
+	_view_angles = view_angles;
+}
+
 void player::set_speed(const glm::vec3& speed) {
 	_speed = speed;
 }
@@ -52,9 +60,9 @@ void player::set_actions(const std::uint8_t actions) {
 }
 
 void player::update_direction(const glm::vec2& direction_update) {
-	_yaw += direction_update.x * PLAYER_ROTATE_SPEED;
-	_pitch -= direction_update.y * PLAYER_ROTATE_SPEED;
-	_pitch = fmax(fmin(_pitch, 89.f), -89.0f);
+	_view_angles.y += direction_update.x * PLAYER_ROTATE_SPEED;
+	_view_angles.x -= direction_update.y * PLAYER_ROTATE_SPEED;
+	_view_angles.x = fmax(fmin(_view_angles.x, 89.f), -89.0f);
 }
 
 glm::vec3 player::get_up() {
@@ -67,9 +75,9 @@ glm::vec3 player::get_right() const {
 
 glm::vec3 player::get_direction() const {
 	return glm::normalize(glm::vec3(
-				cos(glm::radians(_pitch)) * cos(glm::radians(_yaw)),
-				sin(glm::radians(_pitch)),
-				cos(glm::radians(_pitch)) * sin(glm::radians(_yaw))
+				cos(glm::radians(_view_angles.x)) * cos(glm::radians(_view_angles.y)),
+				sin(glm::radians(_view_angles.x)),
+				cos(glm::radians(_view_angles.x)) * sin(glm::radians(_view_angles.y))
 			));
 }
 

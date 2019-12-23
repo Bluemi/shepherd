@@ -21,7 +21,7 @@ class actions_packet {
 
 		void write_to(std::vector<char>* buffer);
 
-		std::uint16_t actions;
+		std::uint8_t actions;
 		glm::vec2 mouse_changes;
 };
 

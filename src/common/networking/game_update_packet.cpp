@@ -11,6 +11,7 @@ namespace packet_helper {
 	void read_from_buffer<game_update_packet::player_info>(game_update_packet::player_info* obj, const char** buffer) {
 		packet_helper::read_from_buffer(&obj->id, buffer);
 		packet_helper::read_from_buffer(&obj->position, buffer);
+		packet_helper::read_from_buffer(&obj->view_angles, buffer);
 		packet_helper::read_from_buffer(&obj->name, buffer);
 	}
 
@@ -18,15 +19,15 @@ namespace packet_helper {
 	void write_to_buffer(const game_update_packet::player_info& pi, std::vector<char>* buffer) {
 		packet_helper::write_to_buffer(pi.id, buffer);
 		packet_helper::write_to_buffer(pi.position, buffer);
+		packet_helper::write_to_buffer(pi.view_angles, buffer);
 		packet_helper::write_to_buffer(pi.name, buffer);
 	}
-
 }
 
 game_update_packet::player_info::player_info() {}
 
 game_update_packet::player_info::player_info(const player& p)
-	: id(p.get_id()), position(p.get_position()), name(p.get_name())
+	: id(p.get_id()), position(p.get_position()), view_angles(p.get_view_angles()), name(p.get_name())
 {}
 
 game_update_packet::game_update_packet() {}
