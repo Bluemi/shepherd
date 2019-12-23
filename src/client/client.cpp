@@ -1,6 +1,7 @@
 #include "client.hpp"
 
 #include "../common/networking/login_packet.hpp"
+#include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
 client::client() {}
@@ -29,10 +30,12 @@ void client::run() {
 		_renderer->tick();
 		_renderer->render(_current_frame);
 
-		if (!_peer->messages().empty()) {
+		while (!_peer->messages().empty()) {
 			const std::vector<char> msg = _peer->messages().pop();
 			handle_message(msg);
 		}
+
+		send_actions_update();
 	}
 
 	send_logout();
@@ -52,6 +55,31 @@ void client::send_logout() {
 	std::vector<char> buffer;
 	buffer.push_back(packet_ids::LOGOUT_PACKET);
 	_peer->send(buffer);
+}
+
+void client::send_actions_update() {
+	std::uint8_t current_actions(0);
+	controller& ctrl = _renderer->get_controller();
+	if (ctrl.is_key_pressed(controller::CAMERA_FORWARD_KEY))
+		current_actions |= FORWARD_ACTION;
+	if (ctrl.is_key_pressed(controller::CAMERA_BACKWARD_KEY))
+		current_actions |= BACKWARD_ACTION;
+	if (ctrl.is_key_pressed(controller::CAMERA_LEFT_KEY))
+		current_actions |= LEFT_ACTION;
+	if (ctrl.is_key_pressed(controller::CAMERA_RIGHT_KEY))
+		current_actions |= RIGHT_ACTION;
+	if (ctrl.is_key_pressed(controller::CAMERA_TOP_KEY))
+		current_actions |= JUMP_ACTION;
+	if (ctrl.is_key_pressed(controller::CAMERA_BOTTOM_KEY))
+		current_actions |= BOTTOM_ACTION;
+
+	if (current_actions != _last_actions) {
+		std::vector<char> buffer;
+		actions_packet packet(current_actions);
+		packet.write_to(&buffer);
+		_peer->async_send(buffer);
+		_last_actions = current_actions;
+	}
 }
 
 void client::handle_message(const std::vector<char>& buffer) {

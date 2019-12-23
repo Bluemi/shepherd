@@ -25,7 +25,10 @@ class server {
 		void handle_message(const std::vector<char>& message, peer_wrapper*);
 		void handle_login(const std::vector<char>& login_message, peer_wrapper*);
 		void handle_logout(peer_wrapper*);
+		void handle_actions(const std::vector<char>& message, peer_wrapper*);
 		void send_game_update() const;
+
+		player* get_player(char player_id);
 
 		netsi::server_network_manager _server_network_manager;
 		std::vector<peer_wrapper> _peers;

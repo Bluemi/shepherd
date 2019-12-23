@@ -20,6 +20,8 @@ class controller {
 		void key_pressed(GLFWwindow* window, Key key);
 		void key_released(GLFWwindow* window, Key key);
 
+		bool is_key_pressed(const Key key) const;
+
 		static const Key CAMERA_FORWARD_KEY;
 		static const Key CAMERA_BACKWARD_KEY;
 		static const Key CAMERA_LEFT_KEY;

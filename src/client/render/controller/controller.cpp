@@ -78,3 +78,11 @@ void controller::key_pressed(GLFWwindow* window, Key key) {
 
 void controller::key_released(GLFWwindow*, Key) {
 }
+
+bool controller::is_key_pressed(const Key key) const {
+	auto it = _is_pressed.find(key);
+	if (it == _is_pressed.end()) {
+		return false;
+	}
+	return it->second;
+}

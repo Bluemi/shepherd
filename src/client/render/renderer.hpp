@@ -26,6 +26,9 @@ class renderer {
 		double get_time() const;
 
 		void framebuffer_size_callback(GLFWwindow*, int width, int height);
+
+		const controller& get_controller() const;
+		controller& get_controller();
 	private:
 		double get_delta_time();
 		void clear_window();

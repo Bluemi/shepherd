@@ -172,3 +172,11 @@ void renderer::clear_window() {
 		glClearColor(0.05f, 0.07f, 0.08f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+const controller& renderer::get_controller() const {
+	return _controller;
+}
+
+controller& renderer::get_controller() {
+	return _controller;
+}

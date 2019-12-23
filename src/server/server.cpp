@@ -4,6 +4,7 @@
 #include <time.h>
 
 #include "../common/networking/login_packet.hpp"
+#include "../common/networking/actions_packet.hpp"
 #include "../common/networking/game_update_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
@@ -20,6 +21,7 @@ void server::run() {
 	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40));; c.next()) {
 		check_new_peers();
 		handle_clients();
+		_current_frame.tick();
 		send_game_update();
 	}
 
@@ -58,6 +60,11 @@ void server::handle_logout(server::peer_wrapper* peer_wrapper) {
 	}
 }
 
+void server::handle_actions(const std::vector<char>& message, peer_wrapper* peer_wrapper) {
+	actions_packet packet = actions_packet::from_message(message);
+	_current_frame.get_player(peer_wrapper->player_id)->set_actions(packet.actions);
+}
+
 void server::handle_message(const std::vector<char>& message, server::peer_wrapper* peer_wrapper) {
 	switch (message[0]) {
 		case packet_ids::LOGIN_PACKET:
@@ -65,6 +72,9 @@ void server::handle_message(const std::vector<char>& message, server::peer_wrapp
 			break;
 		case packet_ids::LOGOUT_PACKET:
 			handle_logout(peer_wrapper);
+			break;
+		case packet_ids::ACTIONS_PACKET:
+			handle_actions(message, peer_wrapper);
 			break;
 		default:
 			std::cerr << "cant handle message with id: " << (int)(message[0]) << std::endl;

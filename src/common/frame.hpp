@@ -8,6 +8,9 @@
 class frame {
 	public:
 		frame();
+		player* get_player(char player_id);
+
+		void tick();
 
 		std::vector<player> players;
 };

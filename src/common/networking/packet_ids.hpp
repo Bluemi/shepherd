@@ -6,6 +6,7 @@ namespace packet_ids {
 		LOGIN_PACKET,
 		LOGOUT_PACKET,
 		GAME_UPDATE_PACKET,
+		ACTIONS_PACKET,
 	};
 }
 

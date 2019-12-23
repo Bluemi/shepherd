@@ -15,6 +15,7 @@ class client {
 	private:
 		void send_login(const std::string& player_name);
 		void send_logout();
+		void send_actions_update();
 
 		void handle_message(const std::vector<char>& buffer);
 		void handle_game_update(const std::vector<char>& buffer);
@@ -24,6 +25,7 @@ class client {
 		netsi::client_network_manager _network_manager;
 		std::unique_ptr<renderer> _renderer;
 		std::shared_ptr<netsi::peer> _peer;
+		std::uint8_t _last_actions;
 };
 
 #endif
