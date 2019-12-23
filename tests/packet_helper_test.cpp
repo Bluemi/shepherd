@@ -20,9 +20,8 @@ int main() {
 
 	game_update_packet packet_copy = game_update_packet::from_message(message);
 
-	std::cout << "original\tcopy" << std::endl;
 	for (unsigned int i = 0; i < packet_copy.get_player_infos().size(); i++) {
-		std::cout << packet.get_player_infos()[i] << "\t" << packet_copy.get_player_infos()[i] << std::endl;
+		std::cout << packet.get_player_infos()[i] << "\n" << packet_copy.get_player_infos()[i] << '\n' << std::endl;
 	}
 
 	return 0;
