@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 
+#include <glm/glm.hpp>
+
 struct GLFWwindow;
 
 class camera;
@@ -21,6 +23,7 @@ class controller {
 		void key_released(GLFWwindow* window, Key key);
 
 		bool is_key_pressed(const Key key) const;
+		glm::vec2 poll_mouse_changes();
 
 		static const Key CAMERA_FORWARD_KEY;
 		static const Key CAMERA_BACKWARD_KEY;
@@ -30,7 +33,6 @@ class controller {
 		static const Key CAMERA_BOTTOM_KEY;
 		static const Key CLOSE_KEY;
 	private:
-		void process_camera(camera* camera);
 
 		std::map<Key, bool> _is_pressed;
 		double x_change, y_change;

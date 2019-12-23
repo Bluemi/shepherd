@@ -21,6 +21,13 @@ class player {
 		void set_position(const glm::vec3& position);
 		void set_speed(const glm::vec3& speed);
 		void set_actions(const std::uint8_t actions);
+		void update_direction(const glm::vec2& direction_update);
+
+		static glm::vec3 get_up();
+		glm::vec3 get_right() const;
+		glm::vec3 get_direction() const;
+		glm::vec3 get_top() const;
+		glm::mat4 get_look_at() const;
 
 		void tick();
 	private:
@@ -29,6 +36,9 @@ class player {
 		glm::vec3 _position;
 		glm::vec3 _speed;
 		std::uint8_t _actions;
+
+		float _pitch;
+		float _yaw;
 };
 
 #endif

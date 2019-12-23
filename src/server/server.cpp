@@ -62,7 +62,9 @@ void server::handle_logout(server::peer_wrapper* peer_wrapper) {
 
 void server::handle_actions(const std::vector<char>& message, peer_wrapper* peer_wrapper) {
 	actions_packet packet = actions_packet::from_message(message);
-	_current_frame.get_player(peer_wrapper->player_id)->set_actions(packet.actions);
+	player* current_player = _current_frame.get_player(peer_wrapper->player_id);
+	current_player->set_actions(packet.actions);
+	current_player->update_direction(packet.mouse_changes);
 }
 
 void server::handle_message(const std::vector<char>& message, server::peer_wrapper* peer_wrapper) {
@@ -84,7 +86,7 @@ void server::handle_message(const std::vector<char>& message, server::peer_wrapp
 
 void server::handle_clients() {
 	for (server::peer_wrapper& p : _peers) {
-		if (!p.peer->messages().empty()) {
+		while (!p.peer->messages().empty()) {
 			std::vector<char> m = p.peer->messages().pop();
 			handle_message(m, &p);
 		}

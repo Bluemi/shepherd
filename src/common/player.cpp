@@ -5,6 +5,8 @@
 
 #include "networking/actions_packet.hpp"
 
+const float PLAYER_ROTATE_SPEED = 0.07f;
+
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name)
 {}
@@ -49,21 +51,49 @@ void player::set_actions(const std::uint8_t actions) {
 	_actions = actions;
 }
 
+void player::update_direction(const glm::vec2& direction_update) {
+	_yaw += direction_update.x * PLAYER_ROTATE_SPEED;
+	_pitch -= direction_update.y * PLAYER_ROTATE_SPEED;
+	_pitch = fmax(fmin(_pitch, 89.f), -89.0f);
+}
+
+glm::vec3 player::get_up() {
+	return glm::vec3(0.0f, 1.0f, 0.0f);
+}
+
+glm::vec3 player::get_right() const {
+	return glm::normalize(glm::cross(get_direction(), player::get_up()));
+}
+
+glm::vec3 player::get_direction() const {
+	return glm::normalize(glm::vec3(
+				cos(glm::radians(_pitch)) * cos(glm::radians(_yaw)),
+				sin(glm::radians(_pitch)),
+				cos(glm::radians(_pitch)) * sin(glm::radians(_yaw))));
+}
+
+glm::vec3 player::get_top() const {
+	return glm::normalize(glm::cross(get_right(), get_direction()));
+}
+
+glm::mat4 player::get_look_at() const {
+	return glm::lookAt(_position, _position + get_direction(), get_up());
+}
+
 void player::tick() {
-	int forward = 0;
+	float forward = 0;
 	if (_actions & FORWARD_ACTION)
 		forward++;
 	if (_actions & BACKWARD_ACTION)
 		forward--;
 
-	int left = 0;
+	float right = 0;
 	if (_actions & LEFT_ACTION)
-		left++;
+		right--;
 	if (_actions & RIGHT_ACTION)
-		left--;
+		right++;
 
-	_speed.x -= left*0.01f;
-	_speed.z += forward*0.01f;
+	_speed += (get_right()*right + get_direction()*forward)*0.01f;
 
 	_speed *= 0.98;
 

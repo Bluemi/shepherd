@@ -73,13 +73,13 @@ void client::send_actions_update() {
 	if (ctrl.is_key_pressed(controller::CAMERA_BOTTOM_KEY))
 		current_actions |= BOTTOM_ACTION;
 
-	if (current_actions != _last_actions) {
-		std::vector<char> buffer;
-		actions_packet packet(current_actions);
-		packet.write_to(&buffer);
-		_peer->async_send(buffer);
-		_last_actions = current_actions;
-	}
+	glm::vec2 mouse_changes = ctrl.poll_mouse_changes();
+
+	std::vector<char> buffer;
+	actions_packet packet(current_actions, mouse_changes);
+	packet.write_to(&buffer);
+	_peer->async_send(buffer);
+	_last_actions = current_actions;
 }
 
 void client::handle_message(const std::vector<char>& buffer) {

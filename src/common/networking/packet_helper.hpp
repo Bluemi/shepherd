@@ -5,8 +5,6 @@
 #include <string>
 #include <glm/glm.hpp>
 
-// #include "game_update_packet.hpp"
-
 namespace packet_helper {
 	// write functions --------------------------------
 	template<typename T>
@@ -16,18 +14,9 @@ namespace packet_helper {
 		buffer->insert(buffer->end(), t_ptr, t_ptr+sizeof(T));
 	}
 
-	template<>
-	void write_to_buffer(const std::string& s, std::vector<char>* buffer) {
-		write_to_buffer(s.size(), buffer);
-		buffer->insert(buffer->end(), s.cbegin(), s.cend());
-	}
-
-	template<>
-	void write_to_buffer(const glm::vec3& v, std::vector<char>* buffer) {
-		write_to_buffer(v.x, buffer);
-		write_to_buffer(v.y, buffer);
-		write_to_buffer(v.z, buffer);
-	}
+	void write_to_buffer(const std::string& s, std::vector<char>* buffer);
+	void write_to_buffer(const glm::vec3& v, std::vector<char>* buffer);
+	void write_to_buffer(const glm::vec2& v, std::vector<char>* buffer);
 
 	template<typename T>
 	void write_to_buffer(const std::vector<T>& v, std::vector<char>* buffer) {
@@ -47,20 +36,9 @@ namespace packet_helper {
 		*obj = *obj_ptr;
 	}
 
-	template<>
-	void read_from_buffer<std::string>(std::string* s, const char** buffer) {
-		std::size_t num_chars(0);
-		read_from_buffer<std::size_t>(&num_chars, buffer);
-		s->assign(*buffer, (*buffer)+num_chars);
-		(*buffer) += num_chars;
-	}
-
-	template<>
-	void read_from_buffer<glm::vec3>(glm::vec3* v, const char** buffer) {
-		read_from_buffer(&v->x, buffer);
-		read_from_buffer(&v->y, buffer);
-		read_from_buffer(&v->z, buffer);
-	}
+	void read_from_buffer(std::string* s, const char** buffer);
+	void read_from_buffer(glm::vec3* v, const char** buffer);
+	void read_from_buffer(glm::vec2* v, const char** buffer);
 
 	template<typename T>
 	void read_from_buffer(std::vector<T>* vec, const char** buffer) {

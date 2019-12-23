@@ -1,7 +1,6 @@
 #include "controller.hpp"
 
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 
 #include "../camera/camera.hpp"
 
@@ -44,31 +43,13 @@ void controller::process_user_input(GLFWwindow* window, camera* camera) {
 			}
 		}
 	}
-
-	process_camera(camera);
 }
 
-void controller::process_camera(camera* camera) {
-	glm::vec3 acceleration;
-	if (_is_pressed[CAMERA_FORWARD_KEY])
-		acceleration.x += 1.f;
-	if (_is_pressed[CAMERA_BACKWARD_KEY])
-		acceleration.x -= 1.f;
-	if (_is_pressed[CAMERA_RIGHT_KEY])
-		acceleration.z += 1.f;
-	if (_is_pressed[CAMERA_LEFT_KEY])
-		acceleration.z -= 1.f;
-	if (_is_pressed[CAMERA_TOP_KEY])
-		acceleration.y += 1.f;
-	if (_is_pressed[CAMERA_BOTTOM_KEY])
-		acceleration.y -= 1.f;
-
-	if (camera != nullptr) {
-		camera->set_acceleration(acceleration);
-		camera->change_direction(glm::vec2(x_change, y_change));
-		x_change = 0.0;
-		y_change = 0.0;
-	}
+glm::vec2 controller::poll_mouse_changes() {
+	glm::vec2 changes(x_change, y_change);
+	x_change = 0.f;
+	y_change = 0.f;
+	return changes;
 }
 
 void controller::key_pressed(GLFWwindow* window, Key key) {
