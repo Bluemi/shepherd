@@ -33,7 +33,7 @@ renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned i
 	mouse_manager::init(_window);
 	mouse_manager::add_controller(&_controller);
 
-	_player_shape = initialize::create_shape(sphere_specification(2));
+	_player_shape = initialize::create_shape(cube_specification());
 }
 
 renderer::renderer(const renderer& v)
@@ -148,6 +148,8 @@ void renderer::render(frame& f, char local_player_id) {
 		}
 		glm::mat4 model = glm::mat4(1.f);
 		model = glm::translate(model, p.get_position());
+		model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
+		model = glm::rotate(model, glm::radians(-p.get_view_angles().y), player::get_up());
 		_shader_program.set_4fv("model", model);
 
 		_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.5));
