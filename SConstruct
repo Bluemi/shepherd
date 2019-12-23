@@ -100,8 +100,11 @@ def get_source_files(env, home, exclude=[]):
     return source_files
 
 
-
+def my_print_command():
+    print('hey')
 env = Environment(parse_flags='-lboost_thread.a -std=c++17')
+env['CXXCOMSTR'] =  'compiling   $TARGET'
+env['LINKCOMSTR'] = 'linking     $TARGET'
 env['ENV']['TERM'] = os.environ['TERM']
 env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
 # env.Append(CCFLAGS='-O3')
@@ -117,7 +120,10 @@ if DRY:
     for client_source_file in client_source_files:
         print('\t{}'.format(client_source_file.name))
 else:
-    env.Program(os.path.join(BIN_DIRECTORY, 'server'), server_source_files)
+    env.Program(
+        os.path.join(BIN_DIRECTORY, 'server'),
+        server_source_files,
+    )
     env.Program(os.path.join(BIN_DIRECTORY, 'client'), client_source_files)
 
 
