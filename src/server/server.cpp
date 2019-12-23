@@ -1,5 +1,8 @@
 #include "server.hpp"
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "../common/networking/login_packet.hpp"
 #include "../common/networking/game_update_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
@@ -8,6 +11,7 @@ server::server() {}
 
 void server::init() {
 	_server_network_manager.run(1350);
+	srand(time(NULL));
 }
 
 void server::run() {
@@ -35,7 +39,9 @@ void server::check_new_peers() {
 
 void server::handle_login(const std::vector<char>& login_message) {
 	login_packet p = login_packet::from_message(login_message);
-	_current_frame.add_player(p.get_player_name());
+	glm::vec3 pos((rand()%10)-5, (rand()%10)-5, (rand()%10)-5);
+	_current_frame.players.push_back(player(_next_player_id, p.get_player_name(), pos));
+	_next_player_id++;
 }
 
 void server::handle_message(const std::vector<char>& message) {

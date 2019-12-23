@@ -57,12 +57,18 @@ void client::handle_message(const std::vector<char>& buffer) {
 }
 
 void client::apply_player_info(const game_update_packet::player_info& pi) {
+	bool new_player = true;
 	for (player& p : _current_frame.players) {
 		if (p.get_id() == pi.id) {
 			p.set_name(pi.name);
 			p.set_position(pi.position);
+			new_player = false;
 			break;
 		}
+	}
+
+	if (new_player) {
+		_current_frame.players.push_back(player(pi.id, pi.name, pi.position));
 	}
 }
 

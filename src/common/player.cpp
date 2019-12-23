@@ -3,7 +3,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
 
-player::player(unsigned int id, const std::string& name): _id(id), _name(name) {}
+player::player(unsigned int id, const std::string& name)
+	: _id(id), _name(name)
+{}
+
+player::player(unsigned int id, const std::string& name, const glm::vec3& position)
+	: _id(id), _name(name), _position(position)
+{}
 
 unsigned int player::get_id() const {
 	return _id;

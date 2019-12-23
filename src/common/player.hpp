@@ -9,6 +9,7 @@ class shader_program;
 class player {
 	public:
 		player(unsigned int id, const std::string& name);
+		player(unsigned int id, const std::string& name, const glm::vec3& position);
 
 		unsigned int get_id() const;
 		const std::string& get_name() const;

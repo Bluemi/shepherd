@@ -22,6 +22,7 @@ class server {
 		netsi::server_network_manager _server_network_manager;
 		std::vector<std::shared_ptr<netsi::peer>> _peers;
 		frame _current_frame;
+		unsigned int _next_player_id;
 };
 
 #endif
