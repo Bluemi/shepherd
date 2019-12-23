@@ -20,3 +20,15 @@ const glm::vec3& player::get_position() const {
 const glm::vec3& player::get_speed() const {
 	return _speed;
 }
+
+void player::set_name(const std::string& name) {
+	_name = name;
+}
+
+void player::set_position(const glm::vec3& position) {
+	_position = position;
+}
+
+void player::set_speed(const glm::vec3& speed) {
+	_speed = speed;
+}

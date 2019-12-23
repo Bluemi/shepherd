@@ -1,7 +1,10 @@
 #include "game_update_packet.hpp"
 
+#include <iostream>
+
 #include "../player.hpp"
 #include "packet_helper.hpp"
+#include "packet_ids.hpp"
 
 namespace packet_helper {
 	template<>
@@ -39,13 +42,18 @@ game_update_packet game_update_packet::from_players(const std::vector<player>& p
 game_update_packet game_update_packet::from_message(const std::vector<char>& message) {
 	game_update_packet packet;
 
-	const char* message_ptr = &message[0];
+	if (message[0] != packet_ids::GAME_UPDATE_PACKET) {
+		std::cerr << "wrong packet id for game_update_packet: " << (int)(message[0]) << std::endl;
+	}
+
+	const char* message_ptr = &message[1];
 	const char** message_ptr_ptr = &message_ptr;
 	packet_helper::read_from_buffer(&packet._player_infos, message_ptr_ptr);
 	return packet;
 }
 
 void game_update_packet::write_to(std::vector<char>* buffer) const {
+	buffer->push_back(packet_ids::GAME_UPDATE_PACKET);
 	packet_helper::write_to_buffer(_player_infos, buffer);
 }
 

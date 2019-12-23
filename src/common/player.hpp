@@ -14,6 +14,10 @@ class player {
 		const std::string& get_name() const;
 		const glm::vec3& get_position() const;
 		const glm::vec3& get_speed() const;
+
+		void set_name(const std::string& name);
+		void set_position(const glm::vec3& position);
+		void set_speed(const glm::vec3& speed);
 	private:
 		char _id;
 		std::string _name;

@@ -17,6 +17,7 @@ class server {
 		void handle_clients();
 		void handle_message(const std::vector<char>& message);
 		void handle_login(const std::vector<char>& login_message);
+		void send_game_update() const;
 
 		netsi::server_network_manager _server_network_manager;
 		std::vector<std::shared_ptr<netsi::peer>> _peers;

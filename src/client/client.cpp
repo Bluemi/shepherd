@@ -1,6 +1,7 @@
 #include "client.hpp"
 
 #include "../common/networking/login_packet.hpp"
+#include "../common/networking/packet_ids.hpp"
 
 client::client() {}
 
@@ -29,10 +30,8 @@ void client::run() {
 		_renderer->render(_current_frame);
 
 		if (!_peer->messages().empty()) {
-			std::cout << "got message" << std::endl;
 			const std::vector<char> msg = _peer->messages().pop();
-			std::cout.write(&msg[0], msg.size());
-			std::cout << std::endl;
+			handle_message(msg);
 		}
 	}
 
@@ -47,9 +46,37 @@ void client::send_login(const std::string& player_name) {
 	_peer->async_send(buffer);
 }
 
+void client::handle_message(const std::vector<char>& buffer) {
+	switch (buffer[0]) {
+		case packet_ids::GAME_UPDATE_PACKET:
+			handle_game_update(buffer);
+			break;
+		default:
+			std::cerr << "could not handle packet with id: " << (int)(buffer[0]) << std::endl;
+	}
+}
+
+void client::apply_player_info(const game_update_packet::player_info& pi) {
+	for (player& p : _current_frame.players) {
+		if (p.get_id() == pi.id) {
+			p.set_name(pi.name);
+			p.set_position(pi.position);
+			break;
+		}
+	}
+}
+
+void client::handle_game_update(const std::vector<char>& buffer) {
+	game_update_packet packet = game_update_packet::from_message(buffer);
+	for (const game_update_packet::player_info& pi : packet.get_player_infos()) {
+		apply_player_info(pi);
+	}
+}
+
 void print_usage() {
 	std::cout << "client [playername]" << std::endl;
 }
+
 
 int main(int argc, const char** argv) {
 	if (argc != 2) {
