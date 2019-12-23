@@ -14,6 +14,8 @@ class client {
 		void run();
 	private:
 		void send_login(const std::string& player_name);
+		void send_logout();
+
 		void handle_message(const std::vector<char>& buffer);
 		void handle_game_update(const std::vector<char>& buffer);
 		void apply_player_info(const game_update_packet::player_info& pi);

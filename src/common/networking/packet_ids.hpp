@@ -4,6 +4,7 @@
 namespace packet_ids {
 	enum : char {
 		LOGIN_PACKET,
+		LOGOUT_PACKET,
 		GAME_UPDATE_PACKET,
 	};
 }

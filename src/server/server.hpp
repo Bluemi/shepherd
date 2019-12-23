@@ -13,14 +13,22 @@ class server {
 		void init();
 		void run();
 	private:
+		struct peer_wrapper {
+			peer_wrapper(const std::shared_ptr<netsi::peer>& peer, const int player_id) : peer(peer), player_id(player_id), disconnected(false) {}
+
+			std::shared_ptr<netsi::peer> peer;
+			char player_id;
+			bool disconnected;
+		};
 		void check_new_peers();
 		void handle_clients();
-		void handle_message(const std::vector<char>& message);
-		void handle_login(const std::vector<char>& login_message);
+		void handle_message(const std::vector<char>& message, peer_wrapper*);
+		void handle_login(const std::vector<char>& login_message, peer_wrapper*);
+		void handle_logout(peer_wrapper*);
 		void send_game_update() const;
 
 		netsi::server_network_manager _server_network_manager;
-		std::vector<std::shared_ptr<netsi::peer>> _peers;
+		std::vector<peer_wrapper> _peers;
 		frame _current_frame;
 		unsigned int _next_player_id;
 };

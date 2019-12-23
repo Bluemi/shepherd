@@ -35,6 +35,8 @@ void client::run() {
 		}
 	}
 
+	send_logout();
+
 	_renderer->close();
 	_network_manager.stop();
 }
@@ -44,6 +46,12 @@ void client::send_login(const std::string& player_name) {
 	std::vector<char> buffer;
 	packet.write_to(&buffer);
 	_peer->async_send(buffer);
+}
+
+void client::send_logout() {
+	std::vector<char> buffer;
+	buffer.push_back(packet_ids::LOGOUT_PACKET);
+	_peer->send(buffer);
 }
 
 void client::handle_message(const std::vector<char>& buffer) {
@@ -74,8 +82,32 @@ void client::apply_player_info(const game_update_packet::player_info& pi) {
 
 void client::handle_game_update(const std::vector<char>& buffer) {
 	game_update_packet packet = game_update_packet::from_message(buffer);
+	std::vector<char> current_player_ids;
 	for (const game_update_packet::player_info& pi : packet.get_player_infos()) {
 		apply_player_info(pi);
+		current_player_ids.push_back(pi.id);
+	}
+
+	_current_frame.players.erase(
+		std::remove_if(
+			_current_frame.players.begin(),
+			_current_frame.players.end(),
+			[current_player_ids](const player& p) { return std::find(current_player_ids.begin(), current_player_ids.end(), p.get_id()) == current_player_ids.end(); }
+		),
+		_current_frame.players.end()
+	);
+
+	for (auto it = _current_frame.players.begin(); it != _current_frame.players.end(); ++it) {
+		bool found = false;
+		for (const auto& pi : packet.get_player_infos()) {
+			if (pi.id == it->get_id()) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			it = _current_frame.players.erase(it);
+		}
 	}
 }
 
