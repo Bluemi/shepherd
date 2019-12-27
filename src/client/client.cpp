@@ -4,6 +4,7 @@
 #include "../common/networking/init_packet.hpp"
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
+#include "../common/world/perlin_noise.hpp"
 
 client::client() : _local_player_id(-1) {}
 
@@ -119,10 +120,17 @@ void client::handle_init(const std::vector<char>& buffer) {
 	init_packet packet = init_packet::from_message(buffer);
 	_local_player_id = packet.local_player_id;
 
+	perlin_noise pn;
+
 	// initialize blocks
-	for (int x = -5; x <= 5; x++) {
-		for (int z = -5; z <= 5; z++) {
-			_current_frame.blocks.push_back(world_block(glm::vec3(x, 0, z)));
+	for (int x = 0; x <= 40; x++) {
+		for (int z = 0; z <= 40; z++) {
+			float y = pn({
+				static_cast<float>(x*0.1f),
+				static_cast<float>(z*0.1f)
+			});
+			y = glm::floor(y*2.f);
+			_current_frame.blocks.push_back(world_block(glm::vec3(x, y, z)));
 		}
 	}
 }

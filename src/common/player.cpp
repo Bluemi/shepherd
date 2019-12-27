@@ -102,9 +102,15 @@ void player::tick() {
 	if (_actions & RIGHT_ACTION)
 		right++;
 
-	_speed += (get_right()*right + get_direction()*forward)*0.01f;
+	float up = 0;
+	if (_actions & JUMP_ACTION)
+		up++;
+	if (_actions & BOTTOM_ACTION)
+		up--;
 
-	_speed *= 0.98;
+	_speed += (get_right()*right + get_direction()*forward + get_top()*up)*0.1f;
+
+	_speed *= 0.78;
 
 	_position += _speed;
 }
