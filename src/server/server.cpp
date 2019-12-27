@@ -14,6 +14,7 @@ server::server() : _next_player_id(0) {}
 void server::init() {
 	_server_network_manager.run(1350);
 	srand(time(NULL));
+	_map_seed = rand();
 }
 
 void server::run() {
@@ -109,7 +110,7 @@ void server::send_game_update() const {
 }
 
 void server::send_init(char player_id, peer_wrapper* pw) const {
-	init_packet packet(player_id);
+	init_packet packet(player_id, _map_seed);
 	std::vector<char> buffer;
 	packet.write_to(&buffer);
 	pw->peer->async_send(buffer);

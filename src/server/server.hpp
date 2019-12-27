@@ -35,6 +35,7 @@ class server {
 		std::vector<peer_wrapper> _peers;
 		frame _current_frame;
 		unsigned int _next_player_id;
+		unsigned int _map_seed;
 };
 
 #endif
