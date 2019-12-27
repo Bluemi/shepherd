@@ -11,8 +11,8 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 	unsigned int s = seed % 25000;
 
 	// initialize blocks
-	for (unsigned int x = 0; x <= 40; x++) {
-		for (unsigned int z = 0; z <= 40; z++) {
+	for (unsigned int x = 0; x <= 50; x++) {
+		for (unsigned int z = 0; z <= 50; z++) {
 			float y = pn({
 				(x+s)*0.1f,
 				(z+s)*0.1f
