@@ -84,9 +84,9 @@ namespace initialize
 
 			void normalize()
 			{
-				p1 = glm::normalize(p1);
-				p2 = glm::normalize(p2);
-				p3 = glm::normalize(p3);
+				p1 = glm::normalize(p1) * 0.5f;
+				p2 = glm::normalize(p2) * 0.5f;
+				p3 = glm::normalize(p3) * 0.5f;
 			}
 
 			/**

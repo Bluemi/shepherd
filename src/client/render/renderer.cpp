@@ -33,7 +33,7 @@ renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned i
 	mouse_manager::init(_window);
 	mouse_manager::add_controller(&_controller);
 
-	_player_shape = initialize::create_shape(cube_specification());
+	_player_shape = initialize::create_shape(sphere_specification(2));
 	_world_block_shape = initialize::create_shape(cube_specification());
 }
 
