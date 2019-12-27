@@ -15,6 +15,7 @@ void server::init() {
 	_server_network_manager.run(1350);
 	srand(time(NULL));
 	_map_seed = rand();
+	_current_frame.blocks = world_block::create_field(_map_seed);
 }
 
 void server::run() {

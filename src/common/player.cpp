@@ -1,11 +1,14 @@
 #include "player.hpp"
 
+#include <iostream>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
 
 #include "networking/actions_packet.hpp"
 
 const float PLAYER_ROTATE_SPEED = 0.07f;
+constexpr float PLAYER_COLLIDER_DIMENSION = 0.3f;
 
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name)
@@ -89,7 +92,13 @@ glm::mat4 player::get_look_at() const {
 	return glm::lookAt(_position, _position + get_direction(), get_up());
 }
 
-void player::tick() {
+void player::tick(const block_container& blocks) {
+	apply_player_movements();
+	physics(blocks);
+	_position += _speed;
+}
+
+void player::apply_player_movements() {
 	float forward = 0;
 	if (_actions & FORWARD_ACTION)
 		forward++;
@@ -111,6 +120,49 @@ void player::tick() {
 	_speed += (get_right()*right + get_direction()*forward + get_top()*up)*0.1f;
 
 	_speed *= 0.78;
+}
 
-	_position += _speed;
+void player::physics(const block_container& blocks) {
+	std::vector<const world_block*> bot_colliding_blocks = blocks.get_colliding_blocks(get_bottom_collider());
+	if (_id == 0) {
+		if (!bot_colliding_blocks.empty()) {
+			std::cout << "colliding bottom" << std::endl;
+		} else {
+			std::cout << "not colliding" << std::endl;
+		}
+	}
+}
+
+cuboid player::get_bottom_collider() const {
+	return cuboid(
+		glm::vec3(_position.x, -0.4f, _position.z),
+		glm::vec3(PLAYER_COLLIDER_DIMENSION, 0.1f, PLAYER_COLLIDER_DIMENSION)
+	);
+}
+
+cuboid player::get_top_collider() const {
+	return cuboid(
+		glm::vec3(_position.x, 0.4f, _position.z),
+		glm::vec3(PLAYER_COLLIDER_DIMENSION, 0.1f, PLAYER_COLLIDER_DIMENSION)
+	);
+}
+
+cuboid player::get_left_collider() const {
+	// TODO
+	return cuboid();
+}
+
+cuboid player::get_right_collider() const {
+	// TODO
+	return cuboid();
+}
+
+cuboid player::get_front_collider() const {
+	// TODO
+	return cuboid();
+}
+
+cuboid player::get_back_collider() const {
+	// TODO
+	return cuboid();
 }

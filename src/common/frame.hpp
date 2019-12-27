@@ -14,7 +14,7 @@ class frame {
 		void tick();
 
 		std::vector<player> players;
-		std::vector<world_block> blocks;
+		block_container blocks;
 };
 
 #endif

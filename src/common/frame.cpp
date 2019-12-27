@@ -15,6 +15,6 @@ player* frame::get_player(char player_id) {
 
 void frame::tick() {
 	for (player& p : players) {
-		p.tick();
+		p.tick(blocks);
 	}
 }

@@ -4,6 +4,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "../physics/forms.hpp"
+
 class world_block {
 	public:
 		world_block(const glm::vec3& position);
@@ -18,6 +20,22 @@ class world_block {
 	private:
 		glm::vec3 _position;
 		glm::vec3 _color;
+};
+
+class block_container {
+	public:
+		block_container();
+		block_container(const std::vector<world_block>& blocks);
+
+		const std::vector<world_block>& get_blocks() const;
+		std::vector<world_block>& get_blocks();
+		world_block& get_block(unsigned int x, unsigned int z);
+		const world_block& get_block(unsigned int x, unsigned int z) const;
+
+		// std::vector<world_block*> get_colliding_blocks(const cuboid&);
+		std::vector<const world_block*> get_colliding_blocks(const cuboid&) const;
+	private:
+		std::vector<world_block> _blocks;
 };
 
 #endif

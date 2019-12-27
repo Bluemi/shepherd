@@ -107,6 +107,7 @@ env['CXXCOMSTR'] =  'compiling   $TARGET'
 env['LINKCOMSTR'] = 'linking     $TARGET'
 env['ENV']['TERM'] = os.environ['TERM']
 env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
+env.Append(CCFLAGS='-g')
 # env.Append(CCFLAGS='-O3')
 
 server_source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['client.cpp'])

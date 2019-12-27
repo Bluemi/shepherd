@@ -162,7 +162,7 @@ void renderer::render(frame& f, char local_player_id) {
 		// render blocks
 		_world_block_shape.bind();
 
-		for (const world_block& b : f.blocks) {
+		for (const world_block& b : f.blocks.get_blocks()) {
 			glm::mat4 model = glm::mat4(1.f);
 			model = glm::translate(model, b.get_position());
 			_shader_program.set_4fv("model", model);

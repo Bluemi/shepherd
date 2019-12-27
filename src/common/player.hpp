@@ -1,8 +1,11 @@
 #ifndef __PLAYER_CLASS__
 #define __PLAYER_CLASS__
 
+#include <vector>
 #include <string>
 #include <glm/glm.hpp>
+
+#include "world/world_block.hpp"
 
 class shader_program;
 
@@ -31,7 +34,16 @@ class player {
 		glm::vec3 get_top() const;
 		glm::mat4 get_look_at() const;
 
-		void tick();
+		void tick(const block_container& blocks);
+		void apply_player_movements();
+		void physics(const block_container& blocks);
+
+		cuboid get_bottom_collider() const;
+		cuboid get_top_collider() const;
+		cuboid get_left_collider() const;
+		cuboid get_right_collider() const;
+		cuboid get_front_collider() const;
+		cuboid get_back_collider() const;
 	private:
 		char _id;
 		std::string _name;
