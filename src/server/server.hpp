@@ -27,6 +27,7 @@ class server {
 		void handle_logout(peer_wrapper*);
 		void handle_actions(const std::vector<char>& message, peer_wrapper*);
 		void send_game_update() const;
+		void send_init(char player_id, peer_wrapper* pw) const;
 
 		player* get_player(char player_id);
 

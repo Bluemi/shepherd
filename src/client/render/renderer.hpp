@@ -36,6 +36,7 @@ class renderer {
 		shader_program _shader_program;
 
 		shape _player_shape;
+		shape _world_block_shape;
 
 		GLFWwindow* _window;
 

@@ -34,12 +34,14 @@ renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned i
 	mouse_manager::add_controller(&_controller);
 
 	_player_shape = initialize::create_shape(cube_specification());
+	_world_block_shape = initialize::create_shape(cube_specification());
 }
 
 renderer::renderer(const renderer& v)
 	: _controller(v._controller),
 	  _shader_program(v._shader_program),
 	  _player_shape(v._player_shape),
+	  _world_block_shape(v._world_block_shape),
 	  _window(v._window),
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
@@ -126,35 +128,49 @@ void renderer::tick() {
 void renderer::render(frame& f, char local_player_id) {
 	clear_window();
 	player* local_player = f.get_player(local_player_id);
-	if (local_player == nullptr) {
-		std::cerr << "local player is nullptr" << (int)local_player_id << std::endl;
-		return;
-	}
-	_shader_program.set_4fv("view", local_player->get_look_at());
-	glm::mat4 projection = glm::perspective(
-		glm::radians(45.0f),
-		_window_width/static_cast<float>(_window_height),
-		0.1f, 600.f
-	);
-	_shader_program.set_4fv("projection", projection);
 
-	_shader_program.use();
-	_player_shape.bind();
+	if (local_player != nullptr) {
+		_shader_program.set_4fv("view", local_player->get_look_at());
+		glm::mat4 projection = glm::perspective(
+			glm::radians(45.0f),
+			_window_width/static_cast<float>(_window_height),
+			0.1f, 600.f
+		);
+		_shader_program.set_4fv("projection", projection);
 
-	for (player& p : f.players) {
-		// dont render local player
-		if (p.get_id() == local_player_id) {
-			continue;
+		_shader_program.use();
+
+		// render players
+		_player_shape.bind();
+
+		for (player& p : f.players) {
+			// dont render local player
+			if (p.get_id() == local_player_id) {
+				continue;
+			}
+			glm::mat4 model = glm::mat4(1.f);
+			model = glm::translate(model, p.get_position());
+			model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
+			model = glm::rotate(model, glm::radians(-p.get_view_angles().y), player::get_up());
+			_shader_program.set_4fv("model", model);
+
+			_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.5));
+
+			glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
 		}
-		glm::mat4 model = glm::mat4(1.f);
-		model = glm::translate(model, p.get_position());
-		model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
-		model = glm::rotate(model, glm::radians(-p.get_view_angles().y), player::get_up());
-		_shader_program.set_4fv("model", model);
 
-		_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.5));
+		// render blocks
+		_world_block_shape.bind();
 
-		glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
+		for (const world_block& b : f.blocks) {
+			glm::mat4 model = glm::mat4(1.f);
+			model = glm::translate(model, b.get_position());
+			_shader_program.set_4fv("model", model);
+
+			_shader_program.set_3f("color", glm::vec3(0.5, 0.2, 0.2));
+
+			glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
+		}
 	}
 
 	glfwSwapBuffers(_window);

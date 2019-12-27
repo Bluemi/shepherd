@@ -7,6 +7,7 @@
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/game_update_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
+#include "../common/networking/init_packet.hpp"
 
 server::server() : _next_player_id(0) {}
 
@@ -43,6 +44,9 @@ void server::handle_login(const std::vector<char>& login_message, server::peer_w
 	glm::vec3 pos((rand()%10)-5, (rand()%10)-5, (rand()%10)-5);
 	_current_frame.players.push_back(player(_next_player_id, p.get_player_name(), pos));
 	peer_wrapper->player_id = _next_player_id;
+
+	send_init(_next_player_id, peer_wrapper);
+
 	_next_player_id++;
 	std::cout << "new player \"" << p.get_player_name() << "\"" << std::endl;
 }
@@ -96,13 +100,19 @@ void server::handle_clients() {
 }
 
 void server::send_game_update() const {
-	game_update_packet gup = game_update_packet::from_players(_current_frame.players, -1);
+	game_update_packet gup = game_update_packet::from_players(_current_frame.players);
 	for (const server::peer_wrapper& p : _peers) {
 		std::vector<char> buffer;
-		gup.set_local_player_id(p.player_id);
 		gup.write_to(&buffer);
 		p.peer->async_send(buffer);
 	}
+}
+
+void server::send_init(char player_id, peer_wrapper* pw) const {
+	init_packet packet(player_id);
+	std::vector<char> buffer;
+	packet.write_to(&buffer);
+	pw->peer->async_send(buffer);
 }
 
 int main() {

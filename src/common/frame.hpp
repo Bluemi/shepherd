@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "player.hpp"
+#include "world/world_block.hpp"
 
 class frame {
 	public:
@@ -13,6 +14,7 @@ class frame {
 		void tick();
 
 		std::vector<player> players;
+		std::vector<world_block> blocks;
 };
 
 #endif

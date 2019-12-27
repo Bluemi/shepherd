@@ -20,6 +20,7 @@ class client {
 		void handle_message(const std::vector<char>& buffer);
 		void handle_game_update(const std::vector<char>& buffer);
 		void apply_player_info(const game_update_packet::player_info& pi);
+		void handle_init(const std::vector<char>& buffer);
 
 		frame _current_frame;
 		netsi::client_network_manager _network_manager;

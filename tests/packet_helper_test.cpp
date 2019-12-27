@@ -21,7 +21,7 @@ void test_game_update_packet() {
 		p.set_view_angles(glm::vec2(1.0f, 2.1f));
 	}
 
-	game_update_packet packet = game_update_packet::from_players(players, 42);
+	game_update_packet packet = game_update_packet::from_players(players);
 	std::vector<char> message;
 
 	packet.write_to(&message);
@@ -31,7 +31,6 @@ void test_game_update_packet() {
 	for (unsigned int i = 0; i < packet_copy.get_player_infos().size(); i++) {
 		std::cout << packet.get_player_infos()[i] << "\n" << packet_copy.get_player_infos()[i] << '\n' << std::endl;
 	}
-	std::cout << "local player ids: " << (int)packet.get_local_player_id() << " <-> " << (int)packet_copy.get_local_player_id() << std::endl;
 }
 
 void test_actions_packet() {

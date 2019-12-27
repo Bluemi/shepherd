@@ -1,6 +1,7 @@
 #include "client.hpp"
 
 #include "../common/networking/login_packet.hpp"
+#include "../common/networking/init_packet.hpp"
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
@@ -29,7 +30,7 @@ void client::run() {
 	while (!_renderer->should_close()) {
 		_renderer->tick();
 		if (_local_player_id != -1) {
-			_renderer->render(_current_frame, _local_player_id); // TODO
+			_renderer->render(_current_frame, _local_player_id);
 		}
 
 		while (!_peer->messages().empty()) {
@@ -89,6 +90,9 @@ void client::handle_message(const std::vector<char>& buffer) {
 		case packet_ids::GAME_UPDATE_PACKET:
 			handle_game_update(buffer);
 			break;
+		case packet_ids::INIT_PACKET:
+			handle_init(buffer);
+			break;
 		default:
 			std::cerr << "could not handle packet with id: " << (int)(buffer[0]) << std::endl;
 	}
@@ -111,6 +115,18 @@ void client::apply_player_info(const game_update_packet::player_info& pi) {
 	}
 }
 
+void client::handle_init(const std::vector<char>& buffer) {
+	init_packet packet = init_packet::from_message(buffer);
+	_local_player_id = packet.local_player_id;
+
+	// initialize blocks
+	for (int x = -5; x <= 5; x++) {
+		for (int z = -5; z <= 5; z++) {
+			_current_frame.blocks.push_back(world_block(glm::vec3(x, 0, z)));
+		}
+	}
+}
+
 void client::handle_game_update(const std::vector<char>& buffer) {
 	game_update_packet packet = game_update_packet::from_message(buffer);
 	std::vector<char> current_player_ids;
@@ -118,8 +134,6 @@ void client::handle_game_update(const std::vector<char>& buffer) {
 		apply_player_info(pi);
 		current_player_ids.push_back(pi.id);
 	}
-
-	_local_player_id = packet.get_local_player_id();
 
 	_current_frame.players.erase(
 		std::remove_if(
