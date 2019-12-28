@@ -11,7 +11,7 @@
 const float PLAYER_ROTATE_SPEED = 0.05f;
 const glm::vec3 CAMERA_OFFSET = glm::vec3(0, 0.4f, 0);
 constexpr float GRAVITY = 0.04f;
-constexpr float PLAYER_JUMP_SPEED = 0.32f;
+constexpr float PLAYER_JUMP_SPEED = 0.28f;
 constexpr float PLAYER_COLLIDER_DIMENSION = 0.2f;
 constexpr float PLAYER_DRAG = 0.03f;
 constexpr float MAX_PLAYER_SPEED = 0.2f;
