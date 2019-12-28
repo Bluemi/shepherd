@@ -9,14 +9,14 @@
 #include "physics/util.hpp"
 
 const float PLAYER_ROTATE_SPEED = 0.07f;
-constexpr float PLAYER_COLLIDER_DIMENSION = 0.3f;
+constexpr float PLAYER_COLLIDER_DIMENSION = 0.2f;
 
 player::player(unsigned int id, const std::string& name)
-	: _id(id), _name(name)
+	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position)
-	: _id(id), _name(name), _position(position)
+	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f)
 {}
 
 unsigned int player::get_id() const {
@@ -96,8 +96,8 @@ glm::mat4 player::get_look_at() const {
 
 void player::tick(const block_container& blocks) {
 	apply_player_movements();
-	physics(blocks);
 	_position += _speed;
+	physics(blocks);
 }
 
 void player::apply_player_movements() {
@@ -125,13 +125,26 @@ void player::apply_player_movements() {
 }
 
 void player::physics(const block_container& blocks) {
-	std::vector<const world_block*> bot_colliding_blocks = blocks.get_colliding_blocks(get_bottom_collider());
-	if (_id == 0) {
-		if (!bot_colliding_blocks.empty()) {
-			std::cout << "colliding bottom" << std::endl;
-		} else {
-			std::cout << "not colliding" << std::endl;
+	check_collider(blocks, get_left_collider()  , -1, 2);
+	check_collider(blocks, get_right_collider() ,  1, 2);
+	check_collider(blocks, get_front_collider() ,  1, 0);
+	check_collider(blocks, get_back_collider()  , -1, 0);
+	check_collider(blocks, get_bottom_collider(), -1, 1);
+	check_collider(blocks, get_top_collider()   ,  1, 1);
+}
+
+// direction = -1, if block is in negative direction to player
+void player::check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate) {
+	std::vector<const world_block*> colliding_blocks = blocks.get_colliding_blocks(collider);
+	if (!colliding_blocks.empty()) {
+		if (_speed[coordinate]*direction > 0.f) {
+			_speed[coordinate] = 0.f;
 		}
+		float min_coord = colliding_blocks[0]->get_position()[coordinate]*direction;
+		for (const world_block* wb : colliding_blocks) {
+			min_coord = glm::min(min_coord, wb->get_position()[coordinate]*direction);
+		}
+		_position[coordinate] = (min_coord*direction) - (0.5f + _size.y - 0.01f)*direction;
 	}
 }
 
@@ -150,21 +163,29 @@ cuboid player::get_top_collider() const {
 }
 
 cuboid player::get_left_collider() const {
-	// TODO
-	return cuboid();
+	return cuboid(
+		glm::vec3(_position.x, _position.y, _position.z-0.4f),
+		glm::vec3(PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION, 0.1f)
+	);
 }
 
 cuboid player::get_right_collider() const {
-	// TODO
-	return cuboid();
+	return cuboid(
+		glm::vec3(_position.x, _position.y, _position.z+0.4f),
+		glm::vec3(PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION, 0.1f)
+	);
 }
 
 cuboid player::get_front_collider() const {
-	// TODO
-	return cuboid();
+	return cuboid(
+		glm::vec3(_position.x+0.4f, _position.y, _position.z),
+		glm::vec3(0.1f, PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION)
+	);
 }
 
 cuboid player::get_back_collider() const {
-	// TODO
-	return cuboid();
+	return cuboid(
+		glm::vec3(_position.x-0.4f, _position.y, _position.z),
+		glm::vec3(0.1f, PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION)
+	);
 }

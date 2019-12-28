@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
 
 #include "world/world_block.hpp"
 
@@ -37,6 +37,7 @@ class player {
 		void tick(const block_container& blocks);
 		void apply_player_movements();
 		void physics(const block_container& blocks);
+		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
 
 		cuboid get_bottom_collider() const;
 		cuboid get_top_collider() const;
@@ -48,6 +49,7 @@ class player {
 		char _id;
 		std::string _name;
 		glm::vec3 _position;
+		glm::vec3 _size;
 		glm::vec2 _view_angles;
 		glm::vec3 _speed;
 		std::uint8_t _actions;
