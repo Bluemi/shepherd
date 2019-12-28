@@ -5,13 +5,24 @@
 
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 200;
+constexpr unsigned int MAP_X_SIZE = 50;
 constexpr unsigned int MAP_Z_SIZE = 20;
 constexpr float NOISE_SCALE = 0.05f;
 constexpr float MAP_HEIGHT = 10.f;
+constexpr float WINNING_COLOR_WHITE = 0.3f;
+constexpr float WINNING_COLOR_BLACK = 0.03f;
 
-world_block::world_block(const glm::vec3& position) : _position(position) {}
-world_block::world_block(const glm::vec3& position, const glm::vec3& color) : _position(position), _color(color) {}
+world_block::world_block(const glm::vec3& position)
+	: _position(position), _block_type(block_type::NORMAL)
+{}
+
+world_block::world_block(const glm::vec3& position, const glm::vec3& color)
+	: _position(position), _color(color), _block_type(block_type::NORMAL)
+{}
+
+world_block::world_block(const glm::vec3& position, const glm::vec3& color, const block_type& block_type)
+	: _position(position), _color(color), _block_type(block_type)
+{}
 
 std::vector<world_block> world_block::create_field(unsigned int seed) {
 	std::vector<world_block> blocks;
@@ -21,19 +32,25 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 	// initialize blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
-			float y = glm::perlin(glm::vec2(
-				(x+s)*NOISE_SCALE,
-				(z+s)*NOISE_SCALE
-			));
-
+			float y = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE));
 			y = glm::floor(y*MAP_HEIGHT);
 
 			// colors
-			float blue  = glm::perlin(glm::vec2(x*0.1f        , z*0.1f + 100.f ))*0.02f + 0.03f;
-			float red   = glm::perlin(glm::vec2(x*0.1f + 200.f, z*0.1f + 300.f ))*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
-			float green = glm::perlin(glm::vec2(x*0.1f + 400.f, z*0.1f + 500.f ))*0.03f + 0.12f - glm::max(blue, 0.f)*0.3f;
+			float red   = (x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK;
+			float green = (x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK;
+			float blue  = (x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK;
 
-			blocks.push_back(world_block(glm::vec3(x, y, z), glm::vec3(red, green, blue)));
+			// block type
+			block_type bt = block_type::NORMAL;
+			if (x > MAP_X_SIZE-3) {
+				bt = block_type::WINNING;
+			} else {
+				blue  = glm::perlin(glm::vec2(x*0.1f        , z*0.1f + 100.f ))*0.02f + 0.03f;
+				red   = glm::perlin(glm::vec2(x*0.1f + 200.f, z*0.1f + 300.f ))*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
+				green = glm::perlin(glm::vec2(x*0.1f + 400.f, z*0.1f + 500.f ))*0.03f + 0.12f - glm::max(blue, 0.f)*0.3f;
+			}
+
+			blocks.push_back(world_block(glm::vec3(x, y, z), glm::vec3(red, green, blue), bt));
 		}
 	}
 

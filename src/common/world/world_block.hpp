@@ -6,10 +6,16 @@
 
 #include "../physics/forms.hpp"
 
+enum class block_type {
+	NORMAL,
+	WINNING
+};
+
 class world_block {
 	public:
 		world_block(const glm::vec3& position);
 		world_block(const glm::vec3& position, const glm::vec3& color);
+		world_block(const glm::vec3& position, const glm::vec3& color, const block_type& block_type);
 
 		static std::vector<world_block> create_field(unsigned int seed);
 
@@ -21,6 +27,7 @@ class world_block {
 	private:
 		glm::vec3 _position;
 		glm::vec3 _color;
+		block_type _block_type;
 };
 
 class block_container {
