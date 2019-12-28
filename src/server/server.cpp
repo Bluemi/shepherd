@@ -21,16 +21,19 @@ void server::init() {
 void server::run() {
 	std::cout << "server is running on port 1350" << std::endl;
 
-	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40));; c.next()) {
+	bool running = true;
+
+	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40)); running; c.next()) {
 		check_new_peers();
 		handle_clients();
-		_current_frame.tick();
+		if (_current_frame.tick()) {
+			running = false;
+		}
 		send_game_update();
 	}
 
 	std::cout << "server is offline" << std::endl;
-	_server_network_manager.join();
-
+	_server_network_manager.stop();
 }
 
 void server::check_new_peers() {

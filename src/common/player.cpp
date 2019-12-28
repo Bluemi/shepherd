@@ -109,11 +109,11 @@ void player::respawn(const glm::vec3& position) {
 	_view_angles = glm::vec2();
 }
 
-void player::tick(const block_container& blocks) {
+bool player::tick(const block_container& blocks) {
 	_speed.y -= GRAVITY;
 	apply_player_movements(blocks);
 	_position += _speed;
-	physics(blocks);
+	return physics(blocks);
 }
 
 void player::apply_player_movements(const block_container& blocks) {
@@ -154,7 +154,7 @@ void player::apply_player_movements(const block_container& blocks) {
 	_speed.z = tmp_speed.y;
 }
 
-void player::physics(const block_container& blocks) {
+bool player::physics(const block_container& blocks) {
 	check_collider(blocks, get_left_collider()  , -1, 2);
 	check_collider(blocks, get_right_collider() ,  1, 2);
 	check_collider(blocks, get_back_collider()  , -1, 0);
@@ -162,15 +162,19 @@ void player::physics(const block_container& blocks) {
 	check_collider(blocks, get_bottom_collider(), -1, 1);
 	check_collider(blocks, get_top_collider()   ,  1, 1);
 
+	bool was_winning = false;
+
 	for (const world_block* wb : blocks.get_colliding_blocks(get_bottom_collider())) {
 		if (wb->is_winning_block()) {
 			respawn(blocks.get_respawn_position()); // TODO: Implement greater winning reward
+			was_winning = true;
 		}
 	}
 
 	if (_position.y < blocks.get_lower_y() - 100.f) {
 		respawn(blocks.get_respawn_position());
 	}
+	return was_winning;
 }
 
 // direction = -1, if block is in negative direction to player

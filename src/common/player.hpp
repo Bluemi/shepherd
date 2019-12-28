@@ -33,9 +33,9 @@ class player {
 		glm::mat4 get_look_at() const;
 
 		void respawn(const glm::vec3& position);
-		void tick(const block_container& blocks);
+		bool tick(const block_container& blocks);
 		void apply_player_movements(const block_container& blocks);
-		void physics(const block_container& blocks);
+		bool physics(const block_container& blocks);
 		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
 
 		cuboid get_bottom_collider() const;

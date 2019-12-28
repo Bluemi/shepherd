@@ -1,5 +1,7 @@
 #include "frame.hpp"
 
+constexpr unsigned int WIN_LIMIT = 2;
+
 frame::frame() {}
 
 player* frame::get_player(char player_id) {
@@ -13,8 +15,12 @@ player* frame::get_player(char player_id) {
 	return a_player;
 }
 
-void frame::tick() {
+bool frame::tick() {
 	for (player& p : players) {
-		p.tick(blocks);
+		if (p.tick(blocks)) {
+			_blue_win_counter++;
+		}
 	}
+
+	return _blue_win_counter >= WIN_LIMIT;
 }

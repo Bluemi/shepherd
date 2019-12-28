@@ -11,10 +11,12 @@ class frame {
 		frame();
 		player* get_player(char player_id);
 
-		void tick();
+		bool tick();
 
 		std::vector<player> players;
 		block_container blocks;
+	private:
+		unsigned int _blue_win_counter;
 };
 
 #endif
