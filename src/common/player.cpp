@@ -95,12 +95,13 @@ glm::mat4 player::get_look_at() const {
 }
 
 void player::tick(const block_container& blocks) {
-	apply_player_movements();
+	_speed.y -= 0.02f;
+	apply_player_movements(blocks);
 	_position += _speed;
 	physics(blocks);
 }
 
-void player::apply_player_movements() {
+void player::apply_player_movements(const block_container& blocks) {
 	float forward = 0;
 	if (_actions & FORWARD_ACTION)
 		forward++;
@@ -113,13 +114,16 @@ void player::apply_player_movements() {
 	if (_actions & RIGHT_ACTION)
 		right++;
 
-	float up = 0;
-	if (_actions & JUMP_ACTION)
-		up++;
-	if (_actions & BOTTOM_ACTION)
-		up--;
+	if (_actions & JUMP_ACTION) {
+		if (!blocks.get_colliding_blocks(get_bottom_collider()).empty()) {
+			_speed += get_up() * 0.5f;
+		}
+	}
 
-	_speed += (get_right()*right + get_direction()*forward + get_top()*up)*0.1f;
+	glm::vec3 tmp_direction = get_direction();
+	tmp_direction.y = 0.f;
+
+	_speed += (get_right()*right + tmp_direction*forward)*0.1f;
 
 	_speed *= 0.78;
 }

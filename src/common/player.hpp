@@ -35,7 +35,7 @@ class player {
 		glm::mat4 get_look_at() const;
 
 		void tick(const block_container& blocks);
-		void apply_player_movements();
+		void apply_player_movements(const block_container& blocks);
 		void physics(const block_container& blocks);
 		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
 
@@ -53,7 +53,6 @@ class player {
 		glm::vec2 _view_angles;
 		glm::vec3 _speed;
 		std::uint8_t _actions;
-
 };
 
 #endif
