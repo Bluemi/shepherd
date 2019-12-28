@@ -19,7 +19,7 @@ void client::init(const std::string& player_name) {
 
 	_renderer = std::make_unique<renderer>(*opt_renderer);
 
-	netsi::endpoint init_endpoint = _network_manager.resolve("localhost", "1350");
+	netsi::endpoint init_endpoint = _network_manager.resolve("192.168.178.89", "1350");
 	_peer = _network_manager.create_peer(init_endpoint);
 
 	_network_manager.run();
@@ -96,6 +96,7 @@ void client::handle_message(const std::vector<char>& buffer) {
 			break;
 		default:
 			std::cerr << "could not handle packet with id: " << (int)(buffer[0]) << std::endl;
+			break;
 	}
 }
 

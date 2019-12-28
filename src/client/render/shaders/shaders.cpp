@@ -21,10 +21,18 @@ namespace shaders {
 		return VERSION_PREFIX + s;
 	}
 
-	const std::string fragment_shader()
+	const std::string player_fragment_shader()
 	{
 		std::string s =
-		#include "fragment_shader.fs"
+		#include "player_fragment_shader.fs"
+		;
+		return VERSION_PREFIX + s;
+	}
+
+	const std::string block_fragment_shader()
+	{
+		std::string s =
+		#include "block_fragment_shader.fs"
 		;
 		return VERSION_PREFIX + s;
 	}

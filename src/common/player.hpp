@@ -3,11 +3,8 @@
 
 #include <vector>
 #include <string>
-#include <glm/vec3.hpp>
 
 #include "world/world_block.hpp"
-
-class shader_program;
 
 class player {
 	public:
@@ -20,6 +17,7 @@ class player {
 		const glm::vec2& get_view_angles() const;
 		const glm::vec3& get_speed() const;
 		std::uint8_t get_actions() const;
+		glm::vec3 get_color() const;
 
 		void set_name(const std::string& name);
 		void set_position(const glm::vec3& position);
@@ -53,6 +51,7 @@ class player {
 		glm::vec2 _view_angles;
 		glm::vec3 _speed;
 		std::uint8_t _actions;
+		glm::vec3 _color;
 };
 
 #endif

@@ -17,11 +17,11 @@ constexpr float PLAYER_DRAG = 0.03f;
 constexpr float MAX_PLAYER_SPEED = 0.2f;
 
 player::player(unsigned int id, const std::string& name)
-	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f)
+	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f), _color(0.1, 0.1, 0.4)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position)
-	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f)
+	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2)
 {}
 
 unsigned int player::get_id() const {
@@ -46,6 +46,10 @@ const glm::vec3& player::get_speed() const {
 
 std::uint8_t player::get_actions() const {
 	return _actions;
+}
+
+glm::vec3 player::get_color() const {
+	return _color;
 }
 
 void player::set_name(const std::string& name) {

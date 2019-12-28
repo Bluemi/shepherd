@@ -10,7 +10,7 @@ class frame;
 
 class renderer {
 	public:
-		renderer(GLFWwindow* window, shader_program shader_program, unsigned int window_width, unsigned int window_height);
+		renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, unsigned int window_width, unsigned int window_height);
 		renderer(const renderer& visu);
 		~renderer();
 
@@ -33,7 +33,8 @@ class renderer {
 		void clear_window();
 
 		controller _controller;
-		shader_program _shader_program;
+		shader_program _player_shader_program;
+		shader_program _block_shader_program;
 
 		shape _player_shape;
 		shape _world_block_shape;

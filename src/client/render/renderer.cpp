@@ -21,8 +21,9 @@ const static std::string VERTEX_SHADER_PATH = "src/client/render/shaders/vertex_
 const static std::string FRAGMENT_SHADER_PATH = "src/client/render/shaders/fragment_shader.fs";
 const static double DEFAULT_SPEED = 59.54188473881952259316;
 
-renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned int window_width, unsigned int window_height)
-	: _shader_program(shader_program),
+renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, unsigned int window_width, unsigned int window_height)
+	: _player_shader_program(player_shader_program),
+	  _block_shader_program(block_shader_program),
 	  _window(window),
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
@@ -34,13 +35,14 @@ renderer::renderer(GLFWwindow* window, shader_program shader_program, unsigned i
 	mouse_manager::init(_window);
 	mouse_manager::add_controller(&_controller);
 
-	_player_shape = initialize::create_shape(sphere_specification(2));
+	_player_shape = initialize::create_shape(sphere_specification(3));
 	_world_block_shape = initialize::create_shape(cube_specification());
 }
 
 renderer::renderer(const renderer& v)
 	: _controller(v._controller),
-	  _shader_program(v._shader_program),
+	  _player_shader_program(v._player_shader_program),
+	  _block_shader_program(v._block_shader_program),
 	  _player_shape(v._player_shape),
 	  _world_block_shape(v._world_block_shape),
 	  _window(v._window),
@@ -97,14 +99,21 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 	glEnable(GL_DEPTH_TEST);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	std::optional<shader_program> opt_shader_program = shader_program::from_code(shaders::vertex_shader(), shaders::fragment_shader());
+	std::optional<shader_program> opt_player_shader_program = shader_program::from_code(shaders::vertex_shader(), shaders::player_fragment_shader());
 
-	if (!opt_shader_program)
-	{
+	if (!opt_player_shader_program) {
+		std::cerr << "failed to create player shader program" << std::endl;
 		return {};
 	}
 
-	return renderer(window, *opt_shader_program, window_width, window_height);
+	std::optional<shader_program> opt_block_shader_program = shader_program::from_code(shaders::vertex_shader(), shaders::block_fragment_shader());
+
+	if (!opt_block_shader_program) {
+		std::cerr << "failed to create block shader program" << std::endl;
+		return {};
+	}
+
+	return renderer(window, *opt_player_shader_program, *opt_block_shader_program, window_width, window_height);
 }
 
 double renderer::get_delta_time()
@@ -131,17 +140,17 @@ void renderer::render(frame& f, char local_player_id) {
 	player* local_player = f.get_player(local_player_id);
 
 	if (local_player != nullptr) {
-		_shader_program.set_4fv("view", local_player->get_look_at());
 		glm::mat4 projection = glm::perspective(
 			glm::radians(45.0f),
 			_window_width/static_cast<float>(_window_height),
 			0.1f, 600.f
 		);
-		_shader_program.set_4fv("projection", projection);
-
-		_shader_program.use();
 
 		// render players
+		_player_shader_program.set_4fv("view", local_player->get_look_at());
+		_player_shader_program.set_4fv("projection", projection);
+		_player_shader_program.use();
+
 		_player_shape.bind();
 
 		for (player& p : f.players) {
@@ -153,22 +162,26 @@ void renderer::render(frame& f, char local_player_id) {
 			model = glm::translate(model, p.get_position());
 			model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
 			model = glm::rotate(model, glm::radians(-p.get_view_angles().y), player::get_up());
-			_shader_program.set_4fv("model", model);
+			_player_shader_program.set_4fv("model", model);
 
-			_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.5));
+			_player_shader_program.set_3f("color", p.get_color());
 
 			glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
 		}
 
 		// render blocks
+		_block_shader_program.set_4fv("view", local_player->get_look_at());
+		_block_shader_program.set_4fv("projection", projection);
+		_block_shader_program.use();
+
 		_world_block_shape.bind();
 
 		for (const world_block& b : f.blocks.get_blocks()) {
 			glm::mat4 model = glm::mat4(1.f);
 			model = glm::translate(model, b.get_position());
-			_shader_program.set_4fv("model", model);
+			_block_shader_program.set_4fv("model", model);
 
-			_shader_program.set_3f("color", b.get_color());
+			_block_shader_program.set_3f("color", b.get_color());
 
 			glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
 		}
