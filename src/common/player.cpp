@@ -10,6 +10,9 @@
 
 const float PLAYER_ROTATE_SPEED = 0.07f;
 constexpr float PLAYER_COLLIDER_DIMENSION = 0.2f;
+constexpr float PLAYER_DRAG = 0.03f;
+constexpr float MAX_PLAYER_SPEED = 0.2f;
+constexpr float PLAYER_JUMP_SPEED = 0.22f;
 
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f)
@@ -116,7 +119,7 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	if (_actions & JUMP_ACTION) {
 		if (!blocks.get_colliding_blocks(get_bottom_collider()).empty()) {
-			_speed += get_up() * 0.5f;
+			_speed = get_up() * PLAYER_JUMP_SPEED;
 		}
 	}
 
@@ -125,7 +128,18 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	_speed += (get_right()*right + tmp_direction*forward)*0.1f;
 
-	_speed *= 0.78;
+	glm::vec2 tmp_speed = glm::vec2(_speed.x, _speed.z);
+
+	if (glm::length(tmp_speed) <= PLAYER_DRAG) {
+		tmp_speed = glm::vec3();
+	} else {
+		tmp_speed += glm::normalize(tmp_speed) * -PLAYER_DRAG;
+		if (glm::length(tmp_speed) > MAX_PLAYER_SPEED) {
+			tmp_speed *= MAX_PLAYER_SPEED / glm::length(tmp_speed);
+		}
+	}
+	_speed.x = tmp_speed.x;
+	_speed.z = tmp_speed.y;
 }
 
 void player::physics(const block_container& blocks) {
