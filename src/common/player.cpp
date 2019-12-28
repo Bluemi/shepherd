@@ -8,11 +8,13 @@
 #include "networking/actions_packet.hpp"
 #include "physics/util.hpp"
 
-const float PLAYER_ROTATE_SPEED = 0.07f;
+const float PLAYER_ROTATE_SPEED = 0.05f;
+const glm::vec3 CAMERA_OFFSET = glm::vec3(0, 0.4f, 0);
+constexpr float GRAVITY = 0.04f;
+constexpr float PLAYER_JUMP_SPEED = 0.32f;
 constexpr float PLAYER_COLLIDER_DIMENSION = 0.2f;
 constexpr float PLAYER_DRAG = 0.03f;
 constexpr float MAX_PLAYER_SPEED = 0.2f;
-constexpr float PLAYER_JUMP_SPEED = 0.22f;
 
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f)
@@ -93,12 +95,12 @@ glm::vec3 player::get_top() const {
 }
 
 glm::mat4 player::get_look_at() const {
-	// return glm::lookAt(_position, _position + get_direction(), get_up());
-	return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
+	return glm::lookAt(_position + CAMERA_OFFSET, _position + CAMERA_OFFSET + get_direction(), get_up());
+	// return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
 }
 
 void player::tick(const block_container& blocks) {
-	_speed.y -= 0.02f;
+	_speed.y -= GRAVITY;
 	apply_player_movements(blocks);
 	_position += _speed;
 	physics(blocks);

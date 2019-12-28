@@ -146,12 +146,9 @@ void renderer::render(frame& f, char local_player_id) {
 
 		for (player& p : f.players) {
 			// dont render local player
-			/*
 			if (p.get_id() == local_player_id) {
 				continue;
 			}
-			*/
-			// std::cout << "render(): " << p.get_position() << std::endl;
 			glm::mat4 model = glm::mat4(1.f);
 			model = glm::translate(model, p.get_position());
 			model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
