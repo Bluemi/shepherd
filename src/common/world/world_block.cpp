@@ -1,6 +1,9 @@
 #include "world_block.hpp"
 
+#include <iostream>
+
 #include "perlin_noise.hpp"
+#include "../physics/util.hpp"
 
 constexpr unsigned int MAP_SIZE = 50;
 
@@ -13,8 +16,8 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 	unsigned int s = seed % 25000;
 
 	// initialize blocks
-	for (unsigned int x = 0; x <= MAP_SIZE; x++) {
-		for (unsigned int z = 0; z <= MAP_SIZE; z++) {
+	for (unsigned int x = 0; x < MAP_SIZE; x++) {
+		for (unsigned int z = 0; z < MAP_SIZE; z++) {
 			float y = pn({
 				(x+s)*0.1f,
 				(z+s)*0.1f
@@ -86,8 +89,12 @@ std::vector<const world_block*> block_container::get_colliding_blocks(const cubo
 		for (unsigned int z = min_z_index_clamped; z <= max_z_index_clamped; z++) {
 			const world_block& b = get_block(x, z);
 			if (
+				b.get_position().x - 0.5f < box.get_max_x() &&
+				b.get_position().x + 0.5f > box.get_min_x() &&
 				b.get_position().y - 0.5f < box.get_max_y() &&
-				b.get_position().y + 0.5f > box.get_min_y()
+				b.get_position().y + 0.5f > box.get_min_y() &&
+				b.get_position().z - 0.5f < box.get_max_z() &&
+				b.get_position().z + 0.5f > box.get_min_z()
 			) {
 				colliding_blocks.push_back(&b);
 			}

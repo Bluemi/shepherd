@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 
 #include "networking/actions_packet.hpp"
+#include "physics/util.hpp"
 
 const float PLAYER_ROTATE_SPEED = 0.07f;
 constexpr float PLAYER_COLLIDER_DIMENSION = 0.3f;
@@ -89,7 +90,8 @@ glm::vec3 player::get_top() const {
 }
 
 glm::mat4 player::get_look_at() const {
-	return glm::lookAt(_position, _position + get_direction(), get_up());
+	// return glm::lookAt(_position, _position + get_direction(), get_up());
+	return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
 }
 
 void player::tick(const block_container& blocks) {
@@ -135,14 +137,14 @@ void player::physics(const block_container& blocks) {
 
 cuboid player::get_bottom_collider() const {
 	return cuboid(
-		glm::vec3(_position.x, -0.4f, _position.z),
+		glm::vec3(_position.x, _position.y-0.4f, _position.z),
 		glm::vec3(PLAYER_COLLIDER_DIMENSION, 0.1f, PLAYER_COLLIDER_DIMENSION)
 	);
 }
 
 cuboid player::get_top_collider() const {
 	return cuboid(
-		glm::vec3(_position.x, 0.4f, _position.z),
+		glm::vec3(_position.x, _position.y+0.4f, _position.z),
 		glm::vec3(PLAYER_COLLIDER_DIMENSION, 0.1f, PLAYER_COLLIDER_DIMENSION)
 	);
 }
