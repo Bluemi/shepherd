@@ -9,6 +9,8 @@ constexpr unsigned int MAP_SIZE = 50;
 
 world_block::world_block(const glm::vec3& position) : _position(position) {}
 
+world_block::world_block(const glm::vec3& position, const glm::vec3& color) : _position(position), _color(color) {}
+
 std::vector<world_block> world_block::create_field(unsigned int seed) {
 	std::vector<world_block> blocks;
 	perlin_noise pn;
@@ -24,7 +26,13 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 			});
 
 			y = glm::floor(y*2.f);
-			blocks.push_back(world_block(glm::vec3(x, y, z)));
+
+			// colors
+			float blue  = pn({ x*0.1f        , z*0.1f + 100.f })*0.02f + 0.03f;
+			float red   = pn({ x*0.1f + 200.f, z*0.1f + 300.f })*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
+			float green = pn({ x*0.1f + 400.f, z*0.1f + 500.f })*0.03f + 0.12f - glm::max(blue, 0.f)*0.3f;
+
+			blocks.push_back(world_block(glm::vec3(x, y, z), glm::vec3(red, green, blue)));
 		}
 	}
 

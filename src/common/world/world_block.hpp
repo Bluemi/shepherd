@@ -9,6 +9,7 @@
 class world_block {
 	public:
 		world_block(const glm::vec3& position);
+		world_block(const glm::vec3& position, const glm::vec3& color);
 
 		static std::vector<world_block> create_field(unsigned int seed);
 
