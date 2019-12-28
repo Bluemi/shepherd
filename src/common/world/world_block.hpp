@@ -24,6 +24,8 @@ class world_block {
 
 		void set_position(const glm::vec3& position);
 		void set_color(const glm::vec3& color);
+
+		bool is_winning_block() const;
 	private:
 		glm::vec3 _position;
 		glm::vec3 _color;
@@ -34,6 +36,8 @@ class block_container {
 	public:
 		block_container();
 		block_container(const std::vector<world_block>& blocks);
+
+		glm::vec3 get_respawn_position() const;
 
 		const std::vector<world_block>& get_blocks() const;
 		std::vector<world_block>& get_blocks();

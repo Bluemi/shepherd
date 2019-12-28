@@ -43,8 +43,7 @@ void server::check_new_peers() {
 
 void server::handle_login(const std::vector<char>& login_message, server::peer_wrapper* peer_wrapper) {
 	login_packet p = login_packet::from_message(login_message);
-	glm::vec3 pos((rand()%4)+1, 5, (rand()%10));
-	_current_frame.players.push_back(player(_next_player_id, p.get_player_name(), pos));
+	_current_frame.players.push_back(player(_next_player_id, p.get_player_name(), _current_frame.blocks.get_respawn_position()));
 	peer_wrapper->player_id = _next_player_id;
 
 	send_init(_next_player_id, peer_wrapper);

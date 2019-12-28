@@ -32,6 +32,7 @@ class player {
 		glm::vec3 get_top() const;
 		glm::mat4 get_look_at() const;
 
+		void respawn(const glm::vec3& position);
 		void tick(const block_container& blocks);
 		void apply_player_movements(const block_container& blocks);
 		void physics(const block_container& blocks);

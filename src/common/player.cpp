@@ -103,6 +103,12 @@ glm::mat4 player::get_look_at() const {
 	// return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
 }
 
+void player::respawn(const glm::vec3& position) {
+	_position = position;
+	_speed = glm::vec3();
+	_view_angles = glm::vec2();
+}
+
 void player::tick(const block_container& blocks) {
 	_speed.y -= GRAVITY;
 	apply_player_movements(blocks);
@@ -155,6 +161,12 @@ void player::physics(const block_container& blocks) {
 	check_collider(blocks, get_back_collider()  , -1, 0);
 	check_collider(blocks, get_bottom_collider(), -1, 1);
 	check_collider(blocks, get_top_collider()   ,  1, 1);
+
+	for (const world_block* wb : blocks.get_colliding_blocks(get_bottom_collider())) {
+		if (wb->is_winning_block()) {
+			respawn(blocks.get_respawn_position());
+		}
+	}
 }
 
 // direction = -1, if block is in negative direction to player

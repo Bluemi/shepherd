@@ -5,8 +5,8 @@
 
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 50;
-constexpr unsigned int MAP_Z_SIZE = 20;
+constexpr unsigned int MAP_X_SIZE = 64;
+constexpr unsigned int MAP_Z_SIZE = 16;
 constexpr float NOISE_SCALE = 0.05f;
 constexpr float MAP_HEIGHT = 10.f;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
@@ -33,7 +33,7 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			float y = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE));
-			y = glm::floor(y*MAP_HEIGHT);
+			y = glm::floor(y*MAP_HEIGHT / (1.f + glm::exp(static_cast<float>(x)-MAP_X_SIZE+6.f)));
 
 			// colors
 			float red   = (x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK;
@@ -44,6 +44,7 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 			block_type bt = block_type::NORMAL;
 			if (x > MAP_X_SIZE-3) {
 				bt = block_type::WINNING;
+				y = 0.f;
 			} else {
 				blue  = glm::perlin(glm::vec2(x*0.1f        , z*0.1f + 100.f ))*0.02f + 0.03f;
 				red   = glm::perlin(glm::vec2(x*0.1f + 200.f, z*0.1f + 300.f ))*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
@@ -73,8 +74,21 @@ void world_block::set_color(const glm::vec3& color) {
 	_color = color;
 }
 
+bool world_block::is_winning_block() const {
+	return _block_type == block_type::WINNING;
+}
+
 block_container::block_container() {}
 block_container::block_container(const std::vector<world_block>& blocks) : _blocks(blocks) {}
+
+glm::vec3 block_container::get_respawn_position() const {
+	unsigned int x = (rand() % 5)+1;
+	unsigned int z = rand() % MAP_Z_SIZE;
+
+	glm::vec3 spawn_pos = get_block(x, z).get_position();
+	spawn_pos.y += 2.f;
+	return spawn_pos;
+}
 
 const std::vector<world_block>& block_container::get_blocks() const {
 	return _blocks;
