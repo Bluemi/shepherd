@@ -120,7 +120,7 @@ void client::handle_init(const std::vector<char>& buffer) {
 	init_packet packet = init_packet::from_message(buffer);
 	_local_player_id = packet.local_player_id;
 
-	_current_frame.blocks = world_block::create_field(packet.map_seed);
+	_current_frame.blocks.set_blocks(world_block::create_field(packet.map_seed));
 }
 
 void client::handle_game_update(const std::vector<char>& buffer) {

@@ -157,15 +157,19 @@ void player::apply_player_movements(const block_container& blocks) {
 void player::physics(const block_container& blocks) {
 	check_collider(blocks, get_left_collider()  , -1, 2);
 	check_collider(blocks, get_right_collider() ,  1, 2);
-	check_collider(blocks, get_front_collider() ,  1, 0);
 	check_collider(blocks, get_back_collider()  , -1, 0);
+	check_collider(blocks, get_front_collider() ,  1, 0);
 	check_collider(blocks, get_bottom_collider(), -1, 1);
 	check_collider(blocks, get_top_collider()   ,  1, 1);
 
 	for (const world_block* wb : blocks.get_colliding_blocks(get_bottom_collider())) {
 		if (wb->is_winning_block()) {
-			respawn(blocks.get_respawn_position());
+			respawn(blocks.get_respawn_position()); // TODO: Implement greater winning reward
 		}
+	}
+
+	if (_position.y < blocks.get_lower_y() - 20.f) {
+		respawn(blocks.get_respawn_position());
 	}
 }
 

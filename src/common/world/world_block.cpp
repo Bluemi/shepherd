@@ -90,6 +90,13 @@ glm::vec3 block_container::get_respawn_position() const {
 	return spawn_pos;
 }
 
+void block_container::set_blocks(const std::vector<world_block>& blocks) {
+	_blocks = blocks;
+	for (const world_block& b : _blocks) {
+		_lower_y = glm::min(_lower_y, b.get_position().y);
+	}
+}
+
 const std::vector<world_block>& block_container::get_blocks() const {
 	return _blocks;
 }
@@ -142,4 +149,8 @@ std::vector<const world_block*> block_container::get_colliding_blocks(const cubo
 	}
 
 	return colliding_blocks;
+}
+
+float block_container::get_lower_y() const {
+	return _lower_y;
 }

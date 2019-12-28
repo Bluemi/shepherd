@@ -39,6 +39,7 @@ class block_container {
 
 		glm::vec3 get_respawn_position() const;
 
+		void set_blocks(const std::vector<world_block>& blocks);
 		const std::vector<world_block>& get_blocks() const;
 		std::vector<world_block>& get_blocks();
 		world_block& get_block(unsigned int x, unsigned int z);
@@ -46,8 +47,10 @@ class block_container {
 
 		// std::vector<world_block*> get_colliding_blocks(const cuboid&);
 		std::vector<const world_block*> get_colliding_blocks(const cuboid&) const;
+		float get_lower_y() const;
 	private:
 		std::vector<world_block> _blocks;
+		float _lower_y;
 };
 
 #endif
