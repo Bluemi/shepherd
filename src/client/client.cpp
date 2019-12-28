@@ -8,7 +8,7 @@
 
 client::client() : _local_player_id(-1) {}
 
-void client::init(const std::string& player_name) {
+void client::init(const std::string& hostname, const std::string& player_name) {
 	renderer::init();
 
 	std::optional<renderer> opt_renderer = renderer::create(800, 600, "cube racing");
@@ -19,7 +19,7 @@ void client::init(const std::string& player_name) {
 
 	_renderer = std::make_unique<renderer>(*opt_renderer);
 
-	netsi::endpoint init_endpoint = _network_manager.resolve("192.168.178.89", "1350");
+	netsi::endpoint init_endpoint = _network_manager.resolve(hostname, "1350");
 	_peer = _network_manager.create_peer(init_endpoint);
 
 	_network_manager.run();
@@ -156,19 +156,20 @@ void client::handle_game_update(const std::vector<char>& buffer) {
 }
 
 void print_usage() {
-	std::cout << "client [playername]" << std::endl;
+	std::cout << "client [host] [playername]" << std::endl;
 }
 
 
 int main(int argc, const char** argv) {
-	if (argc != 2) {
+	if (argc != 3) {
 		print_usage();
 		return 1;
 	}
 
-	std::string player_name(argv[1]);
+	std::string hostname(argv[1]);
+	std::string player_name(argv[2]);
 	client c;
-	c.init(player_name);
+	c.init(hostname, player_name);
 	c.run();
 	return 0;
 }

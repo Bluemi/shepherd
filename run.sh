@@ -5,5 +5,5 @@ if [ "$1" == "s" ]; then
 elif [ "$1" == "t" ]; then
 	./build/tests/bin/packet_helper_test
 else
-	./build/bin/client "player0"
+	./build/bin/client "localhost" "player0"
 fi

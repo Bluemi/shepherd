@@ -5,7 +5,8 @@
 #include "perlin_noise.hpp"
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_SIZE = 50;
+constexpr unsigned int MAP_X_SIZE = 100;
+constexpr unsigned int MAP_Z_SIZE = 10;
 
 world_block::world_block(const glm::vec3& position) : _position(position) {}
 
@@ -18,8 +19,8 @@ std::vector<world_block> world_block::create_field(unsigned int seed) {
 	unsigned int s = seed % 25000;
 
 	// initialize blocks
-	for (unsigned int x = 0; x < MAP_SIZE; x++) {
-		for (unsigned int z = 0; z < MAP_SIZE; z++) {
+	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
+		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			float y = pn({
 				(x+s)*0.1f,
 				(z+s)*0.1f
@@ -67,11 +68,11 @@ std::vector<world_block>& block_container::get_blocks() {
 }
 
 world_block& block_container::get_block(unsigned int x, unsigned int z) {
-	return _blocks[x*MAP_SIZE + z];
+	return _blocks[x*MAP_Z_SIZE + z];
 }
 
 const world_block& block_container::get_block(unsigned int x, unsigned int z) const {
-	return _blocks[x*MAP_SIZE + z];
+	return _blocks[x*MAP_Z_SIZE + z];
 }
 
 /*
@@ -88,10 +89,10 @@ std::vector<const world_block*> block_container::get_colliding_blocks(const cubo
 	int min_z_index = static_cast<int>(glm::floor(box.get_min_z() + 0.5f));
 	int max_z_index = static_cast<int>(glm::floor(box.get_max_z() + 0.5f));
 
-	unsigned int min_x_index_clamped = glm::clamp(min_x_index, 0, static_cast<int>(MAP_SIZE));
-	unsigned int max_x_index_clamped = glm::clamp(max_x_index, 0, static_cast<int>(MAP_SIZE));
-	unsigned int min_z_index_clamped = glm::clamp(min_z_index, 0, static_cast<int>(MAP_SIZE));
-	unsigned int max_z_index_clamped = glm::clamp(max_z_index, 0, static_cast<int>(MAP_SIZE));
+	unsigned int min_x_index_clamped = glm::clamp(min_x_index, 0, static_cast<int>(MAP_X_SIZE));
+	unsigned int max_x_index_clamped = glm::clamp(max_x_index, 0, static_cast<int>(MAP_X_SIZE));
+	unsigned int min_z_index_clamped = glm::clamp(min_z_index, 0, static_cast<int>(MAP_Z_SIZE));
+	unsigned int max_z_index_clamped = glm::clamp(max_z_index, 0, static_cast<int>(MAP_Z_SIZE));
 
 	for (unsigned int x = min_x_index_clamped; x <= max_x_index_clamped; x++) {
 		for (unsigned int z = min_z_index_clamped; z <= max_z_index_clamped; z++) {

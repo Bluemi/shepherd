@@ -10,7 +10,7 @@
 class client {
 	public:
 		client();
-		void init(const std::string& player_name);
+		void init(const std::string& hostname, const std::string& player_name);
 		void run();
 	private:
 		void send_login(const std::string& player_name);
