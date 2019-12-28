@@ -168,7 +168,7 @@ void player::physics(const block_container& blocks) {
 		}
 	}
 
-	if (_position.y < blocks.get_lower_y() - 20.f) {
+	if (_position.y < blocks.get_lower_y() - 100.f) {
 		respawn(blocks.get_respawn_position());
 	}
 }
