@@ -4,7 +4,6 @@
 #include "../common/networking/init_packet.hpp"
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
-#include "../common/world/perlin_noise.hpp"
 
 client::client() : _local_player_id(-1) {}
 

@@ -1,37 +1,37 @@
 #include "world_block.hpp"
 
 #include <iostream>
+#include <glm/gtc/noise.hpp>
 
-#include "perlin_noise.hpp"
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 100;
-constexpr unsigned int MAP_Z_SIZE = 10;
+constexpr unsigned int MAP_X_SIZE = 200;
+constexpr unsigned int MAP_Z_SIZE = 20;
+constexpr float NOISE_SCALE = 0.05f;
+constexpr float MAP_HEIGHT = 10.f;
 
 world_block::world_block(const glm::vec3& position) : _position(position) {}
-
 world_block::world_block(const glm::vec3& position, const glm::vec3& color) : _position(position), _color(color) {}
 
 std::vector<world_block> world_block::create_field(unsigned int seed) {
 	std::vector<world_block> blocks;
-	perlin_noise pn;
 
 	unsigned int s = seed % 25000;
 
 	// initialize blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
-			float y = pn({
-				(x+s)*0.1f,
-				(z+s)*0.1f
-			});
+			float y = glm::perlin(glm::vec2(
+				(x+s)*NOISE_SCALE,
+				(z+s)*NOISE_SCALE
+			));
 
-			y = glm::floor(y*2.f);
+			y = glm::floor(y*MAP_HEIGHT);
 
 			// colors
-			float blue  = pn({ x*0.1f        , z*0.1f + 100.f })*0.02f + 0.03f;
-			float red   = pn({ x*0.1f + 200.f, z*0.1f + 300.f })*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
-			float green = pn({ x*0.1f + 400.f, z*0.1f + 500.f })*0.03f + 0.12f - glm::max(blue, 0.f)*0.3f;
+			float blue  = glm::perlin(glm::vec2(x*0.1f        , z*0.1f + 100.f ))*0.02f + 0.03f;
+			float red   = glm::perlin(glm::vec2(x*0.1f + 200.f, z*0.1f + 300.f ))*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
+			float green = glm::perlin(glm::vec2(x*0.1f + 400.f, z*0.1f + 500.f ))*0.03f + 0.12f - glm::max(blue, 0.f)*0.3f;
 
 			blocks.push_back(world_block(glm::vec3(x, y, z), glm::vec3(red, green, blue)));
 		}
