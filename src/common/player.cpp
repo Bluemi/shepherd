@@ -164,14 +164,14 @@ bool player::physics(const block_container& blocks) {
 
 	bool was_winning = false;
 
-	for (const world_block* wb : blocks.get_colliding_blocks(get_bottom_collider())) {
-		if (wb->is_winning_block()) {
+	for (const world_block& wb : blocks.get_colliding_blocks(get_bottom_collider())) {
+		if (wb.is_winning_block()) {
 			respawn(blocks.get_respawn_position()); // TODO: Implement greater winning reward
 			was_winning = true;
 		}
 	}
 
-	if (_position.y < blocks.get_lower_y() - 100.f) {
+	if (_position.y < blocks.get_min_y() - 100.f) {
 		respawn(blocks.get_respawn_position());
 	}
 	return was_winning;
@@ -179,14 +179,14 @@ bool player::physics(const block_container& blocks) {
 
 // direction = -1, if block is in negative direction to player
 void player::check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate) {
-	std::vector<const world_block*> colliding_blocks = blocks.get_colliding_blocks(collider);
+	std::vector<world_block> colliding_blocks = blocks.get_colliding_blocks(collider);
 	if (!colliding_blocks.empty()) {
 		if (_speed[coordinate]*direction > 0.f) {
 			_speed[coordinate] = 0.f;
 		}
-		float min_coord = colliding_blocks[0]->get_position()[coordinate]*direction;
-		for (const world_block* wb : colliding_blocks) {
-			min_coord = glm::min(min_coord, wb->get_position()[coordinate]*direction);
+		float min_coord = colliding_blocks[0].get_position()[coordinate]*direction;
+		for (const world_block& wb : colliding_blocks) {
+			min_coord = glm::min(min_coord, static_cast<float>(wb.get_position()[coordinate]*direction));
 		}
 		_position[coordinate] = (min_coord*direction) - (0.5f + _size.y - 0.01f)*direction;
 	}

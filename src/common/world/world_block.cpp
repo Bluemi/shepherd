@@ -4,19 +4,19 @@
 
 #include "../physics/util.hpp"
 
-world_block::world_block(const glm::vec3& position)
+world_block::world_block(const glm::ivec3& position)
 	: _position(position), _block_type(block_type::NORMAL)
 {}
 
-world_block::world_block(const glm::vec3& position, const glm::vec3& color)
+world_block::world_block(const glm::ivec3& position, const glm::vec3& color)
 	: _position(position), _color(color), _block_type(block_type::NORMAL)
 {}
 
-world_block::world_block(const glm::vec3& position, const glm::vec3& color, const block_type& block_type)
+world_block::world_block(const glm::ivec3& position, const glm::vec3& color, const block_type& block_type)
 	: _position(position), _color(color), _block_type(block_type)
 {}
 
-const glm::vec3& world_block::get_position() const {
+const glm::ivec3& world_block::get_position() const {
 	return _position;
 }
 
@@ -24,7 +24,11 @@ const glm::vec3& world_block::get_color() const {
 	return _color;
 }
 
-void world_block::set_position(const glm::vec3& position) {
+block_type world_block::get_type() const {
+	return _block_type;
+}
+
+void world_block::set_position(const glm::ivec3& position) {
 	_position = position;
 }
 

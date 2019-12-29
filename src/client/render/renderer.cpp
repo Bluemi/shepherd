@@ -176,14 +176,24 @@ void renderer::render(frame& f, char local_player_id) {
 
 		_world_block_shape.bind();
 
-		for (const world_block& b : f.blocks.get_blocks()) {
-			glm::mat4 model = glm::mat4(1.f);
-			model = glm::translate(model, b.get_position());
-			_block_shader_program.set_4fv("model", model);
+		for (const std::shared_ptr<block_chunk>& bc : f.blocks.get_chunks()) {
+			for (unsigned int x = 0; x < BLOCK_CHUNK_SIZE; x++) {
+				for (unsigned int y = 0; y < BLOCK_CHUNK_SIZE; y++) {
+					for (unsigned int z = 0; z < BLOCK_CHUNK_SIZE; z++) {
+						glm::ivec3 pos = glm::ivec3(x, y, z) + bc->get_origin();
+						block_type bt = bc->get_block_type(pos);
+						if (bt == block_type::NORMAL) {
+							glm::mat4 model = glm::mat4(1.f);
+							model = glm::translate(model, glm::vec3(pos));
+							_block_shader_program.set_4fv("model", model);
 
-			_block_shader_program.set_3f("color", b.get_color());
+							_block_shader_program.set_3f("color", glm::vec3(0.2f, 0.2f, 0.2f));
 
-			glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
+							glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
+						}
+					}
+				}
+			}
 		}
 	}
 
