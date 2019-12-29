@@ -174,6 +174,7 @@ bool player::physics(const block_container& blocks) {
 	if (_position.y < blocks.get_min_y() - 100.f) {
 		respawn(blocks.get_respawn_position());
 	}
+
 	return was_winning;
 }
 

@@ -54,8 +54,8 @@ glm::uvec3 block_chunk::global_to_local(const glm::ivec3& position) const {
 
 // ------- BLOCK CONTAINER -------
 
-block_container::block_container() {}
-block_container::block_container(const std::vector<world_block>& blocks) : _block_chunks() {
+block_container::block_container() : _min_y(0) {}
+block_container::block_container(const std::vector<world_block>& blocks) : _block_chunks(), _min_y(0) {
 	for (const world_block& b : blocks) {
 		add_block(b.get_position(), b.get_type());
 	}
@@ -72,7 +72,7 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 			float h_f = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE));
 			int h = glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(static_cast<float>(x)-MAP_X_SIZE+6.f)));
 
-			for (int y = -10; y < h; y++) {
+			for (int y = h-2; y < h; y++) {
 				// colors
 				glm::vec3 color(
 					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
