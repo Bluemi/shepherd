@@ -4,12 +4,12 @@
 
 #include "../physics/forms.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 128*4;
-constexpr unsigned int MAP_Z_SIZE = 32*2;
+constexpr unsigned int MAP_X_SIZE = 128*2;
+constexpr unsigned int MAP_Z_SIZE = 32;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
-constexpr float MAP_HEIGHT = 10.f;
+constexpr float MAP_HEIGHT = 5.f;
 
 block_chunk::block_chunk()
 	: _block_types(BLOCK_CHUNK_SIZE*BLOCK_CHUNK_SIZE*BLOCK_CHUNK_SIZE, block_type::VOID)
@@ -73,7 +73,11 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 	// initialize blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
-			float h_f = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE));
+			float h_f = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE)) + 
+						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*3.0, (z+s)*NOISE_SCALE*3.0))*0.4f +
+						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*0.2, (z+s)*NOISE_SCALE*0.2))*2.f +
+						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*0.02, (z+s)*NOISE_SCALE*0.02))*10.f;
+
 			int h = glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(static_cast<float>(x)-MAP_X_SIZE+6.f)));
 
 			for (int y = h-2; y < h; y++) {
