@@ -21,7 +21,11 @@ block_chunk::block_chunk(const glm::ivec3& origin)
 {}
 
 block_type block_chunk::get_block_type(const glm::ivec3& position) const {
-	return _block_types[block_chunk::get_index(global_to_local(position))];
+	return get_local_block_type(global_to_local(position));
+}
+
+block_type block_chunk::get_local_block_type(const glm::uvec3& position) const {
+	return _block_types[block_chunk::get_index(position)];
 }
 
 const std::vector<block_type>& block_chunk::get_block_types() const {

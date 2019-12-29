@@ -17,6 +17,7 @@ class block_chunk {
 		block_chunk(const glm::ivec3& origin);
 
 		block_type get_block_type(const glm::ivec3& position) const;
+		block_type get_local_block_type(const glm::uvec3& position) const;
 		const std::vector<block_type>& get_block_types() const;
 		const glm::ivec3& get_origin() const;
 		glm::ivec3 get_top() const;

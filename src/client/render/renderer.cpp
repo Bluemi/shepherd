@@ -36,7 +36,6 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	mouse_manager::add_controller(&_controller);
 
 	_player_shape = initialize::create_shape(sphere_specification(3));
-	_world_block_shape = initialize::create_shape(cube_specification());
 }
 
 renderer::renderer(const renderer& v)
@@ -44,7 +43,6 @@ renderer::renderer(const renderer& v)
 	  _player_shader_program(v._player_shader_program),
 	  _block_shader_program(v._block_shader_program),
 	  _player_shape(v._player_shape),
-	  _world_block_shape(v._world_block_shape),
 	  _window(v._window),
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
@@ -57,6 +55,11 @@ renderer::renderer(const renderer& v)
 renderer::~renderer() {
 	resize_manager::remove_renderer(this);
 	mouse_manager::remove_controller(&_controller);
+
+	/*
+	 TODO free buffers
+	_player_shape.free_buffers();
+	*/
 }
 
 void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
@@ -129,6 +132,14 @@ double renderer::get_delta_time()
 	return delta_time;
 }
 
+void renderer::run_shape_loader() {
+	_shape_loader.run();
+}
+
+void renderer::load_chunk(const block_chunk& bc) {
+	_shape_loader.load_chunk(bc);
+}
+
 void renderer::tick() {
 	const double speed = get_delta_time() * DEFAULT_SPEED;
 
@@ -174,30 +185,15 @@ void renderer::render(frame& f, char local_player_id) {
 		_block_shader_program.set_4fv("projection", projection);
 		_block_shader_program.use();
 
-		_world_block_shape.bind();
+		update_render_chunks();
 
-		for (const std::shared_ptr<block_chunk>& bc : f.blocks.get_chunks()) {
-			for (unsigned int x = 0; x < BLOCK_CHUNK_SIZE; x++) {
-				for (unsigned int y = 0; y < BLOCK_CHUNK_SIZE; y++) {
-					for (unsigned int z = 0; z < BLOCK_CHUNK_SIZE; z++) {
-						glm::ivec3 pos = glm::ivec3(x, y, z) + bc->get_origin();
-						block_type bt = bc->get_block_type(pos);
-						if (bt != block_type::VOID) {
-							glm::mat4 model = glm::mat4(1.f);
-							model = glm::translate(model, glm::vec3(pos));
-							_block_shader_program.set_4fv("model", model);
+		for (const render_chunk& rc : _render_chunks) {
+			rc.chunk_shape.bind();
+			glm::mat4 model = glm::mat4(1.f);
+			model = glm::translate(model, glm::vec3(rc.origin));
+			_block_shader_program.set_4fv("model", model);
 
-							if (bt == block_type::WINNING) {
-								_block_shader_program.set_3f("color", block_container::get_winning_color(pos));
-							} else {
-								_block_shader_program.set_3f("color", block_container::get_color(pos));
-							}
-
-							glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
-						}
-					}
-				}
-			}
+			glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
 		}
 	}
 
@@ -208,6 +204,10 @@ void renderer::render(frame& f, char local_player_id) {
 void renderer::close() {
 	mouse_manager::clear();
 	resize_manager::clear_renderers();
+
+	_player_shape.free_buffers();
+	_world_block_shape.free_buffers();
+	_shape_loader.stop();
 
 	glfwTerminate();
 }
@@ -223,6 +223,13 @@ double renderer::get_time() const {
 void renderer::clear_window() {
 		glClearColor(0.05f, 0.07f, 0.08f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void renderer::update_render_chunks() {
+	while (!_shape_loader.get_update_queue().empty()) {
+		render_chunk rc = _shape_loader.get_update_queue().pop();
+		_render_chunks.push_back(rc); // TODO remove old chunks
+	}
 }
 
 const controller& renderer::get_controller() const {

@@ -18,6 +18,8 @@ void client::init(const std::string& hostname, const std::string& player_name) {
 
 	_renderer = std::make_unique<renderer>(*opt_renderer);
 
+	_renderer->run_shape_loader();
+
 	netsi::endpoint init_endpoint = _network_manager.resolve(hostname, "1350");
 	_peer = _network_manager.create_peer(init_endpoint);
 
@@ -121,6 +123,10 @@ void client::handle_init(const std::vector<char>& buffer) {
 	_local_player_id = packet.local_player_id;
 
 	_current_frame.blocks = block_container(block_container::create_field(packet.map_seed));
+
+	for (const std::shared_ptr<block_chunk>& bc : _current_frame.blocks.get_chunks()) {
+		_renderer->load_chunk(*bc);
+	}
 }
 
 void client::handle_game_update(const std::vector<char>& buffer) {

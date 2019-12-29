@@ -4,9 +4,11 @@
 #include "controller/controller.hpp"
 #include "shader_program.hpp"
 #include "shape/shape_heap.hpp"
+#include "shape/shape_loader.hpp"
 
 struct GLFWwindow;
 class frame;
+class block_chunk;
 
 class renderer {
 	public:
@@ -17,6 +19,8 @@ class renderer {
 		static void init();
 		static std::optional<renderer> create(unsigned int window_width, unsigned int window_height, const std::string& window_name);
 
+		void run_shape_loader();
+		void load_chunk(const block_chunk& bc);
 		void tick();
 		void render(frame& f, char player_id);
 		void close();
@@ -28,9 +32,11 @@ class renderer {
 
 		const controller& get_controller() const;
 		controller& get_controller();
+
 	private:
 		double get_delta_time();
 		void clear_window();
+		void update_render_chunks();
 
 		controller _controller;
 		shader_program _player_shader_program;
@@ -38,6 +44,9 @@ class renderer {
 
 		shape _player_shape;
 		shape _world_block_shape;
+		std::vector<render_chunk> _render_chunks;
+
+		shape_loader _shape_loader;
 
 		GLFWwindow* _window;
 
