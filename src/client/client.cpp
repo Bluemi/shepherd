@@ -18,8 +18,6 @@ void client::init(const std::string& hostname, const std::string& player_name) {
 
 	_renderer = std::make_unique<renderer>(*opt_renderer);
 
-	_renderer->run_shape_loader();
-
 	netsi::endpoint init_endpoint = _network_manager.resolve(hostname, "1350");
 	_peer = _network_manager.create_peer(init_endpoint);
 

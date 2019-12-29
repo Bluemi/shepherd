@@ -132,12 +132,10 @@ double renderer::get_delta_time()
 	return delta_time;
 }
 
-void renderer::run_shape_loader() {
-	_shape_loader.run();
-}
-
 void renderer::load_chunk(const block_chunk& bc) {
-	_shape_loader.load_chunk(bc);
+	chunk_request cr(bc.get_block_types(), bc.get_origin());
+	render_chunk rc = do_load_chunk(cr);
+	_render_chunks.push_back(rc); // TODO remove old chunks
 }
 
 void renderer::tick() {
@@ -183,9 +181,8 @@ void renderer::render(frame& f, char local_player_id) {
 		// render blocks
 		_block_shader_program.set_4fv("view", local_player->get_look_at());
 		_block_shader_program.set_4fv("projection", projection);
+		_block_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.2));
 		_block_shader_program.use();
-
-		update_render_chunks();
 
 		for (const render_chunk& rc : _render_chunks) {
 			rc.chunk_shape.bind();
@@ -193,7 +190,7 @@ void renderer::render(frame& f, char local_player_id) {
 			model = glm::translate(model, glm::vec3(rc.origin));
 			_block_shader_program.set_4fv("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
+			glDrawArrays(GL_TRIANGLES, 0, rc.chunk_shape.get_number_vertices());
 		}
 	}
 
@@ -207,7 +204,6 @@ void renderer::close() {
 
 	_player_shape.free_buffers();
 	_world_block_shape.free_buffers();
-	_shape_loader.stop();
 
 	glfwTerminate();
 }
@@ -225,12 +221,6 @@ void renderer::clear_window() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void renderer::update_render_chunks() {
-	while (!_shape_loader.get_update_queue().empty()) {
-		render_chunk rc = _shape_loader.get_update_queue().pop();
-		_render_chunks.push_back(rc); // TODO remove old chunks
-	}
-}
 
 const controller& renderer::get_controller() const {
 	return _controller;

@@ -36,7 +36,6 @@ class renderer {
 	private:
 		double get_delta_time();
 		void clear_window();
-		void update_render_chunks();
 
 		controller _controller;
 		shader_program _player_shader_program;
@@ -45,8 +44,6 @@ class renderer {
 		shape _player_shape;
 		shape _world_block_shape;
 		std::vector<render_chunk> _render_chunks;
-
-		shape_loader _shape_loader;
 
 		GLFWwindow* _window;
 
