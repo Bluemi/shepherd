@@ -69,26 +69,27 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 	// initialize blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
-			float y = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE));
-			y = glm::floor(y*MAP_HEIGHT / (1.f + glm::exp(static_cast<float>(x)-MAP_X_SIZE+6.f)));
+			float h_f = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE));
+			int h = glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(static_cast<float>(x)-MAP_X_SIZE+6.f)));
 
-			// colors
-			glm::vec3 color(
-				(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
-				(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
-				(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK
-			);
+			for (int y = -10; y < h; y++) {
+				// colors
+				glm::vec3 color(
+					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
+					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
+					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK
+				);
 
-			// block type
-			block_type bt = block_type::NORMAL;
-			if (x > MAP_X_SIZE-3) {
-				bt = block_type::WINNING;
-				y = 0.f;
-			} else {
-				color = get_color(glm::ivec3(x, 0, z));
+				// block type
+				block_type bt = block_type::NORMAL;
+				if (x > MAP_X_SIZE-3) {
+					bt = block_type::WINNING;
+				} else {
+					color = get_color(glm::ivec3(x, 0, z));
+				}
+
+				blocks.push_back(world_block(glm::ivec3(x, y, z), color, bt));
 			}
-
-			blocks.push_back(world_block(glm::vec3(x, y, z), color, bt));
 		}
 	}
 
