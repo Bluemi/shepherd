@@ -57,6 +57,9 @@ renderer::renderer(const renderer& v)
 renderer::~renderer() {
 	resize_manager::remove_renderer(this);
 	mouse_manager::remove_controller(&_controller);
+
+	_player_shape.free_buffers();
+	_block_shape.free_buffers();
 }
 
 void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
