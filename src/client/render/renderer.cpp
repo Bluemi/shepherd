@@ -187,7 +187,7 @@ void renderer::render(frame& f, char local_player_id) {
 							model = glm::translate(model, glm::vec3(pos));
 							_block_shader_program.set_4fv("model", model);
 
-							_block_shader_program.set_3f("color", glm::vec3(0.2f, 0.2f, 0.2f));
+							_block_shader_program.set_3f("color", block_container::get_color(pos));
 
 							glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
 						}
