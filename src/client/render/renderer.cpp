@@ -59,7 +59,7 @@ renderer::~renderer() {
 	mouse_manager::remove_controller(&_controller);
 
 	_player_shape.free_buffers();
-	_block_shape.free_buffers();
+	_world_block_shape.free_buffers();
 }
 
 void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
