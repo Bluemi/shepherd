@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "player.hpp"
-#include "world/world_block.hpp"
+#include "world/block_container.hpp"
 
 class frame {
 	public:
