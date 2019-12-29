@@ -4,7 +4,9 @@
 #include <string>
 
 namespace shaders {
-	const std::string vertex_shader();
+	const std::string player_vertex_shader();
+	const std::string block_vertex_shader();
+
 	const std::string player_fragment_shader();
 	const std::string block_fragment_shader();
 }

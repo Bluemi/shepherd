@@ -13,10 +13,18 @@ namespace shaders {
 	// because otherwise it is interpreted as precompiler directive.
 	const std::string VERSION_PREFIX = "#version 330\n";
 
-	const std::string vertex_shader()
+	const std::string player_vertex_shader()
 	{
 		std::string s =
-		#include "vertex_shader.vs"
+		#include "player_vertex_shader.vs"
+		;
+		return VERSION_PREFIX + s;
+	}
+
+	const std::string block_vertex_shader()
+	{
+		std::string s =
+		#include "block_vertex_shader.vs"
 		;
 		return VERSION_PREFIX + s;
 	}

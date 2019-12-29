@@ -17,8 +17,6 @@
 #include "../../common/frame.hpp"
 #include "../../common/physics/util.hpp"
 
-const static std::string VERTEX_SHADER_PATH = "src/client/render/shaders/vertex_shader.vs";
-const static std::string FRAGMENT_SHADER_PATH = "src/client/render/shaders/fragment_shader.fs";
 const static double DEFAULT_SPEED = 59.54188473881952259316;
 
 renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, unsigned int window_width, unsigned int window_height)
@@ -102,14 +100,14 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 	glEnable(GL_DEPTH_TEST);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	std::optional<shader_program> opt_player_shader_program = shader_program::from_code(shaders::vertex_shader(), shaders::player_fragment_shader());
+	std::optional<shader_program> opt_player_shader_program = shader_program::from_code(shaders::player_vertex_shader(), shaders::player_fragment_shader());
 
 	if (!opt_player_shader_program) {
 		std::cerr << "failed to create player shader program" << std::endl;
 		return {};
 	}
 
-	std::optional<shader_program> opt_block_shader_program = shader_program::from_code(shaders::vertex_shader(), shaders::block_fragment_shader());
+	std::optional<shader_program> opt_block_shader_program = shader_program::from_code(shaders::block_vertex_shader(), shaders::block_fragment_shader());
 
 	if (!opt_block_shader_program) {
 		std::cerr << "failed to create block shader program" << std::endl;
