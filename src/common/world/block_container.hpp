@@ -43,6 +43,7 @@ class block_container {
 		static std::vector<world_block> create_field(unsigned int seed);
 		static glm::ivec3 to_chunk_position(const glm::ivec3& position);
 		static glm::vec3 get_color(const glm::ivec3& position);
+		static glm::vec3 get_winning_color(const glm::ivec3& position);
 
 		glm::vec3 get_respawn_position() const;
 

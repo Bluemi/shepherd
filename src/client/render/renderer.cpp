@@ -182,12 +182,16 @@ void renderer::render(frame& f, char local_player_id) {
 					for (unsigned int z = 0; z < BLOCK_CHUNK_SIZE; z++) {
 						glm::ivec3 pos = glm::ivec3(x, y, z) + bc->get_origin();
 						block_type bt = bc->get_block_type(pos);
-						if (bt == block_type::NORMAL) {
+						if (bt != block_type::VOID) {
 							glm::mat4 model = glm::mat4(1.f);
 							model = glm::translate(model, glm::vec3(pos));
 							_block_shader_program.set_4fv("model", model);
 
-							_block_shader_program.set_3f("color", block_container::get_color(pos));
+							if (bt == block_type::WINNING) {
+								_block_shader_program.set_3f("color", block_container::get_winning_color(pos));
+							} else {
+								_block_shader_program.set_3f("color", block_container::get_color(pos));
+							}
 
 							glDrawArrays(GL_TRIANGLES, 0, _world_block_shape.get_number_vertices());
 						}

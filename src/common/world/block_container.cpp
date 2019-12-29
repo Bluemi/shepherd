@@ -5,7 +5,7 @@
 #include "../physics/forms.hpp"
 
 constexpr unsigned int MAP_X_SIZE = 64;
-constexpr unsigned int MAP_Z_SIZE = 16;
+constexpr unsigned int MAP_Z_SIZE = 32;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
@@ -198,6 +198,14 @@ glm::vec3 block_container::get_color(const glm::ivec3& position) {
 	const float red   = glm::perlin(glm::vec2(position.x*0.1f + 200.f, position.z*0.1f + 300.f ))*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;
 	const float green = glm::perlin(glm::vec2(position.x*0.1f + 400.f, position.z*0.1f + 500.f ))*0.03f + 0.12f - glm::max(blue, 0.f)*0.3f;
 	return glm::vec3(red, green, blue);
+}
+
+glm::vec3 block_container::get_winning_color(const glm::ivec3& position) {
+	return glm::vec3(
+		(position.x+position.y+position.z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
+		(position.x+position.y+position.z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
+		(position.x+position.y+position.z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK
+	);
 }
 
 int block_container::get_min_y() const {
