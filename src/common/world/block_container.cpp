@@ -117,7 +117,10 @@ glm::vec3 block_container::get_respawn_position() const {
 std::optional<world_block> block_container::get_block(const glm::ivec3& position) const {
 	const block_chunk* bc = get_containing_chunk(position);
 	if (bc) {
-		return world_block(position, get_color(position), bc->get_block_type(position));
+		block_type bt = bc->get_block_type(position);
+		if (bt != block_type::VOID) {
+			return world_block(position, get_color(position), bt);
+		}
 	}
 	return {};
 }
