@@ -136,6 +136,7 @@ void renderer::load_chunk(const block_chunk& bc) {
 	// remove old chunk
 	for (auto it = _render_chunks.begin(); it != _render_chunks.end(); ++it) {
 		if (it->origin == cr.origin) {
+			it->chunk_shape.free_buffers();
 			_render_chunks.erase(it);
 			break;
 		}
