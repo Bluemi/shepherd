@@ -7,8 +7,8 @@ import hashlib
 DRY=False
 TESTS=True
 
-# MODE = 'debug'
-MODE = 'release'
+MODE = 'debug'
+# MODE = 'release'
 
 SRC_DIRECTORY = 'src'
 BUILD_DIRECTORY = os.path.join('build', MODE)
