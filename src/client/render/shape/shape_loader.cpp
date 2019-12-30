@@ -32,16 +32,18 @@ render_chunk do_load_chunk(const chunk_request& cr) {
 
 void add_block(const glm::uvec3& position, const glm::ivec3& origin, std::vector<float>* vertices) {
 	unsigned int coord_index = 0;
+	glm::vec3 vert;
 	for (float v : initialize::cube_vertices) {
 		vertices->push_back(v + position[coord_index]);
+		vert[coord_index] = v;
 		coord_index = (coord_index+1) % 3;
 
 		// add color
 		if (coord_index == 0) {
 			glm::vec3 color(block_container::get_color(glm::ivec3(position) + origin));
-			vertices->push_back(color.r);
-			vertices->push_back(color.g);
-			vertices->push_back(color.b);
+			vertices->push_back(color.r + (vert.y*0.05 + vert.z*0.015 + vert.x*0.012));
+			vertices->push_back(color.g + (vert.y*0.05 + vert.z*0.013 + vert.x*0.017));
+			vertices->push_back(color.b + (vert.y*0.05 + vert.z*0.011 + vert.x*0.019));
 		}
 	}
 }
