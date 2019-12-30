@@ -132,8 +132,17 @@ double renderer::get_delta_time()
 
 void renderer::load_chunk(const block_chunk& bc) {
 	chunk_request cr(bc.get_block_types(), bc.get_origin());
+	
+	// remove old chunk
+	for (auto it = _render_chunks.begin(); it != _render_chunks.end(); ++it) {
+		if (it->origin == cr.origin) {
+			_render_chunks.erase(it);
+			break;
+		}
+	}
+
 	render_chunk rc = do_load_chunk(cr);
-	_render_chunks.push_back(rc); // TODO remove old chunks
+	_render_chunks.push_back(rc);
 }
 
 void renderer::tick() {

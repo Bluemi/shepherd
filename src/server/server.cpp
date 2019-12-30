@@ -21,14 +21,10 @@ void server::init() {
 void server::run() {
 	std::cout << "server is running on port 1350" << std::endl;
 
-	bool running = true;
-
-	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40)); running; c.next()) {
+	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40));; c.next()) {
 		check_new_peers();
 		handle_clients();
-		if (_current_frame.tick()) {
-			running = false;
-		}
+		_current_frame.tick();
 		send_game_update();
 	}
 
@@ -103,13 +99,14 @@ void server::handle_clients() {
 	_peers.erase(std::remove_if(_peers.begin(), _peers.end(), [](const server::peer_wrapper& p) { return p.disconnected; }), _peers.end());
 }
 
-void server::send_game_update() const {
-	game_update_packet gup = game_update_packet::from_players(_current_frame.players);
+void server::send_game_update() {
+	game_update_packet gup = game_update_packet::from_game(_current_frame.players, _current_frame.block_removes);
 	for (const server::peer_wrapper& p : _peers) {
 		std::vector<char> buffer;
 		gup.write_to(&buffer);
 		p.peer->async_send(buffer);
 	}
+	_current_frame.block_removes.clear();
 }
 
 void server::send_init(char player_id, peer_wrapper* pw) const {

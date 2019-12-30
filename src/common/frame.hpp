@@ -16,6 +16,7 @@ class frame {
 
 		std::vector<player> players;
 		block_container blocks;
+		std::vector<glm::ivec3> block_removes;
 	private:
 		unsigned int _blue_win_counter;
 };

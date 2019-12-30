@@ -133,8 +133,13 @@ void client::handle_init(const std::vector<char>& buffer) {
 
 void client::handle_game_update(const std::vector<char>& buffer) {
 	game_update_packet packet = game_update_packet::from_message(buffer);
+	handle_player_infos(packet.get_player_infos());
+	handle_block_removes(packet.get_block_removes());
+}
+
+void client::handle_player_infos(const std::vector<game_update_packet::player_info>& player_infos) {
 	std::vector<char> current_player_ids;
-	for (const game_update_packet::player_info& pi : packet.get_player_infos()) {
+	for (const game_update_packet::player_info& pi : player_infos) {
 		apply_player_info(pi);
 		current_player_ids.push_back(pi.id);
 	}
@@ -150,7 +155,7 @@ void client::handle_game_update(const std::vector<char>& buffer) {
 
 	for (auto it = _current_frame.players.begin(); it != _current_frame.players.end(); ++it) {
 		bool found = false;
-		for (const auto& pi : packet.get_player_infos()) {
+		for (const auto& pi : player_infos) {
 			if (pi.id == it->get_id()) {
 				found = true;
 				break;
@@ -159,6 +164,13 @@ void client::handle_game_update(const std::vector<char>& buffer) {
 		if (!found) {
 			it = _current_frame.players.erase(it);
 		}
+	}
+}
+
+void client::handle_block_removes(const std::vector<glm::ivec3>& block_removes) {
+	for (const glm::ivec3& br : block_removes) {
+		_current_frame.blocks.remove_block(br);
+		_renderer->load_chunk(*_current_frame.blocks.get_containing_chunk(br));
 	}
 }
 

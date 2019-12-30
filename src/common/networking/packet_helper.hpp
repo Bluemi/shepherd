@@ -17,6 +17,7 @@ namespace packet_helper {
 	void write_to_buffer(const std::string& s, std::vector<char>* buffer);
 	void write_to_buffer(const glm::vec3& v, std::vector<char>* buffer);
 	void write_to_buffer(const glm::vec2& v, std::vector<char>* buffer);
+	void write_to_buffer(const glm::ivec3& v, std::vector<char>* buffer);
 
 	template<typename T>
 	void write_to_buffer(const std::vector<T>& v, std::vector<char>* buffer) {
@@ -39,6 +40,7 @@ namespace packet_helper {
 	void read_from_buffer(std::string* s, const char** buffer);
 	void read_from_buffer(glm::vec3* v, const char** buffer);
 	void read_from_buffer(glm::vec2* v, const char** buffer);
+	void read_from_buffer(glm::ivec3* v, const char** buffer);
 
 	template<typename T>
 	void read_from_buffer(std::vector<T>* vec, const char** buffer) {
