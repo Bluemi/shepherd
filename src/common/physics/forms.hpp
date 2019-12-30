@@ -18,6 +18,14 @@ struct cuboid {
 	glm::vec3 size;
 };
 
+struct ray {
+	ray() {}
+	ray(const glm::vec3& p, const glm::vec3& d) : position(p), direction(d) {}
+
+	glm::vec3 position;
+	glm::vec3 direction;
+};
+
 struct sphere {
 	glm::vec3 position;
 	float radius;

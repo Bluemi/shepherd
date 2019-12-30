@@ -18,6 +18,8 @@ class player {
 		const glm::vec2& get_view_angles() const;
 		const glm::vec3& get_speed() const;
 		std::uint8_t get_actions() const;
+		bool poll_left_mouse_pressed();
+		bool poll_right_mouse_pressed();
 		glm::vec3 get_color() const;
 
 		void set_name(const std::string& name);
@@ -32,6 +34,7 @@ class player {
 		glm::vec3 get_direction() const;
 		glm::vec3 get_top() const;
 		glm::mat4 get_look_at() const;
+		glm::vec3 get_camera_position() const;
 
 		void respawn(const glm::vec3& position);
 		bool tick(const block_container& blocks);
@@ -54,6 +57,8 @@ class player {
 		glm::vec3 _speed;
 		std::uint8_t _actions;
 		glm::vec3 _color;
+		bool _on_left_mouse_pressed;
+		bool _on_right_mouse_pressed;
 };
 
 #endif

@@ -23,6 +23,8 @@ class controller {
 		void key_released(GLFWwindow* window, Key key);
 
 		bool is_key_pressed(const Key key) const;
+		bool is_left_mouse_pressed() const;
+		bool is_right_mouse_pressed() const;
 		glm::vec2 poll_mouse_changes();
 
 		static const Key CAMERA_FORWARD_KEY;
@@ -35,7 +37,9 @@ class controller {
 	private:
 
 		std::map<Key, bool> _is_pressed;
-		double x_change, y_change;
+		double _mouse_x_change, _mouse_y_change;
+		bool _left_mouse_pressed;
+		bool _right_mouse_pressed;
 };
 
 #endif

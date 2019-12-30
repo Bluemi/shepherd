@@ -17,11 +17,11 @@ constexpr float PLAYER_DRAG = 0.03f;
 constexpr float MAX_PLAYER_SPEED = 0.2f;
 
 player::player(unsigned int id, const std::string& name)
-	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f), _color(0.1, 0.1, 0.4)
+	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position)
-	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2)
+	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
 {}
 
 unsigned int player::get_id() const {
@@ -48,6 +48,18 @@ std::uint8_t player::get_actions() const {
 	return _actions;
 }
 
+bool player::poll_left_mouse_pressed() {
+	bool lmp = _on_left_mouse_pressed;
+	_on_left_mouse_pressed = false;
+	return lmp;
+}
+
+bool player::poll_right_mouse_pressed() {
+	bool rmp = _on_right_mouse_pressed;
+	_on_right_mouse_pressed = false;
+	return rmp;
+}
+
 glm::vec3 player::get_color() const {
 	return _color;
 }
@@ -69,6 +81,12 @@ void player::set_speed(const glm::vec3& speed) {
 }
 
 void player::set_actions(const std::uint8_t actions) {
+	if (actions & LEFT_MOUSE_PRESSED && !(_actions & LEFT_MOUSE_PRESSED)) {
+		_on_left_mouse_pressed = true;
+	}
+	if (actions & RIGHT_MOUSE_PRESSED && !(_actions & RIGHT_MOUSE_PRESSED)) {
+		_on_right_mouse_pressed = true;
+	}
 	_actions = actions;
 }
 
@@ -99,8 +117,12 @@ glm::vec3 player::get_top() const {
 }
 
 glm::mat4 player::get_look_at() const {
-	return glm::lookAt(_position + CAMERA_OFFSET, _position + CAMERA_OFFSET + get_direction(), get_up());
+	return glm::lookAt(get_camera_position(), _position + CAMERA_OFFSET + get_direction(), get_up());
 	// return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
+}
+
+glm::vec3 player::get_camera_position() const {
+	return _position + CAMERA_OFFSET;
 }
 
 void player::respawn(const glm::vec3& position) {

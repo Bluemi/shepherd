@@ -6,12 +6,14 @@
 
 #include <glm/glm.hpp>
 
-constexpr std::uint8_t FORWARD_ACTION = 	0b1;
-constexpr std::uint8_t BACKWARD_ACTION = 	0b10;
-constexpr std::uint8_t LEFT_ACTION = 		0b100;
-constexpr std::uint8_t RIGHT_ACTION = 		0b1000;
-constexpr std::uint8_t JUMP_ACTION = 		0b10000;
-constexpr std::uint8_t BOTTOM_ACTION = 		0b100000;
+constexpr std::uint8_t FORWARD_ACTION = 	 0b1;
+constexpr std::uint8_t BACKWARD_ACTION = 	 0b10;
+constexpr std::uint8_t LEFT_ACTION = 		 0b100;
+constexpr std::uint8_t RIGHT_ACTION = 		 0b1000;
+constexpr std::uint8_t JUMP_ACTION = 		 0b10000;
+constexpr std::uint8_t BOTTOM_ACTION = 		 0b100000;
+constexpr std::uint8_t LEFT_MOUSE_PRESSED =  0b1000000;
+constexpr std::uint8_t RIGHT_MOUSE_PRESSED = 0b10000000;
 
 class actions_packet {
 	public:

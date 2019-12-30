@@ -8,6 +8,7 @@
 #include "world_block.hpp"
 
 class cuboid;
+class ray;
 
 constexpr unsigned int BLOCK_CHUNK_SIZE = 16;
 
@@ -23,7 +24,7 @@ class block_chunk {
 		glm::ivec3 get_top() const;
 		bool contains(const glm::ivec3& position) const;
 
-		void add_block(const glm::ivec3& position, block_type bt);
+		void set_block_type(const glm::ivec3& position, block_type bt);
 	private:
 		static unsigned int get_index(const glm::uvec3& position);
 		glm::uvec3 global_to_local(const glm::ivec3& position) const;
@@ -53,11 +54,13 @@ class block_container {
 		const block_chunk* get_containing_chunk(const glm::ivec3& position) const;
 		block_chunk* get_containing_chunk(const glm::ivec3& position);
 		std::vector<world_block> get_colliding_blocks(const cuboid&) const;
+		std::optional<world_block> get_colliding_block(const ray& r, float max_range) const;
 
 		int get_min_y() const;
 
 		void add_block(const glm::ivec3& position, block_type bt);
 		block_chunk* add_chunk(const glm::ivec3& position);
+		bool remove_block(const glm::ivec3& position);
 
 	private:
 		std::vector<std::shared_ptr<block_chunk>> _block_chunks;

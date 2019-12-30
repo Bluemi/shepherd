@@ -1,11 +1,15 @@
 #include "block_container.hpp"
 
+#include <iostream>
+
 #include <glm/gtc/noise.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include "../physics/forms.hpp"
+#include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 128*2;
-constexpr unsigned int MAP_Z_SIZE = 32;
+constexpr unsigned int MAP_X_SIZE = 32;
+constexpr unsigned int MAP_Z_SIZE = 16;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
@@ -44,7 +48,7 @@ bool block_chunk::contains(const glm::ivec3& position) const {
 	return glm::all(glm::greaterThanEqual(position, _origin)) && glm::all(glm::lessThan(position, get_top()));
 }
 
-void block_chunk::add_block(const glm::ivec3& position, block_type bt) {
+void block_chunk::set_block_type(const glm::ivec3& position, block_type bt) {
 	_block_types[get_index(global_to_local(position))] = bt;
 }
 
@@ -156,7 +160,7 @@ void block_container::add_block(const glm::ivec3& position, block_type bt) {
 	if (bc == nullptr) {
 		bc = add_chunk(position);
 	}
-	bc->add_block(position, bt);
+	bc->set_block_type(position, bt);
 
 	if (position.y < _min_y) {
 		_min_y = position.y;
@@ -168,6 +172,16 @@ block_chunk* block_container::add_chunk(const glm::ivec3& position) {
 	std::shared_ptr<block_chunk> chunk = std::make_shared<block_chunk>(chunk_origin);
 	_block_chunks.push_back(chunk);
 	return &(*chunk);
+}
+
+bool block_container::remove_block(const glm::ivec3& position) {
+	block_chunk* bc = get_containing_chunk(position);
+	if (bc == nullptr) {
+		return false;
+	}
+
+	bc->set_block_type(position, block_type::VOID);
+	return true;
 }
 
 std::vector<world_block> block_container::get_colliding_blocks(const cuboid& box) const {
@@ -199,6 +213,52 @@ std::vector<world_block> block_container::get_colliding_blocks(const cuboid& box
 	}
 
 	return colliding_blocks;
+}
+
+unsigned int argmin(const glm::vec3& v) {
+	float min_value = v.x;
+	unsigned int min_index = 0;
+	for (unsigned int i = 1; i < v.length(); i++) {
+		const float value = v[i];
+		if (value < min_value) {
+			min_value = value;
+			min_index = i;
+		}
+	}
+	return min_index;
+}
+
+std::optional<world_block> block_container::get_colliding_block(const ray& r, float max_range) const {
+	glm::vec3 current_position = r.position;
+	glm::ivec3 current_block = glm::round(r.position);
+
+	const glm::vec3 next_block_direction = glm::sign(r.direction);
+	const float max_range2 = max_range*max_range;
+
+	// std::cout << "checking destroy (position=" << r.position << " direction=" << r.direction << "):" << std::endl;
+	while (glm::distance2(current_position, r.position) < max_range2) {
+		// std::cout << "\tdistance: " << glm::distance2(current_position, r.position) << " max range: " << max_range2 << std::endl;
+		// std::cout << "-- start cycle" << std::endl;
+		// std::cout << "\tcurrent block: " << current_block << std::endl;
+		std::optional<world_block> cb = get_block(current_block);
+		if (cb) return cb;
+
+		glm::vec3 next_block = glm::vec3(current_block) + next_block_direction;
+		// std::cout << "\tnext_block: " << next_block << std::endl;
+		const glm::vec3 distances = current_position - (next_block - next_block_direction*0.5f);
+		// std::cout << "\tdistances: " << distances << std::endl;
+		const glm::vec3 rel_distances = glm::abs(distances / r.direction);
+		// std::cout << "\trel distances: " << rel_distances << std::endl;
+		unsigned int min_index = argmin(rel_distances);
+		// std::cout << "\tmin index: " << min_index << std::endl;
+		current_block[min_index] += next_block_direction[min_index];
+		current_position += r.direction * rel_distances[min_index];
+
+		// std::cout << "\tcurrent_position: " << current_position << std::endl;
+	}
+	// std::cout << "\tstopping with distance: " << glm::distance2(current_position, r.position) << " max range: " << max_range2 << std::endl;
+
+	return {};
 }
 
 glm::vec3 block_container::get_color(const glm::ivec3& position) {

@@ -75,6 +75,10 @@ void client::send_actions_update() {
 		current_actions |= JUMP_ACTION;
 	if (ctrl.is_key_pressed(controller::CAMERA_BOTTOM_KEY))
 		current_actions |= BOTTOM_ACTION;
+	if (ctrl.is_left_mouse_pressed())
+		current_actions |= LEFT_MOUSE_PRESSED;
+	if (ctrl.is_right_mouse_pressed())
+		current_actions |= RIGHT_MOUSE_PRESSED;
 
 	glm::vec2 mouse_changes = ctrl.poll_mouse_changes();
 

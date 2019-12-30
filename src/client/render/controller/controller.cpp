@@ -1,5 +1,6 @@
 #include "controller.hpp"
 
+#include <iostream>
 #include <GLFW/glfw3.h>
 
 #include "../camera/camera.hpp"
@@ -12,7 +13,9 @@ const Key controller::CAMERA_TOP_KEY = GLFW_KEY_SPACE;
 const Key controller::CAMERA_BOTTOM_KEY = GLFW_KEY_LEFT_CONTROL;
 const Key controller::CLOSE_KEY = GLFW_KEY_ESCAPE;
 
-controller::controller() {
+controller::controller()
+	: _mouse_x_change(0.0), _mouse_y_change(0.0), _left_mouse_pressed(false), _right_mouse_pressed(false)
+{
 	std::vector<Key> keys_to_track = {
 		CAMERA_LEFT_KEY,
 		CAMERA_RIGHT_KEY,
@@ -29,8 +32,8 @@ controller::controller() {
 }
 
 void controller::mouse_callback(double x, double y) {
-	x_change += x;
-	y_change += y;
+	_mouse_x_change += x;
+	_mouse_y_change += y;
 }
 
 void controller::process_user_input(GLFWwindow* window) {
@@ -45,12 +48,30 @@ void controller::process_user_input(GLFWwindow* window) {
 			}
 		}
 	}
+
+	const int left_pressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	const int right_pressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+
+	if (left_pressed == GLFW_PRESS) {
+		if (!_left_mouse_pressed) {
+			_left_mouse_pressed = true;
+		}
+	} else {
+		_left_mouse_pressed = false;
+	}
+	if (right_pressed == GLFW_PRESS) {
+		if (!_right_mouse_pressed) {
+			_right_mouse_pressed = true;
+		}
+	} else {
+			_right_mouse_pressed = false;
+	}
 }
 
 glm::vec2 controller::poll_mouse_changes() {
-	glm::vec2 changes(x_change, y_change);
-	x_change = 0.f;
-	y_change = 0.f;
+	glm::vec2 changes(_mouse_x_change, _mouse_y_change);
+	_mouse_x_change = 0.f;
+	_mouse_y_change = 0.f;
 	return changes;
 }
 
@@ -65,7 +86,16 @@ void controller::key_released(GLFWwindow*, Key) {
 bool controller::is_key_pressed(const Key key) const {
 	auto it = _is_pressed.find(key);
 	if (it == _is_pressed.end()) {
+		std::cerr << "controller: asked for key: " << key << " but not found" << std::endl;
 		return false;
 	}
 	return it->second;
+}
+
+bool controller::is_left_mouse_pressed() const {
+	return _left_mouse_pressed;
+}
+
+bool controller::is_right_mouse_pressed() const {
+	return _right_mouse_pressed;
 }

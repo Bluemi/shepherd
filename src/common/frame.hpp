@@ -12,6 +12,7 @@ class frame {
 		player* get_player(char player_id);
 
 		bool tick();
+		void check_destroy_block(player* p);
 
 		std::vector<player> players;
 		block_container blocks;

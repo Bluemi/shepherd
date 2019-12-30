@@ -1,5 +1,9 @@
 #include "frame.hpp"
 
+#include <iostream>
+
+#include "physics/util.hpp"
+
 constexpr unsigned int WIN_LIMIT = 2;
 
 frame::frame() {}
@@ -20,7 +24,20 @@ bool frame::tick() {
 		if (p.tick(blocks)) {
 			_blue_win_counter++;
 		}
+		check_destroy_block(&p);
 	}
 
 	return _blue_win_counter >= WIN_LIMIT;
+}
+
+void frame::check_destroy_block(player* p) {
+	if (p->poll_left_mouse_pressed()) {
+		std::optional<world_block> block_to_destroy = blocks.get_colliding_block(ray(p->get_camera_position(), p->get_direction()), 3.f);
+		if (block_to_destroy) {
+			std::cout << "destroying " << block_to_destroy->get_position() << std::endl;
+			blocks.remove_block(block_to_destroy->get_position());
+		} else {
+			std::cout << "hit no block" << std::endl;
+		}
+	}
 }
