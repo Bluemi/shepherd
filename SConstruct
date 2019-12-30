@@ -7,8 +7,11 @@ import hashlib
 DRY=False
 TESTS=True
 
+# MODE = 'debug'
+MODE = 'release'
+
 SRC_DIRECTORY = 'src'
-BUILD_DIRECTORY = 'build'
+BUILD_DIRECTORY = os.path.join('build', MODE)
 OBJ_DIRECTORY = os.path.join(BUILD_DIRECTORY, 'obj')
 BIN_DIRECTORY = os.path.join(BUILD_DIRECTORY, 'bin')
 
@@ -107,8 +110,10 @@ env['CXXCOMSTR'] =  'compiling   $TARGET'
 env['LINKCOMSTR'] = 'linking     $TARGET'
 env['ENV']['TERM'] = os.environ['TERM']
 env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
-env.Append(CCFLAGS='-g')
-# env.Append(CCFLAGS='-O3')
+if MODE == 'debug':
+    env.Append(CCFLAGS='-g')
+else:
+    env.Append(CCFLAGS='-O3')
 
 server_source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['client.cpp'])
 client_source_files = get_source_files(env, OBJ_DIRECTORY, exclude=['server.cpp'])
@@ -132,7 +137,7 @@ if TESTS:
     # test_env = Environment(parse_flags='-std=c++17 -I./build/obj')
     # test_env['ENV']['TERM'] = os.environ['TERM']
     # test_env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
-    env.Append(CPPPATH='-I./build/obj')
+    env.Append(CPPPATH='-I{}'.format(OBJ_DIRECTORY))
 
     copy_tree(TESTS_SRC_DIRECTORY, TESTS_OBJ_DIRECTORY, dry=DRY)
 

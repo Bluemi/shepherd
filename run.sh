@@ -1,11 +1,13 @@
 #!/bin/bash
 
+mode='release'
+
 if [ "$1" == "s" ]; then
-	./build/bin/server
+	./build/${mode}/bin/server
 elif [ "$1" == "t" ]; then
-	./build/tests/bin/packet_helper_test
+	./build/${mode}/tests/bin/packet_helper_test
 elif [ "$1" == "r" ]; then
-	./build/bin/client "192.168.178.89" "player0"
+	./build/${mode}/bin/client "192.168.178.89" "player0"
 else
-	./build/bin/client "localhost" "player0"
+	./build/${mode}/bin/client "localhost" "player0"
 fi
