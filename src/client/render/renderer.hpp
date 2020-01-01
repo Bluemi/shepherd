@@ -1,6 +1,8 @@
 #ifndef __RENDERER_CLASS__
 #define __RENDERER_CLASS__
 
+#include <deque>
+
 #include "controller/controller.hpp"
 #include "shader_program.hpp"
 #include "shape/shape_heap.hpp"
@@ -21,6 +23,7 @@ class renderer {
 
 		void run_shape_loader();
 		void load_chunk(const block_chunk& bc);
+		void load_next_chunk();
 		void tick();
 		void render(frame& f, char player_id);
 		void close();
@@ -44,6 +47,7 @@ class renderer {
 		shape _player_shape;
 		shape _world_block_shape;
 		std::vector<render_chunk> _render_chunks;
+		std::deque<chunk_request> _chunks_to_load;
 
 		GLFWwindow* _window;
 
@@ -51,7 +55,6 @@ class renderer {
 
 		unsigned int _window_width;
 		unsigned int _window_height;
-
 };
 
 #endif

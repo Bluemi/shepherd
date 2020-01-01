@@ -6,12 +6,21 @@
 #include "shape_initializer.hpp"
 
 render_chunk do_load_chunk(const chunk_request& cr) {
+	unsigned int num_blocks = 0;
+	for (block_type bt : cr.blocks) {
+		if (bt != block_type::VOID) {
+			num_blocks++;
+		}
+	}
+
 	std::vector<float> vertices;
+	vertices.reserve(num_blocks*6*36);
 
 	unsigned int num_vertices = 0;
 
 	unsigned int counter = 0;
 	glm::uvec3 pos;
+
 	for (pos.x = 0; pos.x < BLOCK_CHUNK_SIZE; pos.x++) {
 		for (pos.y = 0; pos.y < BLOCK_CHUNK_SIZE; pos.y++) {
 			for (pos.z = 0; pos.z < BLOCK_CHUNK_SIZE; pos.z++) {

@@ -132,18 +132,28 @@ double renderer::get_delta_time()
 
 void renderer::load_chunk(const block_chunk& bc) {
 	chunk_request cr(bc.get_block_types(), bc.get_origin());
-	
-	// remove old chunk
-	for (auto it = _render_chunks.begin(); it != _render_chunks.end(); ++it) {
-		if (it->origin == cr.origin) {
-			it->chunk_shape.free_buffers();
-			_render_chunks.erase(it);
-			break;
-		}
-	}
 
-	render_chunk rc = do_load_chunk(cr);
-	_render_chunks.push_back(rc);
+	_chunks_to_load.push_back(cr);
+	
+}
+
+void renderer::load_next_chunk() {
+	if (!_chunks_to_load.empty()) {
+		chunk_request cr = _chunks_to_load.front();
+		_chunks_to_load.pop_front();
+
+		// remove old chunk
+		for (auto it = _render_chunks.begin(); it != _render_chunks.end(); ++it) {
+			if (it->origin == cr.origin) {
+				it->chunk_shape.free_buffers();
+				_render_chunks.erase(it);
+				break;
+			}
+		}
+
+		render_chunk rc = do_load_chunk(cr);
+		_render_chunks.push_back(rc);
+	}
 }
 
 void renderer::tick() {
@@ -204,6 +214,8 @@ void renderer::render(frame& f, char local_player_id) {
 
 	glfwSwapBuffers(_window);
 	glfwPollEvents();
+
+	load_next_chunk();
 }
 
 void renderer::close() {
