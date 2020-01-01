@@ -235,28 +235,41 @@ std::optional<world_block> block_container::get_colliding_block(const ray& r, fl
 	const glm::vec3 next_block_direction = glm::sign(r.direction);
 	const float max_range2 = max_range*max_range;
 
-	// std::cout << "checking destroy (position=" << r.position << " direction=" << r.direction << "):" << std::endl;
 	while (glm::distance2(current_position, r.position) < max_range2) {
-		// std::cout << "\tdistance: " << glm::distance2(current_position, r.position) << " max range: " << max_range2 << std::endl;
-		// std::cout << "-- start cycle" << std::endl;
-		// std::cout << "\tcurrent block: " << current_block << std::endl;
 		std::optional<world_block> cb = get_block(current_block);
 		if (cb) return cb;
 
 		glm::vec3 next_block = glm::vec3(current_block) + next_block_direction;
-		// std::cout << "\tnext_block: " << next_block << std::endl;
 		const glm::vec3 distances = current_position - (next_block - next_block_direction*0.5f);
-		// std::cout << "\tdistances: " << distances << std::endl;
 		const glm::vec3 rel_distances = glm::abs(distances / r.direction);
-		// std::cout << "\trel distances: " << rel_distances << std::endl;
 		unsigned int min_index = argmin(rel_distances);
-		// std::cout << "\tmin index: " << min_index << std::endl;
 		current_block[min_index] += next_block_direction[min_index];
 		current_position += r.direction * rel_distances[min_index];
-
-		// std::cout << "\tcurrent_position: " << current_position << std::endl;
 	}
-	// std::cout << "\tstopping with distance: " << glm::distance2(current_position, r.position) << " max range: " << max_range2 << std::endl;
+
+	return {};
+}
+
+std::optional<glm::ivec3> block_container::get_addition_position(const ray& r, float max_range) const {
+	glm::vec3 current_position = r.position;
+	glm::ivec3 current_block = glm::round(r.position);
+	glm::ivec3 last_block = current_block;
+
+	const glm::vec3 next_block_direction = glm::sign(r.direction);
+	const float max_range2 = max_range*max_range;
+
+	while (glm::distance2(current_position, r.position) < max_range2) {
+		std::optional<world_block> cb = get_block(current_block);
+		if (cb) return last_block;
+
+		const glm::vec3 next_block = glm::vec3(current_block) + next_block_direction;
+		const glm::vec3 distances = current_position - (next_block - next_block_direction*0.5f);
+		const glm::vec3 rel_distances = glm::abs(distances / r.direction);
+		const unsigned int min_index = argmin(rel_distances);
+		last_block = current_block;
+		current_block[min_index] += next_block_direction[min_index];
+		current_position += r.direction * rel_distances[min_index];
+	}
 
 	return {};
 }

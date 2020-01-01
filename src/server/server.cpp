@@ -100,13 +100,14 @@ void server::handle_clients() {
 }
 
 void server::send_game_update() {
-	game_update_packet gup = game_update_packet::from_game(_current_frame.players, _current_frame.block_removes);
+	game_update_packet gup = game_update_packet::from_game(_current_frame.players, _current_frame.block_removes, _current_frame.block_additions);
 	for (const server::peer_wrapper& p : _peers) {
 		std::vector<char> buffer;
 		gup.write_to(&buffer);
 		p.peer->async_send(buffer);
 	}
 	_current_frame.block_removes.clear();
+	_current_frame.block_additions.clear();
 }
 
 void server::send_init(char player_id, peer_wrapper* pw) const {

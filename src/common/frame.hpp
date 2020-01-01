@@ -13,10 +13,12 @@ class frame {
 
 		bool tick();
 		void check_destroy_block(player* p);
+		void check_add_block(player* p);
 
 		std::vector<player> players;
 		block_container blocks;
 		std::vector<glm::ivec3> block_removes;
+		std::vector<glm::ivec3> block_additions;
 	private:
 		unsigned int _blue_win_counter;
 };

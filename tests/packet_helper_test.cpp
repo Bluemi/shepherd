@@ -21,7 +21,7 @@ void test_game_update_packet() {
 		p.set_view_angles(glm::vec2(1.0f, 2.1f));
 	}
 
-	game_update_packet packet = game_update_packet::from_game(players, std::vector<glm::ivec3>());
+	game_update_packet packet = game_update_packet::from_game(players, std::vector<glm::ivec3>(), std::vector<glm::ivec3>());
 	std::vector<char> message;
 
 	packet.write_to(&message);

@@ -32,12 +32,15 @@ game_update_packet::player_info::player_info(const player& p)
 
 game_update_packet::game_update_packet() {}
 
-game_update_packet game_update_packet::from_game(const std::vector<player>& players, const std::vector<glm::ivec3>& block_removes) {
+game_update_packet game_update_packet::from_game(const std::vector<player>& players, const std::vector<glm::ivec3>& block_removes, const std::vector<glm::ivec3>& block_additions) {
 	game_update_packet packet;
 	for (const player& p : players) {
 		packet._player_infos.push_back(game_update_packet::player_info(p));
 	}
+
 	packet._block_removes.assign(block_removes.cbegin(), block_removes.cend());
+	packet._block_additions.assign(block_additions.cbegin(), block_additions.cend());
+
 	return packet;
 }
 
@@ -52,6 +55,7 @@ game_update_packet game_update_packet::from_message(const std::vector<char>& mes
 
 	packet_helper::read_from_buffer(&packet._player_infos, &message_ptr);
 	packet_helper::read_from_buffer(&packet._block_removes, &message_ptr);
+	packet_helper::read_from_buffer(&packet._block_additions, &message_ptr);
 
 	return packet;
 }
@@ -60,6 +64,7 @@ void game_update_packet::write_to(std::vector<char>* buffer) const {
 	buffer->push_back(packet_ids::GAME_UPDATE_PACKET);
 	packet_helper::write_to_buffer(_player_infos, buffer);
 	packet_helper::write_to_buffer(_block_removes, buffer);
+	packet_helper::write_to_buffer(_block_additions, buffer);
 }
 
 const std::vector<game_update_packet::player_info>& game_update_packet::get_player_infos() const {
@@ -68,4 +73,8 @@ const std::vector<game_update_packet::player_info>& game_update_packet::get_play
 
 const std::vector<glm::ivec3>& game_update_packet::get_block_removes() const {
 	return _block_removes;
+}
+
+const std::vector<glm::ivec3>& game_update_packet::get_block_additions() const {
+	return _block_additions;
 }

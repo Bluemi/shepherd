@@ -55,6 +55,7 @@ class block_container {
 		block_chunk* get_containing_chunk(const glm::ivec3& position);
 		std::vector<world_block> get_colliding_blocks(const cuboid&) const;
 		std::optional<world_block> get_colliding_block(const ray& r, float max_range) const;
+		std::optional<glm::ivec3> get_addition_position(const ray& r, float max_range) const;
 
 		int get_min_y() const;
 

@@ -135,6 +135,7 @@ void client::handle_game_update(const std::vector<char>& buffer) {
 	game_update_packet packet = game_update_packet::from_message(buffer);
 	handle_player_infos(packet.get_player_infos());
 	handle_block_removes(packet.get_block_removes());
+	handle_block_additions(packet.get_block_additions());
 }
 
 void client::handle_player_infos(const std::vector<game_update_packet::player_info>& player_infos) {
@@ -171,6 +172,13 @@ void client::handle_block_removes(const std::vector<glm::ivec3>& block_removes) 
 	for (const glm::ivec3& br : block_removes) {
 		_current_frame.blocks.remove_block(br);
 		_renderer->load_chunk(*_current_frame.blocks.get_containing_chunk(br));
+	}
+}
+
+void client::handle_block_additions(const std::vector<glm::ivec3>& block_additions) {
+	for (const glm::ivec3& ba : block_additions) {
+		_current_frame.blocks.add_block(ba, block_type::NORMAL);
+		_renderer->load_chunk(*_current_frame.blocks.get_containing_chunk(ba));
 	}
 }
 
