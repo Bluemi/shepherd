@@ -82,25 +82,16 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*0.2, (z+s)*NOISE_SCALE*0.2))*2.f +
 						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*0.02, (z+s)*NOISE_SCALE*0.02))*10.f;
 
-			int h = glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(static_cast<float>(x)-MAP_X_SIZE+6.f)));
+			int h = glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(0.25f*(static_cast<float>(x)-MAP_X_SIZE)+3.f)));
 
-			for (int y = h-2; y < h; y++) {
-				// colors
-				glm::vec3 color(
-					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
-					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK,
-					(x+z)%2?WINNING_COLOR_WHITE:WINNING_COLOR_BLACK
-				);
-
+			for (int y = h-3; y < h; y++) {
 				// block type
 				block_type bt = block_type::NORMAL;
 				if (x > MAP_X_SIZE-3) {
 					bt = block_type::WINNING;
-				} else {
-					color = get_color(glm::ivec3(x, 0, z));
 				}
 
-				blocks.push_back(world_block(glm::ivec3(x, y, z), color, bt));
+				blocks.push_back(world_block(glm::ivec3(x, y, z), bt));
 			}
 		}
 	}
@@ -132,7 +123,7 @@ std::optional<world_block> block_container::get_block(const glm::ivec3& position
 	if (bc) {
 		block_type bt = bc->get_block_type(position);
 		if (bt != block_type::VOID) {
-			return world_block(position, get_color(position), bt);
+			return world_block(position, bt);
 		}
 	}
 	return {};
