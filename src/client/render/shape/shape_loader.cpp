@@ -1,5 +1,6 @@
 #include "shape_loader.hpp"
 
+#include <iostream>
 #include <glm/vec3.hpp>
 
 #include "../../../common/world/block_container.hpp"
@@ -25,7 +26,7 @@ render_chunk do_load_chunk(const chunk_request& cr) {
 		for (pos.y = 0; pos.y < BLOCK_CHUNK_SIZE; pos.y++) {
 			for (pos.z = 0; pos.z < BLOCK_CHUNK_SIZE; pos.z++) {
 				if (cr.blocks[counter] != block_type::VOID) {
-					add_block(pos, cr.origin, &vertices);
+					add_block(pos, cr.origin, &vertices, cr.blocks[counter]);
 					num_vertices += 36;
 				}
 				counter++;
@@ -39,7 +40,7 @@ render_chunk do_load_chunk(const chunk_request& cr) {
 	return render_chunk(s, cr.origin);
 }
 
-void add_block(const glm::uvec3& position, const glm::ivec3& origin, std::vector<float>* vertices) {
+void add_block(const glm::uvec3& position, const glm::ivec3& origin, std::vector<float>* vertices, block_type bt) {
 	unsigned int coord_index = 0;
 	glm::vec3 vert;
 	for (float v : initialize::cube_vertices) {
@@ -49,7 +50,21 @@ void add_block(const glm::uvec3& position, const glm::ivec3& origin, std::vector
 
 		// add color
 		if (coord_index == 0) {
-			glm::vec3 color(block_container::get_color(glm::ivec3(position) + origin));
+			glm::vec3 color;
+			switch (bt) {
+				case block_type::GROUND:
+					color = glm::vec3(0.02f, 0.02f, 0.02f);
+					break;
+				case block_type::NORMAL:
+					color = block_container::get_color(glm::ivec3(position) + origin);
+					break;
+				case block_type::WINNING:
+					color = block_container::get_winning_color(glm::ivec3(position) + origin);
+					break;
+				default:
+					std::cerr << "shape_loader::add_block(): cant indentify block type" << std::endl;
+					break;
+			}
 			vertices->push_back(color.r + (vert.y*0.05 + vert.z*0.015 + vert.x*0.012));
 			vertices->push_back(color.g + (vert.y*0.05 + vert.z*0.013 + vert.x*0.017));
 			vertices->push_back(color.b + (vert.y*0.05 + vert.z*0.011 + vert.x*0.019));

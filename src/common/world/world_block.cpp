@@ -12,6 +12,10 @@ world_block::world_block(const glm::ivec3& position, const block_type block_type
 	: _position(position), _block_type(block_type)
 {}
 
+bool world_block::destroyable(const block_type bt) {
+	return bt == block_type::NORMAL;
+}
+
 const glm::ivec3& world_block::get_position() const {
 	return _position;
 }

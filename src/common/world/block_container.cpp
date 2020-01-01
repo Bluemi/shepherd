@@ -74,7 +74,7 @@ int get_height(int x, int z, unsigned seed) {
 	float h_f = glm::perlin(glm::vec2((x+seed)*NOISE_SCALE,      (z_sym+seed)*NOISE_SCALE)) + 
 				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*3.0,  (z_sym+seed)*NOISE_SCALE*3.0))*0.4f +
 				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.2,  (z_sym+seed)*NOISE_SCALE*0.2))*2.f +
-				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.02, (z_sym+seed)*NOISE_SCALE*0.02))*10.f;
+				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.02, (z_sym+seed)*NOISE_SCALE*0.02))*2.f;
 
 	return glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(0.25f*(static_cast<float>(x)-MAP_X_SIZE)+3.f)));
 }
@@ -89,7 +89,8 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			int h = get_height(x, z, s);
 
-			for (int y = h-3; y < h; y++) {
+			blocks.push_back(world_block(glm::ivec3(x, h-6, z), block_type::GROUND));
+			for (int y = h - 5; y < h; y++) {
 				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
 			}
 		}

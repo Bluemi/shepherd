@@ -7,6 +7,7 @@
 enum class block_type {
 	VOID,
 	NORMAL,
+	GROUND,
 	WINNING
 };
 
@@ -14,6 +15,8 @@ class world_block {
 	public:
 		world_block(const glm::ivec3& position);
 		world_block(const glm::ivec3& position, const block_type block_type);
+
+		static bool destroyable(const block_type bt);
 
 		const glm::ivec3& get_position() const;
 		block_type get_type() const;
