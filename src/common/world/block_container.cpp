@@ -8,8 +8,8 @@
 #include "../physics/forms.hpp"
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 32;
-constexpr unsigned int MAP_Z_SIZE = 16;
+constexpr unsigned int MAP_X_SIZE = 128;
+constexpr unsigned int MAP_Z_SIZE = 32;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
@@ -69,6 +69,16 @@ block_container::block_container(const std::vector<world_block>& blocks) : _bloc
 	}
 }
 
+int get_height(int x, int z, unsigned seed) {
+	int z_sym = std::abs(z - (int)MAP_Z_SIZE/2);
+	float h_f = glm::perlin(glm::vec2((x+seed)*NOISE_SCALE,      (z_sym+seed)*NOISE_SCALE)) + 
+				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*3.0,  (z_sym+seed)*NOISE_SCALE*3.0))*0.4f +
+				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.2,  (z_sym+seed)*NOISE_SCALE*0.2))*2.f +
+				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.02, (z_sym+seed)*NOISE_SCALE*0.02))*10.f;
+
+	return glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(0.25f*(static_cast<float>(x)-MAP_X_SIZE)+3.f)));
+}
+
 std::vector<world_block> block_container::create_field(unsigned int seed) {
 	std::vector<world_block> blocks;
 
@@ -77,21 +87,10 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 	// initialize blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
-			float h_f = glm::perlin(glm::vec2((x+s)*NOISE_SCALE, (z+s)*NOISE_SCALE)) + 
-						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*3.0, (z+s)*NOISE_SCALE*3.0))*0.4f +
-						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*0.2, (z+s)*NOISE_SCALE*0.2))*2.f +
-						glm::perlin(glm::vec2((x+s)*NOISE_SCALE*0.02, (z+s)*NOISE_SCALE*0.02))*10.f;
-
-			int h = glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(0.25f*(static_cast<float>(x)-MAP_X_SIZE)+3.f)));
+			int h = get_height(x, z, s);
 
 			for (int y = h-3; y < h; y++) {
-				// block type
-				block_type bt = block_type::NORMAL;
-				if (x > MAP_X_SIZE-3) {
-					bt = block_type::WINNING;
-				}
-
-				blocks.push_back(world_block(glm::ivec3(x, y, z), bt));
+				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
 			}
 		}
 	}
