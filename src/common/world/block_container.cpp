@@ -112,10 +112,17 @@ glm::ivec3 block_container::to_chunk_position(const glm::ivec3& position) {
 }
 
 glm::vec3 block_container::get_respawn_position() const {
-	unsigned int x = (rand() % 5)+1;
-	unsigned int z = rand() % MAP_Z_SIZE;
+	int x = (rand() % 5)+1;
+	int y = 10.f;
+	int z = rand() % MAP_Z_SIZE;
 
-	return glm::vec3(x, 10.f, z);
+	for (int yi = -200; yi < 200; yi++) {
+		if (get_block(glm::ivec3(x, yi, z))) {
+			y = yi;
+		}
+	}
+
+	return glm::vec3(x, y+3.f, z);
 }
 
 std::optional<world_block> block_container::get_block(const glm::ivec3& position) const {
