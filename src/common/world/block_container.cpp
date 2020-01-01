@@ -13,7 +13,7 @@ constexpr unsigned int MAP_Z_SIZE = 32;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
-constexpr float MAP_HEIGHT = 5.f;
+constexpr float MAP_HEIGHT = 15.f;
 
 block_chunk::block_chunk()
 	: _block_types(BLOCK_CHUNK_SIZE*BLOCK_CHUNK_SIZE*BLOCK_CHUNK_SIZE, block_type::VOID)
@@ -69,14 +69,20 @@ block_container::block_container(const std::vector<world_block>& blocks) : _bloc
 	}
 }
 
+float smooth_factor(int x, int center, float peekeness) {
+	return 1.f / (1.f + glm::exp(peekeness*(center-x)));
+}
+
 int get_height(int x, int z, unsigned seed) {
 	int z_sym = std::abs(z - (int)MAP_Z_SIZE/2);
-	float h_f = glm::perlin(glm::vec2((x+seed)*NOISE_SCALE,      (z_sym+seed)*NOISE_SCALE)) + 
-				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*3.0,  (z_sym+seed)*NOISE_SCALE*3.0))*0.4f +
-				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.2,  (z_sym+seed)*NOISE_SCALE*0.2))*2.f +
-				glm::perlin(glm::vec2((x+seed)*NOISE_SCALE*0.02, (z_sym+seed)*NOISE_SCALE*0.02))*2.f;
+	float h_f =
+		0.5f +
+		glm::perlin(glm::vec2((x+seed+9549)*NOISE_SCALE*6.0,  (z_sym+seed+4820)*NOISE_SCALE*4.0 ))*0.3f * smooth_factor(x, 20, 0.3f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
+		glm::perlin(glm::vec2((x+seed+6311)*NOISE_SCALE*3.0,  (z_sym+seed+2349)*NOISE_SCALE*3.0 ))*0.5f * smooth_factor(x, MAP_X_SIZE/2, 0.1f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
+		glm::perlin(glm::vec2((x+seed+5917)*NOISE_SCALE*0.8,  (z_sym+seed+1294)*NOISE_SCALE*0.8 ))*0.4f * smooth_factor(x, 20, 0.3f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
+		glm::perlin(glm::vec2((x+seed+8402)*NOISE_SCALE*0.15, (z_sym+seed+3429)*NOISE_SCALE*0.15))*4.f;
 
-	return glm::floor(h_f*MAP_HEIGHT / (1.f + glm::exp(0.25f*(static_cast<float>(x)-MAP_X_SIZE)+3.f)));
+	return glm::floor(h_f*MAP_HEIGHT);
 }
 
 std::vector<world_block> block_container::create_field(unsigned int seed) {
@@ -268,7 +274,13 @@ std::optional<glm::ivec3> block_container::get_addition_position(const ray& r, f
 
 	while (glm::distance2(current_position, r.position) < max_range2) {
 		std::optional<world_block> cb = get_block(current_block);
-		if (cb) return last_block;
+		if (cb) {
+			if (world_block::placeable(cb->get_type())) {
+				return last_block;
+			} else {
+				return {};
+			}
+		}
 
 		const glm::vec3 next_block = glm::vec3(current_block) + next_block_direction;
 		const glm::vec3 distances = current_position - (next_block - next_block_direction*0.5f);

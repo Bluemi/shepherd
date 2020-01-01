@@ -15,6 +15,8 @@ constexpr float PLAYER_JUMP_SPEED = 0.28f;
 constexpr float PLAYER_COLLIDER_DIMENSION = 0.2f;
 constexpr float PLAYER_DRAG = 0.03f;
 constexpr float MAX_PLAYER_SPEED = 0.2f;
+constexpr unsigned int NUM_BLOCKS_TO_PLACE = 20;
+constexpr unsigned int NUM_BLOCKS_TO_DESTROY = 20;
 
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
@@ -62,6 +64,22 @@ bool player::poll_right_mouse_pressed() {
 
 glm::vec3 player::get_color() const {
 	return _color;
+}
+
+bool player::can_destroy_block() const {
+	return _blocks_to_destroy;
+}
+
+bool player::can_place_block() const {
+	return _blocks_to_place;
+}
+
+void player::decr_blocks_to_destroy() {
+	_blocks_to_destroy--;
+}
+
+void player::decr_blocks_to_place() {
+	_blocks_to_place--;
 }
 
 void player::set_name(const std::string& name) {
@@ -135,6 +153,11 @@ bool player::tick(const block_container& blocks) {
 	_speed.y -= GRAVITY;
 	apply_player_movements(blocks);
 	_position += _speed;
+
+	if (_position.x < 10.f) {
+		_blocks_to_destroy = NUM_BLOCKS_TO_DESTROY;
+		_blocks_to_place = NUM_BLOCKS_TO_PLACE;
+	}
 	return physics(blocks);
 }
 

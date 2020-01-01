@@ -16,6 +16,10 @@ bool world_block::destroyable(const block_type bt) {
 	return bt == block_type::NORMAL;
 }
 
+bool world_block::placeable(const block_type bt) {
+	return bt == block_type::NORMAL || bt == block_type::GROUND;
+}
+
 const glm::ivec3& world_block::get_position() const {
 	return _position;
 }
