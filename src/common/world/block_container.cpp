@@ -84,7 +84,7 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 
 	unsigned int s = seed % 25000;
 
-	// initialize blocks
+	// create blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			int h = get_height(x, z, s);
@@ -92,6 +92,16 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 			blocks.push_back(world_block(glm::ivec3(x, h-6, z), block_type::GROUND));
 			for (int y = h - 5; y < h; y++) {
 				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
+			}
+		}
+	}
+
+	// create winning blocks
+	int winning_h = get_height(MAP_X_SIZE-8, (MAP_Z_SIZE/2), s) + 10;
+	for (int x = MAP_X_SIZE - 10; x < static_cast<int>(MAP_X_SIZE) - 6; x++) {
+		for (int z = (MAP_Z_SIZE/2)-2; z < (static_cast<int>(MAP_Z_SIZE)/2)+2; z++) {
+			for (int y = winning_h-1; y <= winning_h+1; y++) {
+				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::WINNING));
 			}
 		}
 	}
