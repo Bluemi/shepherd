@@ -8,8 +8,8 @@
 #include "../physics/forms.hpp"
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 128;
-constexpr unsigned int MAP_Z_SIZE = 32;
+constexpr unsigned int MAP_X_SIZE = 128*2;
+constexpr unsigned int MAP_Z_SIZE = 32*2;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
@@ -95,8 +95,8 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			int h = get_height(x, z, s);
 
-			blocks.push_back(world_block(glm::ivec3(x, h-6, z), block_type::GROUND));
-			for (int y = h - 5; y < h; y++) {
+			blocks.push_back(world_block(glm::ivec3(x, h-4, z), block_type::GROUND));
+			for (int y = h - 3; y < h; y++) {
 				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
 			}
 		}
