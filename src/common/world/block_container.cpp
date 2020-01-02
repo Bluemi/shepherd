@@ -74,7 +74,10 @@ float smooth_factor(int x, int center, float peekeness) {
 }
 
 int get_height(int x, int z, unsigned seed) {
-	int z_sym = std::abs(z - (int)MAP_Z_SIZE/2);
+	int z_sym = z - (int)MAP_Z_SIZE/2;
+	if (z_sym < 0) {
+		z_sym = -z_sym -1;
+	}
 	float h_f =
 		0.5f +
 		glm::perlin(glm::vec2((x+seed+9549)*NOISE_SCALE*6.0,  (z_sym+seed+4820)*NOISE_SCALE*4.0 ))*0.3f * smooth_factor(x, 20, 0.3f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
@@ -95,8 +98,8 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			int h = get_height(x, z, s);
 
-			blocks.push_back(world_block(glm::ivec3(x, h-4, z), block_type::GROUND));
-			for (int y = h - 3; y < h; y++) {
+			blocks.push_back(world_block(glm::ivec3(x, h-11, z), block_type::GROUND));
+			for (int y = h - 10; y < h; y++) {
 				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
 			}
 		}
