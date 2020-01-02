@@ -21,10 +21,6 @@ class player {
 		bool poll_left_mouse_pressed();
 		bool poll_right_mouse_pressed();
 		glm::vec3 get_color() const;
-		bool can_destroy_block() const;
-		bool can_place_block() const;
-		void decr_blocks_to_destroy();
-		void decr_blocks_to_place();
 
 		void set_name(const std::string& name);
 		void set_position(const glm::vec3& position);
@@ -61,8 +57,6 @@ class player {
 		glm::vec3 _speed;
 		std::uint8_t _actions;
 		glm::vec3 _color;
-		unsigned int _blocks_to_destroy;
-		unsigned int _blocks_to_place;
 		bool _on_left_mouse_pressed;
 		bool _on_right_mouse_pressed;
 };

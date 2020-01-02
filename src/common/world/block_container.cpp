@@ -81,7 +81,7 @@ int get_height(int x, int z, unsigned seed) {
 	float h_f =
 		0.5f +
 		glm::perlin(glm::vec2((x+seed+9549)*NOISE_SCALE*6.0,  (z_sym+seed+4820)*NOISE_SCALE*4.0 ))*0.3f * smooth_factor(x, 20, 0.3f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
-		glm::perlin(glm::vec2((x+seed+6311)*NOISE_SCALE*3.0,  (z_sym+seed+2349)*NOISE_SCALE*3.0 ))*0.5f * smooth_factor(x, MAP_X_SIZE/2, 0.1f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
+		glm::perlin(glm::vec2((x+seed+6311)*NOISE_SCALE*2.0,  (z_sym+seed+2349)*NOISE_SCALE*3.0 ))*0.7f * smooth_factor(x, MAP_X_SIZE/2, 0.1f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
 		glm::perlin(glm::vec2((x+seed+5917)*NOISE_SCALE*0.8,  (z_sym+seed+1294)*NOISE_SCALE*0.8 ))*0.4f * smooth_factor(x, 20, 0.3f) * smooth_factor(x, MAP_X_SIZE-20, -0.3f) +
 		glm::perlin(glm::vec2((x+seed+8402)*NOISE_SCALE*0.15, (z_sym+seed+3429)*NOISE_SCALE*0.15))*4.f;
 
@@ -98,8 +98,8 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			int h = get_height(x, z, s);
 
-			blocks.push_back(world_block(glm::ivec3(x, h-11, z), block_type::GROUND));
-			for (int y = h - 10; y < h; y++) {
+			blocks.push_back(world_block(glm::ivec3(x, h-4, z), block_type::GROUND));
+			for (int y = h - 3; y < h; y++) {
 				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
 			}
 		}
