@@ -18,6 +18,7 @@
 #include "../../common/physics/util.hpp"
 
 const static double DEFAULT_SPEED = 59.54188473881952259316;
+constexpr float HOOK_RENDER_STRENGTH = 0.03f;
 
 renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, unsigned int window_width, unsigned int window_height)
 	: _player_shader_program(player_shader_program),
@@ -162,19 +163,20 @@ void renderer::tick() {
 void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& hook_tip) {
 	const glm::vec3 mid = (player_position + hook_tip) / 2.f;
 	const glm::vec3 from_to = hook_tip - player_position;
-	const float range = glm::distance(player_position, hook_tip) + 0.0001f;
+
+	const float range = glm::distance(player_position, hook_tip);
+	const float range_wo_y = glm::distance(glm::vec2(player_position.x, player_position.z), glm::vec2(hook_tip.x, hook_tip.z));
 
 	glm::mat4 model = glm::mat4(1.f);
 	model = glm::translate(model, mid);
-	// model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
 	
-	float up_angle = glm::sign(from_to.z) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.z) / range);
+	float up_angle = glm::sign(from_to.z) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.z) / range_wo_y);
 	float side_angle = glm::sign(from_to.y) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.y) / range);
 
 	model = glm::rotate(model, -up_angle, player::get_up());
 	model = glm::rotate(model, side_angle, glm::vec3(0.f, 0.f, 1.f));
 
-	model = glm::scale(model, glm::vec3(range, 0.1f, 0.1f));
+	model = glm::scale(model, glm::vec3(range, HOOK_RENDER_STRENGTH, HOOK_RENDER_STRENGTH));
 	_player_shader_program.set_4fv("model", model);
 
 	_player_shader_program.set_3f("color", glm::vec3());
