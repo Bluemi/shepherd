@@ -34,6 +34,7 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	mouse_manager::add_controller(&_controller);
 
 	_player_shape = initialize::create_shape(sphere_specification(3));
+	_hook_shape = initialize::create_shape(cube_specification());
 }
 
 renderer::renderer(const renderer& v)
@@ -41,6 +42,7 @@ renderer::renderer(const renderer& v)
 	  _player_shader_program(v._player_shader_program),
 	  _block_shader_program(v._block_shader_program),
 	  _player_shape(v._player_shape),
+	  _hook_shape(v._hook_shape),
 	  _window(v._window),
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
@@ -53,11 +55,6 @@ renderer::renderer(const renderer& v)
 renderer::~renderer() {
 	resize_manager::remove_renderer(this);
 	mouse_manager::remove_controller(&_controller);
-
-	/*
-	 TODO free buffers
-	_player_shape.free_buffers();
-	*/
 }
 
 void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
@@ -162,6 +159,29 @@ void renderer::tick() {
 	_controller.process_user_input(_window);
 }
 
+void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& hook_tip) {
+	const glm::vec3 mid = (player_position + hook_tip) / 2.f;
+	const glm::vec3 from_to = hook_tip - player_position;
+	const float range = glm::distance(player_position, hook_tip) + 0.0001f;
+
+	glm::mat4 model = glm::mat4(1.f);
+	model = glm::translate(model, mid);
+	// model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
+	
+	float up_angle = glm::sign(from_to.z) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.z) / range);
+	float side_angle = glm::sign(from_to.y) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.y) / range);
+
+	model = glm::rotate(model, -up_angle, player::get_up());
+	model = glm::rotate(model, side_angle, glm::vec3(0.f, 0.f, 1.f));
+
+	model = glm::scale(model, glm::vec3(range, 0.1f, 0.1f));
+	_player_shader_program.set_4fv("model", model);
+
+	_player_shader_program.set_3f("color", glm::vec3());
+
+	glDrawArrays(GL_TRIANGLES, 0, _hook_shape.get_number_vertices());
+}
+
 void renderer::render(frame& f, char local_player_id) {
 	clear_window();
 	player* local_player = f.get_player(local_player_id);
@@ -196,6 +216,15 @@ void renderer::render(frame& f, char local_player_id) {
 			glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
 		}
 
+		// render hooks
+		_hook_shape.bind();
+
+		for (player& p : f.players) {
+			if (!p.get_hook()) continue;
+			if (!p.get_hook()->target_block) continue;
+			render_hook(p.get_position(), *p.get_hook()->target_block);
+		}
+
 		// render blocks
 		_block_shader_program.set_4fv("view", local_player->get_look_at());
 		_block_shader_program.set_4fv("projection", projection);
@@ -223,7 +252,11 @@ void renderer::close() {
 	resize_manager::clear_renderers();
 
 	_player_shape.free_buffers();
-	_world_block_shape.free_buffers();
+	_hook_shape.free_buffers();
+
+	for (render_chunk& rc : _render_chunks) {
+		rc.chunk_shape.free_buffers();
+	}
 
 	glfwTerminate();
 }

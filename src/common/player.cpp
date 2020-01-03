@@ -27,6 +27,10 @@ player::player(unsigned int id, const std::string& name, const glm::vec3& positi
 	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
 {}
 
+player::player(unsigned int id, const std::string& name, const glm::vec3& position, const std::optional<glm::vec3>& h)
+	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook(h)
+{}
+
 unsigned int player::get_id() const {
 	return _id;
 }
@@ -67,6 +71,10 @@ glm::vec3 player::get_color() const {
 	return _color;
 }
 
+const std::optional<hook>& player::get_hook() const {
+	return _hook;
+}
+
 bool player::is_hooked() const {
 	return _hook && _hook->is_hooked();
 }
@@ -95,6 +103,10 @@ void player::set_actions(const std::uint16_t actions) {
 		_on_right_mouse_pressed = true;
 	}
 	_actions = actions;
+}
+
+void player::set_hook(const std::optional<hook>& h) {
+	_hook = h;
 }
 
 void player::update_direction(const glm::vec2& direction_update) {
@@ -254,7 +266,7 @@ void player::handle_active_hook(const block_container& blocks) {
 	}
 
 	if (is_hooked()) {
-		const glm::vec3 hook_direction = glm::normalize(glm::vec3(_hook->target_block->get_position()) - _position);
+		const glm::vec3 hook_direction = glm::normalize(glm::vec3(*(_hook->target_block)) - _position);
 		_speed += hook_direction*HOOK_ACCELERATION;
 	}
 }

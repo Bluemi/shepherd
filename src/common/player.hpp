@@ -13,6 +13,7 @@ class player {
 	public:
 		player(unsigned int id, const std::string& name);
 		player(unsigned int id, const std::string& name, const glm::vec3& position);
+		player(unsigned int id, const std::string& name, const glm::vec3& position, const std::optional<glm::vec3>& h);
 
 		unsigned int get_id() const;
 		const std::string& get_name() const;
@@ -23,6 +24,7 @@ class player {
 		bool poll_left_mouse_pressed();
 		bool poll_right_mouse_pressed();
 		glm::vec3 get_color() const;
+		const std::optional<hook>& get_hook() const;
 		bool is_hooked() const;
 
 		void set_name(const std::string& name);
@@ -30,6 +32,7 @@ class player {
 		void set_view_angles(const glm::vec2& view_angles);
 		void set_speed(const glm::vec3& speed);
 		void set_actions(const std::uint16_t actions);
+		void set_hook(const std::optional<hook>& h);
 		void update_direction(const glm::vec2& direction_update);
 
 		static glm::vec3 get_up();

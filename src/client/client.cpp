@@ -112,13 +112,14 @@ void client::apply_player_info(const game_update_packet::player_info& pi) {
 			p.set_name(pi.name);
 			p.set_position(pi.position);
 			p.set_view_angles(pi.view_angles);
+			p.set_hook(hook(pi.player_hook));
 			new_player = false;
 			break;
 		}
 	}
 
 	if (new_player) {
-		_current_frame.players.push_back(player(pi.id, pi.name, pi.position));
+		_current_frame.players.push_back(player(pi.id, pi.name, pi.position, pi.player_hook));
 	}
 }
 

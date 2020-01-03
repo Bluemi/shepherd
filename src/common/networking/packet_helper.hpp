@@ -2,6 +2,7 @@
 #define __PACKET_HELPER_CLASS__
 
 #include <vector>
+#include <optional>
 #include <string>
 #include <glm/glm.hpp>
 
@@ -27,6 +28,13 @@ namespace packet_helper {
 		}
 	}
 
+	template<typename T>
+	void write_to_buffer(const std::optional<T>& o, std::vector<char>* buffer) {
+		write_to_buffer(o.has_value(), buffer);
+		if (o) {
+			write_to_buffer(*o, buffer);
+		}
+	}
 
 	// read functions --------------------------------
 	template<typename T>
@@ -54,6 +62,20 @@ namespace packet_helper {
 			T t;
 			read_from_buffer(&t, buffer);
 			vec->push_back(t);
+		}
+	}
+
+	template<typename T>
+	void read_from_buffer(std::optional<T>* o, const char** buffer) {
+		bool has_value = false;
+		read_from_buffer(&has_value, buffer);
+
+		if (has_value) {
+			T t;
+			read_from_buffer(&t, buffer);
+			*o = t;
+		} else {
+			o->reset();
 		}
 	}
 }

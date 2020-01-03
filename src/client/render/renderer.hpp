@@ -24,6 +24,7 @@ class renderer {
 		void load_chunk(const block_chunk& bc);
 		void load_next_chunk();
 		void tick();
+		void render_hook(const glm::vec3& player_position, const glm::vec3& hook_tip);
 		void render(frame& f, char player_id);
 		void close();
 		bool should_close() const;
@@ -44,7 +45,7 @@ class renderer {
 		shader_program _block_shader_program;
 
 		shape _player_shape;
-		shape _world_block_shape;
+		shape _hook_shape;
 		std::vector<render_chunk> _render_chunks;
 		std::deque<chunk_request> _chunks_to_load;
 

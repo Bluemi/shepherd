@@ -14,7 +14,9 @@ constexpr float HOOK_ACCELERATION = 0.35f;
 
 class hook {
 	public:
+		hook();
 		hook(const glm::vec3& position, const glm::vec3& direction);
+		hook(const std::optional<glm::ivec3>& target_block);
 
 		bool is_hooked() const;
 		void check_target_block(const block_container& blocks);
@@ -22,7 +24,7 @@ class hook {
 		glm::vec3 position;
 		glm::vec3 direction;
 		float range;
-		std::optional<world_block> target_block;
+		std::optional<glm::ivec3> target_block;
 };
 
 #endif

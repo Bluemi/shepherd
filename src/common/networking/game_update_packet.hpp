@@ -3,7 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 #include <glm/glm.hpp>
+
+#include "../hook.hpp"
 
 class player;
 
@@ -17,6 +20,8 @@ class game_update_packet {
 			glm::vec3 position;
 			glm::vec2 view_angles;
 			std::string name;
+
+			std::optional<glm::vec3> player_hook;
 		};
 
 		game_update_packet();
