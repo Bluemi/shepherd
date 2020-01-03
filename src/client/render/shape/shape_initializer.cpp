@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include "shape.hpp"
-#include "../../../common/physics/forms.hpp"
 
 namespace initialize
 {
