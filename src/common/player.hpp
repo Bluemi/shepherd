@@ -2,10 +2,12 @@
 #define __PLAYER_CLASS__
 
 #include <vector>
+#include <optional>
 #include <string>
 
 #include "world/block_container.hpp"
 #include "physics/forms.hpp"
+#include "hook.hpp"
 
 class player {
 	public:
@@ -21,6 +23,7 @@ class player {
 		bool poll_left_mouse_pressed();
 		bool poll_right_mouse_pressed();
 		glm::vec3 get_color() const;
+		bool is_hooked() const;
 
 		void set_name(const std::string& name);
 		void set_position(const glm::vec3& position);
@@ -39,8 +42,11 @@ class player {
 		void respawn(const glm::vec3& position);
 		bool tick(const block_container& blocks);
 		void apply_player_movements(const block_container& blocks);
-		bool physics(const block_container& blocks);
+		void apply_drag(glm::vec3& speed);
+		void physics(const block_container& blocks);
 		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
+		void handle_hook(const block_container& blocks);
+		void handle_active_hook(const block_container& blocks);
 
 		cuboid get_bottom_collider() const;
 		cuboid get_top_collider() const;
@@ -59,6 +65,8 @@ class player {
 		glm::vec3 _color;
 		bool _on_left_mouse_pressed;
 		bool _on_right_mouse_pressed;
+
+		std::optional<hook> _hook;
 };
 
 #endif

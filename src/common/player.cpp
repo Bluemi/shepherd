@@ -17,6 +17,7 @@ constexpr float PLAYER_DRAG = 0.03f;
 constexpr float MAX_PLAYER_SPEED = 0.2f;
 constexpr unsigned int NUM_BLOCKS_TO_PLACE = 20;
 constexpr unsigned int NUM_BLOCKS_TO_DESTROY = 20;
+constexpr float HOOK_DRAG = 0.7f;
 
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
@@ -64,6 +65,10 @@ bool player::poll_right_mouse_pressed() {
 
 glm::vec3 player::get_color() const {
 	return _color;
+}
+
+bool player::is_hooked() const {
+	return _hook && _hook->is_hooked();
 }
 
 void player::set_name(const std::string& name) {
@@ -134,11 +139,29 @@ void player::respawn(const glm::vec3& position) {
 }
 
 bool player::tick(const block_container& blocks) {
-	_speed.y -= GRAVITY;
+	if (!is_hooked()) {
+		_speed.y -= GRAVITY;
+	}
 	apply_player_movements(blocks);
 	_position += _speed;
 
-	return physics(blocks);
+	handle_hook(blocks);
+	physics(blocks);
+
+	bool was_winning = false;
+
+	for (const world_block& wb : blocks.get_colliding_blocks(get_bottom_collider())) {
+		if (wb.is_winning_block()) {
+			respawn(blocks.get_respawn_position());
+			was_winning = true;
+		}
+	}
+
+	if (_position.y < blocks.get_min_y() - 100.f) {
+		respawn(blocks.get_respawn_position());
+	}
+
+	return was_winning;
 }
 
 void player::apply_player_movements(const block_container& blocks) {
@@ -165,8 +188,19 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	_speed += (get_right()*right + tmp_direction*forward)*0.1f;
 
-	glm::vec2 tmp_speed = glm::vec2(_speed.x, _speed.z);
+	glm::vec3 tmp_speed = _speed;
 
+	if (is_hooked()) {
+		tmp_speed *= HOOK_DRAG;
+		_speed = tmp_speed;
+	} else {
+		apply_drag(tmp_speed);
+		_speed.x = tmp_speed.x;
+		_speed.z = tmp_speed.z;
+	}
+}
+
+void player::apply_drag(glm::vec3& tmp_speed) {
 	if (glm::length(tmp_speed) <= PLAYER_DRAG) {
 		tmp_speed = glm::vec3();
 	} else {
@@ -175,32 +209,24 @@ void player::apply_player_movements(const block_container& blocks) {
 			tmp_speed *= MAX_PLAYER_SPEED / glm::length(tmp_speed);
 		}
 	}
-	_speed.x = tmp_speed.x;
-	_speed.z = tmp_speed.y;
 }
 
-bool player::physics(const block_container& blocks) {
+void player::physics(const block_container& blocks) {
+	bool y_checked = false;
+	if (glm::abs(_speed.y) > 0.2f) {
+		check_collider(blocks, get_bottom_collider(), -1, 1);
+		check_collider(blocks, get_top_collider()   ,  1, 1);
+		y_checked = true;
+	}
 	check_collider(blocks, get_left_collider()  , -1, 2);
 	check_collider(blocks, get_right_collider() ,  1, 2);
 	check_collider(blocks, get_back_collider()  , -1, 0);
 	check_collider(blocks, get_front_collider() ,  1, 0);
-	check_collider(blocks, get_bottom_collider(), -1, 1);
-	check_collider(blocks, get_top_collider()   ,  1, 1);
 
-	bool was_winning = false;
-
-	for (const world_block& wb : blocks.get_colliding_blocks(get_bottom_collider())) {
-		if (wb.is_winning_block()) {
-			respawn(blocks.get_respawn_position()); // TODO: Implement greater winning reward
-			was_winning = true;
-		}
+	if (!y_checked) {
+		check_collider(blocks, get_bottom_collider(), -1, 1);
+		check_collider(blocks, get_top_collider()   ,  1, 1);
 	}
-
-	if (_position.y < blocks.get_min_y() - 100.f) {
-		respawn(blocks.get_respawn_position());
-	}
-
-	return was_winning;
 }
 
 // direction = -1, if block is in negative direction to player
@@ -215,6 +241,34 @@ void player::check_collider(const block_container& blocks, const cuboid& collide
 			min_coord = glm::min(min_coord, static_cast<float>(wb.get_position()[coordinate]*direction));
 		}
 		_position[coordinate] = (min_coord*direction) - (0.5f + _size.y - 0.01f)*direction;
+	}
+}
+
+void player::handle_active_hook(const block_container& blocks) {
+	if (!_hook->is_hooked()) {
+		_hook->range += HOOK_SPEED;
+		_hook->check_target_block(blocks);
+		if ((!_hook->is_hooked()) && _hook->range >= HOOK_RANGE) {
+			_hook.reset();
+		}
+	}
+
+	if (is_hooked()) {
+		const glm::vec3 hook_direction = glm::normalize(glm::vec3(_hook->target_block->get_position()) - _position);
+		_speed += hook_direction*HOOK_ACCELERATION;
+	}
+}
+
+void player::handle_hook(const block_container& blocks) {
+	if (!_hook && _actions & HOOK_ACTION) {
+		_hook = hook(get_camera_position(), get_direction());
+	}
+	if (_hook) {
+		if (_actions & HOOK_ACTION) {
+			handle_active_hook(blocks);
+		} else {
+			_hook.reset();
+		}
 	}
 }
 

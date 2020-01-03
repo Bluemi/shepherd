@@ -61,7 +61,7 @@ void client::send_logout() {
 }
 
 void client::send_actions_update() {
-	std::uint8_t current_actions(0);
+	std::uint16_t current_actions(0);
 	controller& ctrl = _renderer->get_controller();
 	if (ctrl.is_key_pressed(controller::CAMERA_FORWARD_KEY))
 		current_actions |= FORWARD_ACTION;
@@ -79,6 +79,8 @@ void client::send_actions_update() {
 		current_actions |= LEFT_MOUSE_PRESSED;
 	if (ctrl.is_right_mouse_pressed())
 		current_actions |= RIGHT_MOUSE_PRESSED;
+	if (ctrl.is_key_pressed(controller::HOOK_KEY))
+		current_actions |= HOOK_ACTION;
 
 	glm::vec2 mouse_changes = ctrl.poll_mouse_changes();
 

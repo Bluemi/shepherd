@@ -11,6 +11,7 @@ const Key controller::CAMERA_LEFT_KEY = GLFW_KEY_A;
 const Key controller::CAMERA_RIGHT_KEY = GLFW_KEY_D;
 const Key controller::CAMERA_TOP_KEY = GLFW_KEY_SPACE;
 const Key controller::CAMERA_BOTTOM_KEY = GLFW_KEY_LEFT_CONTROL;
+const Key controller::HOOK_KEY = GLFW_KEY_E;
 const Key controller::CLOSE_KEY = GLFW_KEY_ESCAPE;
 
 controller::controller()
@@ -23,6 +24,7 @@ controller::controller()
 		CAMERA_BACKWARD_KEY,
 		CAMERA_TOP_KEY,
 		CAMERA_BOTTOM_KEY,
+		HOOK_KEY,
 		CLOSE_KEY
 	};
 
@@ -49,23 +51,8 @@ void controller::process_user_input(GLFWwindow* window) {
 		}
 	}
 
-	const int left_pressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	const int right_pressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
-
-	if (left_pressed == GLFW_PRESS) {
-		if (!_left_mouse_pressed) {
-			_left_mouse_pressed = true;
-		}
-	} else {
-		_left_mouse_pressed = false;
-	}
-	if (right_pressed == GLFW_PRESS) {
-		if (!_right_mouse_pressed) {
-			_right_mouse_pressed = true;
-		}
-	} else {
-			_right_mouse_pressed = false;
-	}
+	_left_mouse_pressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+	_right_mouse_pressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
 }
 
 glm::vec2 controller::poll_mouse_changes() {

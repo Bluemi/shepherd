@@ -33,6 +33,7 @@ class controller {
 		static const Key CAMERA_RIGHT_KEY;
 		static const Key CAMERA_TOP_KEY;
 		static const Key CAMERA_BOTTOM_KEY;
+		static const Key HOOK_KEY;
 		static const Key CLOSE_KEY;
 	private:
 
