@@ -32,7 +32,7 @@ game_update_packet::player_info::player_info(const player& p)
 	: id(p.get_id()), position(p.get_position()), view_angles(p.get_view_angles()), name(p.get_name())
 {
 	if (p.get_hook()) {
-		player_hook = p.get_hook()->target_block;
+		player_hook = p.get_hook()->target_point;
 	}
 }
 

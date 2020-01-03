@@ -16,15 +16,15 @@ class hook {
 	public:
 		hook();
 		hook(const glm::vec3& position, const glm::vec3& direction);
-		hook(const std::optional<glm::ivec3>& target_block);
+		hook(const std::optional<glm::vec3>& target_point);
 
 		bool is_hooked() const;
-		void check_target_block(const block_container& blocks);
+		void check_target_point(const block_container& blocks);
 
 		glm::vec3 position;
 		glm::vec3 direction;
 		float range;
-		std::optional<glm::ivec3> target_block;
+		std::optional<glm::vec3> target_point;
 };
 
 #endif

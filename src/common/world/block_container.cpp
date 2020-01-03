@@ -305,6 +305,28 @@ std::optional<glm::ivec3> block_container::get_addition_position(const ray& r, f
 	return {};
 }
 
+std::optional<glm::vec3> block_container::get_collision_point(const ray& r, float max_range) const {
+	glm::vec3 current_position = r.position;
+	glm::ivec3 current_block = glm::round(r.position);
+
+	const glm::vec3 next_block_direction = glm::sign(r.direction);
+	const float max_range2 = max_range*max_range;
+
+	while (glm::distance2(current_position, r.position) < max_range2) {
+		std::optional<world_block> cb = get_block(current_block);
+		if (cb) return current_position;
+
+		glm::vec3 next_block = glm::vec3(current_block) + next_block_direction;
+		const glm::vec3 distances = current_position - (next_block - next_block_direction*0.5f);
+		const glm::vec3 rel_distances = glm::abs(distances / r.direction);
+		unsigned int min_index = argmin(rel_distances);
+		current_block[min_index] += next_block_direction[min_index];
+		current_position += r.direction * rel_distances[min_index];
+	}
+
+	return {};
+}
+
 glm::vec3 block_container::get_color(const glm::ivec3& position) {
 	const float blue  = glm::perlin(glm::vec2(position.x*0.1f        , position.z*0.1f + 100.f ))*0.02f + 0.03f;
 	const float red   = glm::perlin(glm::vec2(position.x*0.1f + 200.f, position.z*0.1f + 300.f ))*0.02f + 0.1f - glm::max(blue, 0.f)*0.6f;

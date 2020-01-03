@@ -220,8 +220,8 @@ void renderer::render(frame& f, char local_player_id) {
 
 		for (player& p : f.players) {
 			if (!p.get_hook()) continue;
-			if (!p.get_hook()->target_block) continue;
-			render_hook(p.get_position(), *p.get_hook()->target_block);
+			if (!p.get_hook()->target_point) continue;
+			render_hook(p.get_position(), *p.get_hook()->target_point);
 		}
 
 		// render blocks

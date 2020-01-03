@@ -259,14 +259,14 @@ void player::check_collider(const block_container& blocks, const cuboid& collide
 void player::handle_active_hook(const block_container& blocks) {
 	if (!_hook->is_hooked()) {
 		_hook->range += HOOK_SPEED;
-		_hook->check_target_block(blocks);
+		_hook->check_target_point(blocks);
 		if ((!_hook->is_hooked()) && _hook->range >= HOOK_RANGE) {
 			_hook.reset();
 		}
 	}
 
 	if (is_hooked()) {
-		const glm::vec3 hook_direction = glm::normalize(glm::vec3(*(_hook->target_block)) - _position);
+		const glm::vec3 hook_direction = glm::normalize(*(_hook->target_point) - _position);
 		_speed += hook_direction*HOOK_ACCELERATION;
 	}
 }
