@@ -5,7 +5,6 @@
 
 #include "controller/controller.hpp"
 #include "shader_program.hpp"
-#include "shape/shape_heap.hpp"
 #include "shape/shape_loader.hpp"
 
 struct GLFWwindow;

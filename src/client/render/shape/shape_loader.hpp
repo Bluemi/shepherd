@@ -25,6 +25,6 @@ struct chunk_request {
 };
 
 render_chunk do_load_chunk(const chunk_request& cr);
-void add_block(const glm::uvec3& position, const glm::ivec3& origin, std::vector<float>* vertices, block_type bt);
+void add_block(const glm::uvec3& position, const glm::ivec3& origin, std::vector<float>* vertices, block_type bt, const std::vector<block_type>& blocks);
 
 #endif

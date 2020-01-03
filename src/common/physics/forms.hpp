@@ -1,26 +1,50 @@
 #ifndef __FORMS_CLASS__
 #define __FORMS_CLASS__
 
+#include <vector>
+#include <cstring>
 #include <glm/glm.hpp>
 
-struct cuboid {
-	cuboid() {}
-	cuboid(const glm::vec3 center, const glm::vec3 size) : center(center), size(size) {}
+class triangle {
+	public:
+		triangle(const glm::vec3& p1_arg, const glm::vec3& p2_arg, const glm::vec3& p3_arg);
 
-	float get_min_x() const { return center.x - size.x; }
-	float get_max_x() const { return center.x + size.x; }
-	float get_min_y() const { return center.y - size.y; }
-	float get_max_y() const { return center.y + size.y; }
-	float get_min_z() const { return center.z - size.z; }
-	float get_max_z() const { return center.z + size.z; }
+		const static unsigned char POSITION_BIT = 0b00000001;
+		const static unsigned char NORMALE_BIT  = 0b00000010;
+
+		static std::vector<triangle> split(const triangle& t);
+		void normalize();
+
+		/**
+		 * Returns the number of floats used for one triangle, if loaded.
+		 */
+		static size_t get_size();
+
+		void load_into(float* vertices);
+		void write_to(std::vector<float>* buffer);
+
+		glm::vec3 p1, p2, p3;
+};
+
+
+struct cuboid {
+	cuboid();
+	cuboid(const glm::vec3 center, const glm::vec3 size);
+
+	float get_min_x() const;
+	float get_max_x() const;
+	float get_min_y() const;
+	float get_max_y() const;
+	float get_min_z() const;
+	float get_max_z() const;
 
 	glm::vec3 center;
 	glm::vec3 size;
 };
 
 struct ray {
-	ray() {}
-	ray(const glm::vec3& p, const glm::vec3& d) : position(p), direction(d) {}
+	ray();
+	ray(const glm::vec3& p, const glm::vec3& d);
 
 	glm::vec3 position;
 	glm::vec3 direction;

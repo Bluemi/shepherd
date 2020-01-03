@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mode='debug'
-mode='release'
+# mode='release'
 
 if [ "$1" == "s" ]; then
 	./build/${mode}/bin/server

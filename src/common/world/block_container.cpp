@@ -93,13 +93,21 @@ std::vector<world_block> block_container::create_field(unsigned int seed) {
 
 	unsigned int s = seed % 25000;
 
+	// get min y
+	int min_y = get_height(0, 0, s);
+	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
+		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
+			min_y = glm::min(min_y, get_height(x, z, s));
+		}
+	}
+
 	// create blocks
 	for (unsigned int x = 0; x < MAP_X_SIZE; x++) {
 		for (unsigned int z = 0; z < MAP_Z_SIZE; z++) {
 			int h = get_height(x, z, s);
 
-			blocks.push_back(world_block(glm::ivec3(x, h-4, z), block_type::GROUND));
-			for (int y = h - 3; y < h; y++) {
+			blocks.push_back(world_block(glm::ivec3(x, min_y-5, z), block_type::GROUND));
+			for (int y = min_y-4; y < h; y++) {
 				blocks.push_back(world_block(glm::ivec3(x, y, z), block_type::NORMAL));
 			}
 		}

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "shape.hpp"
+#include "../../../common/physics/forms.hpp"
 
 namespace initialize
 {
@@ -13,54 +14,6 @@ namespace initialize
 
 		return shape::create(cube_vertices, 36, attributes, cube_specification());
 	}
-
-	class triangle
-	{
-		public:
-			triangle(const glm::vec3& p1_arg, const glm::vec3& p2_arg, const glm::vec3& p3_arg)
-				: p1(p1_arg), p2(p2_arg), p3(p3_arg)
-			{}
-
-			const static unsigned char POSITION_BIT = 0b00000001;
-			const static unsigned char NORMALE_BIT  = 0b00000010;
-
-			static std::vector<triangle> split(const triangle& t)
-			{
-				glm::vec3 p12 = (t.p1 + t.p2) / 2.f;
-				glm::vec3 p13 = (t.p1 + t.p3) / 2.f;
-				glm::vec3 p23 = (t.p2 + t.p3) / 2.f;
-
-				return std::vector<triangle> {
-					triangle(t.p1, p12, p13),
-					triangle(t.p2, p12, p23),
-					triangle(t.p3, p13, p23),
-					triangle(p12, p13, p23)
-				};
-			}
-
-			void normalize()
-			{
-				p1 = glm::normalize(p1) * 0.5f;
-				p2 = glm::normalize(p2) * 0.5f;
-				p3 = glm::normalize(p3) * 0.5f;
-			}
-
-			/**
-			 * Returns the number of floats used for one triangle, if loaded.
-			 */
-			static size_t get_size() {
-				return 9;
-			}
-
-			void load_into(float* vertices) {
-				float verts[] = {p1.x, p1.y, p1.z,
-								 p2.x, p2.y, p2.z,
-								 p3.x, p3.y, p3.z};
-				memcpy(vertices, verts, sizeof(verts));
-			}
-
-			glm::vec3 p1, p2, p3;
-	};
 
 	std::vector<triangle> split_triangles(std::vector<triangle> triangles, unsigned int fineness) {
 		for (unsigned int i = 0; i < fineness; i++)
