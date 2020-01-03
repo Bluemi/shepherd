@@ -164,8 +164,8 @@ void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& ho
 	const glm::vec3 mid = (player_position + hook_tip) / 2.f;
 	const glm::vec3 from_to = hook_tip - player_position;
 
-	const float range = glm::distance(player_position, hook_tip);
-	const float range_wo_y = glm::distance(glm::vec2(player_position.x, player_position.z), glm::vec2(hook_tip.x, hook_tip.z));
+	const float range = glm::distance(player_position, hook_tip) + 0.0001f;
+	const float range_wo_y = glm::distance(glm::vec2(player_position.x, player_position.z), glm::vec2(hook_tip.x, hook_tip.z)) + 0.0001f;
 
 	glm::mat4 model = glm::mat4(1.f);
 	model = glm::translate(model, mid);
