@@ -17,7 +17,6 @@
 #include "../../common/frame.hpp"
 #include "../../common/physics/util.hpp"
 
-const static double DEFAULT_SPEED = 59.54188473881952259316;
 constexpr float HOOK_RENDER_STRENGTH = 0.03f;
 
 renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, unsigned int window_width, unsigned int window_height)
@@ -155,8 +154,6 @@ void renderer::load_next_chunk() {
 }
 
 void renderer::tick() {
-	const double speed = get_delta_time() * DEFAULT_SPEED;
-
 	_controller.process_user_input(_window);
 }
 
