@@ -7,7 +7,7 @@
 
 actions_packet::actions_packet() {}
 
-actions_packet::actions_packet(std::uint8_t actions, const glm::vec2& mouse_changes) : actions(actions), mouse_changes(mouse_changes) {}
+actions_packet::actions_packet(std::uint16_t actions, const glm::vec2& mouse_changes) : actions(actions), mouse_changes(mouse_changes) {}
 
 actions_packet actions_packet::from_message(const std::vector<char>& buffer) {
 	if (buffer[0] != packet_ids::ACTIONS_PACKET) {
@@ -17,15 +17,14 @@ actions_packet actions_packet::from_message(const std::vector<char>& buffer) {
 	actions_packet packet;
 
 	const char* buffer_ptr = &buffer[1];
-	const char** buffer_ptr_ptr = &buffer_ptr;
 
-	packet_helper::read_from_buffer(&packet.actions, buffer_ptr_ptr);
-	packet_helper::read_from_buffer(&packet.mouse_changes, buffer_ptr_ptr);
+	packet_helper::read_from_buffer(&packet.actions, &buffer_ptr);
+	packet_helper::read_from_buffer(&packet.mouse_changes, &buffer_ptr);
 	return packet;
 }
 
 void actions_packet::write_to(std::vector<char>* buffer) {
 	buffer->push_back(packet_ids::ACTIONS_PACKET);
-	buffer->push_back(actions);
+	packet_helper::write_to_buffer(actions, buffer);
 	packet_helper::write_to_buffer(mouse_changes, buffer);
 }

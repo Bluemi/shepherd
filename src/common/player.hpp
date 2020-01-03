@@ -17,7 +17,7 @@ class player {
 		const glm::vec3& get_position() const;
 		const glm::vec2& get_view_angles() const;
 		const glm::vec3& get_speed() const;
-		std::uint8_t get_actions() const;
+		std::uint16_t get_actions() const;
 		bool poll_left_mouse_pressed();
 		bool poll_right_mouse_pressed();
 		glm::vec3 get_color() const;
@@ -26,7 +26,7 @@ class player {
 		void set_position(const glm::vec3& position);
 		void set_view_angles(const glm::vec2& view_angles);
 		void set_speed(const glm::vec3& speed);
-		void set_actions(const std::uint8_t actions);
+		void set_actions(const std::uint16_t actions);
 		void update_direction(const glm::vec2& direction_update);
 
 		static glm::vec3 get_up();
@@ -55,7 +55,7 @@ class player {
 		glm::vec3 _size;
 		glm::vec2 _view_angles;
 		glm::vec3 _speed;
-		std::uint8_t _actions;
+		std::uint16_t _actions;
 		glm::vec3 _color;
 		bool _on_left_mouse_pressed;
 		bool _on_right_mouse_pressed;

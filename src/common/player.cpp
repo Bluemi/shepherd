@@ -46,7 +46,7 @@ const glm::vec3& player::get_speed() const {
 	return _speed;
 }
 
-std::uint8_t player::get_actions() const {
+std::uint16_t player::get_actions() const {
 	return _actions;
 }
 
@@ -82,7 +82,7 @@ void player::set_speed(const glm::vec3& speed) {
 	_speed = speed;
 }
 
-void player::set_actions(const std::uint8_t actions) {
+void player::set_actions(const std::uint16_t actions) {
 	if (actions & LEFT_MOUSE_PRESSED && !(_actions & LEFT_MOUSE_PRESSED)) {
 		_on_left_mouse_pressed = true;
 	}
