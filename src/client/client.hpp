@@ -20,6 +20,7 @@ class client {
 		void handle_message(const std::vector<char>& buffer);
 		void handle_game_update(const std::vector<char>& buffer);
 		void handle_player_infos(const std::vector<game_update_packet::player_info>& pis);
+		void handle_sheep_infos(const std::vector<game_update_packet::sheep_info>& sis);
 		void handle_block_removes(const std::vector<glm::ivec3>& block_removes);
 		void handle_block_additions(const std::vector<glm::ivec3>& block_additions);
 		void apply_player_info(const game_update_packet::player_info& pi);

@@ -215,6 +215,16 @@ void renderer::render(frame& f, char local_player_id) {
 			glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
 		}
 
+		// render sheep
+		_hook_shape.bind();
+		_player_shader_program.use();
+		for (sheep& s : f.sheeps) {
+			glm::mat4 sheep_model = glm::mat4(1.f);
+			sheep_model = glm::translate(sheep_model, s.get_position());
+			_player_shader_program.set_4fv("model", sheep_model);
+			glDrawArrays(GL_TRIANGLES, 0, _hook_shape.get_number_vertices());
+		}
+
 		// render hooks
 		_hook_shape.bind();
 

@@ -3,6 +3,7 @@
 #include <common/networking/game_update_packet.hpp>
 #include <common/networking/actions_packet.hpp>
 #include <common/player.hpp>
+#include <common/sheep.hpp>
 
 std::ostream& operator<<(std::ostream& stream, const game_update_packet::player_info& player_info) {
 	stream << "player_info(id=" << (int)(player_info.id) << " name=" << player_info.name <<
@@ -21,7 +22,7 @@ void test_game_update_packet() {
 		p.set_view_angles(glm::vec2(1.0f, 2.1f));
 	}
 
-	game_update_packet packet = game_update_packet::from_game(players, std::vector<glm::ivec3>(), std::vector<glm::ivec3>());
+	game_update_packet packet = game_update_packet::from_game(players, std::vector<sheep>(), std::vector<glm::ivec3>(), std::vector<glm::ivec3>());
 	std::vector<char> message;
 
 	packet.write_to(&message);

@@ -137,6 +137,7 @@ void client::handle_init(const std::vector<char>& buffer) {
 void client::handle_game_update(const std::vector<char>& buffer) {
 	game_update_packet packet = game_update_packet::from_message(buffer);
 	handle_player_infos(packet.get_player_infos());
+	handle_sheep_infos(packet.get_sheep_infos());
 	handle_block_removes(packet.get_block_removes());
 	handle_block_additions(packet.get_block_additions());
 }
@@ -168,6 +169,14 @@ void client::handle_player_infos(const std::vector<game_update_packet::player_in
 		if (!found) {
 			it = _current_frame.players.erase(it);
 		}
+	}
+}
+
+void client::handle_sheep_infos(const std::vector<game_update_packet::sheep_info>& sis) {
+	_current_frame.sheeps.clear();
+
+	for (const game_update_packet::sheep_info& si : sis) {
+		_current_frame.sheeps.push_back(si.create_sheep());
 	}
 }
 

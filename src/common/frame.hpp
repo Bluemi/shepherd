@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "player.hpp"
+#include "sheep.hpp"
 #include "world/block_container.hpp"
 
 class frame {
@@ -16,6 +17,7 @@ class frame {
 		void check_add_block(player* p);
 
 		std::vector<player> players;
+		std::vector<sheep> sheeps;
 		block_container blocks;
 		std::vector<glm::ivec3> block_removes;
 		std::vector<glm::ivec3> block_additions;

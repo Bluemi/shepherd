@@ -15,7 +15,7 @@ class player {
 		player(unsigned int id, const std::string& name, const glm::vec3& position);
 		player(unsigned int id, const std::string& name, const glm::vec3& position, const std::optional<glm::vec3>& h);
 
-		unsigned int get_id() const;
+		char get_id() const;
 		const std::string& get_name() const;
 		const glm::vec3& get_position() const;
 		const glm::vec2& get_view_angles() const;

@@ -31,7 +31,7 @@ player::player(unsigned int id, const std::string& name, const glm::vec3& positi
 	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook(h)
 {}
 
-unsigned int player::get_id() const {
+char player::get_id() const {
 	return _id;
 }
 

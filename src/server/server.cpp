@@ -16,6 +16,9 @@ void server::init() {
 	srand(time(NULL));
 	_map_seed = rand();
 	_current_frame.blocks = block_container(block_container::create_field(_map_seed));
+	for (unsigned int i = 0; i < 10; i++) {
+		_current_frame.sheeps.push_back(sheep(_current_frame.blocks.get_respawn_position()));
+	}
 }
 
 void server::run() {
@@ -100,7 +103,7 @@ void server::handle_clients() {
 }
 
 void server::send_game_update() {
-	game_update_packet gup = game_update_packet::from_game(_current_frame.players, _current_frame.block_removes, _current_frame.block_additions);
+	game_update_packet gup = game_update_packet::from_game(_current_frame.players, _current_frame.sheeps, _current_frame.block_removes, _current_frame.block_additions);
 	for (const server::peer_wrapper& p : _peers) {
 		std::vector<char> buffer;
 		gup.write_to(&buffer);

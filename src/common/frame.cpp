@@ -30,6 +30,10 @@ bool frame::tick() {
 		check_add_block(&p);
 	}
 
+	for (sheep& s : sheeps) {
+		s.tick();
+	}
+
 	return _blue_win_counter >= WIN_LIMIT;
 }
 
