@@ -3,8 +3,6 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
-#include "../camera/camera.hpp"
-
 const Key controller::CAMERA_FORWARD_KEY = GLFW_KEY_W;
 const Key controller::CAMERA_BACKWARD_KEY = GLFW_KEY_S;
 const Key controller::CAMERA_LEFT_KEY = GLFW_KEY_A;
