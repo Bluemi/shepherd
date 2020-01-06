@@ -187,7 +187,7 @@ void renderer::render(frame& f, char local_player_id) {
 
 	if (local_player != nullptr) {
 		glm::mat4 projection = glm::perspective(
-			glm::radians(45.0f),
+			glm::radians(60.0f),
 			_window_width/static_cast<float>(_window_height),
 			0.1f, 600.f
 		);
