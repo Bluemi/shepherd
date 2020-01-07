@@ -1,9 +1,6 @@
 #ifndef __SHAPEINITIALIZER_CLASS__
 #define __SHAPEINITIALIZER_CLASS__
 
-#include <map>
-#include <variant>
-
 #include "../../../common/physics/forms.hpp"
 #include "shape.hpp"
 
@@ -108,6 +105,8 @@ namespace initialize {
 	 * 				   n_triangles = 8 * 4 ^ fineness
 	 */
 	shape sphere(unsigned int fineness);
+
+	shape sheep();
 }
 
 #endif

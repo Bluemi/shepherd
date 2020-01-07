@@ -23,6 +23,12 @@ class triangle {
 		void load_into(float* vertices);
 		void write_to(std::vector<float>* buffer);
 
+		const glm::vec3* begin() const;
+		const glm::vec3* end() const;
+
+		glm::vec3* begin();
+		glm::vec3* end();
+
 		glm::vec3 p1, p2, p3;
 };
 

@@ -24,8 +24,7 @@ using n_triangles = std::size_t;
 /**
  * An attribute defining the size in number of floats and the type of vertices.
  */
-struct attribute
-{
+struct attribute {
 	attribute(n_floats s, unsigned int t)
 		: size(s), type(t)
 	{}
@@ -66,10 +65,12 @@ class shape {
 		 * 						If you have 2 triangles this would be 2*3=6
 		 * @param attributes A list of attributes, which define the order of the vertices.
 		 */
-		static shape create(const float* vertices,
-							n_vertices number_vertices,
-							const std::vector<attribute>& attributes,
-							const shape_specification& specification);
+		static shape create(
+			const float* vertices,
+			n_vertices number_vertices,
+			const std::vector<attribute>& attributes,
+			const shape_specification& specification
+		);
 
 		/**
 		 * Binds this shape to use for rendering.

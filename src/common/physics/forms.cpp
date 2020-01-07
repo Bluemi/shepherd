@@ -44,6 +44,22 @@ void triangle::write_to(std::vector<float>* buffer) {
 	buffer->insert(buffer->end(), verts, verts + 9);
 }
 
+const glm::vec3* triangle::begin() const {
+	return &p1;
+}
+
+const glm::vec3* triangle::end() const {
+	return (&p3) + 1;
+}
+
+glm::vec3* triangle::begin() {
+	return &p1;
+}
+
+glm::vec3* triangle::end() {
+	return (&p3) + 1;
+}
+
 cuboid::cuboid() {}
 cuboid::cuboid(const glm::vec3 center, const glm::vec3 size) : center(center), size(size) {}
 

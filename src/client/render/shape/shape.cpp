@@ -21,8 +21,7 @@ shape::shape(unsigned int vertex_array_object,
 	  _specification(specification)
 {}
 
-void shape::free_buffers()
-{
+void shape::free_buffers() {
 	glDeleteVertexArrays(1, &_vertex_array_object);
 }
 
@@ -41,36 +40,30 @@ shape shape::create(
 	return shape(vao, vbo, number_vertices, false, specification);
 }
 
-void shape::bind() const
-{
+void shape::bind() const {
 	glBindVertexArray(_vertex_array_object);
 }
 
-bool shape::use_indices() const
-{
+bool shape::use_indices() const {
 	return _use_indices;
 }
 
-n_vertices shape::get_number_vertices() const
-{
+n_vertices shape::get_number_vertices() const {
 	return _number_vertices;
 }
 
-void shape::unbind()
-{
+void shape::unbind() {
 	glBindVertexArray(0);
 }
 
-unsigned int shape::create_vao()
-{
+unsigned int shape::create_vao() {
 	unsigned int vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	return vao;
 }
 
-unsigned int shape::buffer_vertices(const float* vertices, size_t vertices_size)
-{
+unsigned int shape::buffer_vertices(const float* vertices, size_t vertices_size) {
 	unsigned int vbo;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -78,8 +71,7 @@ unsigned int shape::buffer_vertices(const float* vertices, size_t vertices_size)
 	return vbo;
 }
 
-n_floats shape::get_attributes_size(const std::vector<attribute>& attributes)
-{
+n_floats shape::get_attributes_size(const std::vector<attribute>& attributes) {
 	unsigned int attributes_size = 0;
 	for (const attribute& a : attributes)
 	{
@@ -88,25 +80,24 @@ n_floats shape::get_attributes_size(const std::vector<attribute>& attributes)
 	return attributes_size;
 }
 
-void shape::create_attribute_pointer(const std::vector<attribute>& attributes)
-{
+void shape::create_attribute_pointer(const std::vector<attribute>& attributes) {
 	size_t attributes_stride = get_attributes_size(attributes) * sizeof(float);
 
 	size_t offset = 0;
-	for (unsigned int i = 0; i < attributes.size(); i++)
-	{
-		glVertexAttribPointer(i,
-							  attributes[i].size,
-							  attributes[i].type,
-							  GL_FALSE,
-							  attributes_stride,
-							  (void*)offset);
+	for (unsigned int i = 0; i < attributes.size(); i++) {
+		glVertexAttribPointer(
+			i,
+			attributes[i].size,
+			attributes[i].type,
+			GL_FALSE,
+			attributes_stride,
+			(void*)offset
+		);
 		offset += attributes[i].size * sizeof(float);
 		glEnableVertexAttribArray(i);
 	}
 }
 
-shape_specification shape::get_specification() const
-{
+shape_specification shape::get_specification() const {
 	return _specification;
 }

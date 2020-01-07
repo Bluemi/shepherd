@@ -23,6 +23,10 @@ class {
 		shape operator()(const sphere_specification& spec) {
 			return initialize::sphere(spec.get_fineness());
 		}
+
+		shape operator()(const sheep_specification&) {
+			return initialize::sheep();
+		}
 } _shape_extractor;
 
 namespace initialize {

@@ -31,7 +31,9 @@ class sphere_specification : public specification_operators<sphere_specification
 		unsigned int _fineness;
 };
 
-using shape_specification = std::variant<cube_specification, sphere_specification>;
+class sheep_specification : public specification_operators<sheep_specification> {};
+
+using shape_specification = std::variant<cube_specification, sphere_specification, sheep_specification>;
 
 namespace initialize {
 	shape create_shape(const shape_specification& spec);

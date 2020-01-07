@@ -149,7 +149,7 @@ glm::vec3 block_container::get_respawn_position() const {
 		}
 	}
 
-	return glm::vec3(x, y+3.f, z);
+	return glm::vec3(x, y+1.f, z);
 }
 
 std::optional<world_block> block_container::get_block(const glm::ivec3& position) const {

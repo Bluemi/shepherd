@@ -9,5 +9,5 @@ const glm::vec3& sheep::get_position() const {
 }
 
 void sheep::tick() {
-	_position.x += 0.1f;
+	// _position.x += 0.1f;
 }

@@ -27,6 +27,20 @@ namespace shaders {
 		return VERSION_PREFIX + s;
 	}
 
+	const std::string sheep_vertex_shader() {
+		std::string s =
+		#include "sheep_vertex_shader.vs"
+		;
+		return VERSION_PREFIX + s;
+	}
+
+	const std::string sheep_fragment_shader() {
+		std::string s =
+		#include "sheep_fragment_shader.fs"
+		;
+		return VERSION_PREFIX + s;
+	}
+
 	const std::string block_vertex_shader() {
 		std::string s =
 		#include "block_vertex_shader.vs"
