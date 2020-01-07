@@ -192,10 +192,11 @@ void renderer::render(frame& f, char local_player_id) {
 			0.1f, 600.f
 		);
 
+		glm::mat4 proj_view = projection * local_player->get_look_at();
+
 		// render players
-		_player_shader_program.set_4fv("view", local_player->get_look_at());
-		_player_shader_program.set_4fv("projection", projection);
 		_player_shader_program.use();
+		_player_shader_program.set_4fv("proj_view", proj_view);
 
 		_player_shape.bind();
 
@@ -235,10 +236,8 @@ void renderer::render(frame& f, char local_player_id) {
 		}
 
 		// render blocks
-		_block_shader_program.set_4fv("view", local_player->get_look_at());
-		_block_shader_program.set_4fv("projection", projection);
-		_block_shader_program.set_3f("color", glm::vec3(0.2, 0.2, 0.2));
 		_block_shader_program.use();
+		_block_shader_program.set_4fv("proj_view", proj_view);
 
 		for (const render_chunk& rc : _render_chunks) {
 			rc.chunk_shape.bind();
