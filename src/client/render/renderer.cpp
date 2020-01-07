@@ -19,9 +19,10 @@
 
 constexpr float HOOK_RENDER_STRENGTH = 0.03f;
 
-renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, unsigned int window_width, unsigned int window_height)
+renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program block_shader_program, shader_program sheep_hook_shader_program, unsigned int window_width, unsigned int window_height)
 	: _player_shader_program(player_shader_program),
 	  _block_shader_program(block_shader_program),
+	  _hook_shader_program(sheep_hook_shader_program),
 	  _window(window),
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
@@ -41,6 +42,7 @@ renderer::renderer(const renderer& v)
 	: _controller(v._controller),
 	  _player_shader_program(v._player_shader_program),
 	  _block_shader_program(v._block_shader_program),
+	  _hook_shader_program(v._hook_shader_program),
 	  _player_shape(v._player_shape),
 	  _hook_shape(v._hook_shape),
 	  _window(v._window),
@@ -111,7 +113,14 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 		return {};
 	}
 
-	return renderer(window, *opt_player_shader_program, *opt_block_shader_program, window_width, window_height);
+	std::optional<shader_program> opt_hook_shader_program = shader_program::from_code(shaders::hook_vertex_shader(), shaders::hook_fragment_shader());
+
+	if (!opt_hook_shader_program) {
+		std::cerr << "failed to create hook shader program" << std::endl;
+		return {};
+	}
+
+	return renderer(window, *opt_player_shader_program, *opt_block_shader_program, *opt_hook_shader_program, window_width, window_height);
 }
 
 double renderer::get_delta_time()
@@ -174,9 +183,7 @@ void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& ho
 	model = glm::rotate(model, side_angle, glm::vec3(0.f, 0.f, 1.f));
 
 	model = glm::scale(model, glm::vec3(range, HOOK_RENDER_STRENGTH, HOOK_RENDER_STRENGTH));
-	_player_shader_program.set_4fv("model", model);
-
-	_player_shader_program.set_3f("color", glm::vec3());
+	_hook_shader_program.set_4fv("model", model);
 
 	glDrawArrays(GL_TRIANGLES, 0, _hook_shape.get_number_vertices());
 }
@@ -217,16 +224,21 @@ void renderer::render(frame& f, char local_player_id) {
 		}
 
 		// render sheep
+		/*
 		_hook_shape.bind();
-		_player_shader_program.use();
+		_hook_shader_program.use();
+		_hook_shader_program.set_4fv("proj_view", proj_view);
 		for (sheep& s : f.sheeps) {
 			glm::mat4 sheep_model = glm::mat4(1.f);
 			sheep_model = glm::translate(sheep_model, s.get_position());
-			_player_shader_program.set_4fv("model", sheep_model);
+			_hook_shader_program.set_4fv("model", sheep_model);
 			glDrawArrays(GL_TRIANGLES, 0, _hook_shape.get_number_vertices());
 		}
+		*/
 
 		// render hooks
+		_hook_shader_program.use();
+		_hook_shader_program.set_4fv("proj_view", proj_view);
 		_hook_shape.bind();
 
 		for (player& p : f.players) {

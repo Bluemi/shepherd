@@ -18,7 +18,7 @@ void main() {
 		if (norm.x / (abs(norm.z) + 0.1) > 2.78) {
 			FragColor = vec4(color*0.2, 1.0);
 		} else {
-			FragColor = vec4(color*0.5, 1.0);
+			FragColor = vec4(0.3, 0.3, 0.3, 1.0);
 		}
 	} else {
 		FragColor = vec4(color, 1.0);
