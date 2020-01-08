@@ -8,11 +8,10 @@
 
 namespace initialize
 {
-	shape cube()
-	{
+	shape cube() {
 		std::vector<attribute> attributes = {shape::position_attribute};
 
-		return shape::create(cube_vertices, 36, attributes, cube_specification());
+		return shape::create(cube_vertices, 36, attributes);
 	}
 
 	std::vector<triangle> split_triangles(std::vector<triangle> triangles, unsigned int fineness) {
@@ -76,7 +75,7 @@ namespace initialize
 
 		std::vector<attribute> attributes = {shape::position_attribute};
 
-		return shape::create(vertices, triangles.size() * 3, attributes, sphere_specification(fineness));
+		return shape::create(vertices, triangles.size() * 3, attributes);
 	}
 
 	void add_point(const glm::vec3& p, std::vector<float>* vertices) {
@@ -173,6 +172,6 @@ namespace initialize
 
 		std::vector<attribute> attributes = {shape::position_attribute, shape::color_attribute};
 
-		return shape::create(sheep_vertices.data(), sheep_vertices.size() / 6, attributes, sheep_specification());
+		return shape::create(sheep_vertices.data(), sheep_vertices.size() / 6, attributes);
 	}
 }

@@ -2,8 +2,6 @@
 
 #include <glad/glad.h>
 
-#include "shape_specification.hpp"
-
 const attribute shape::position_attribute(3, GL_FLOAT);
 const attribute shape::color_attribute(3, GL_FLOAT);
 const attribute shape::texture_coordinate_attribute(2, GL_FLOAT);
@@ -12,13 +10,12 @@ const attribute shape::normale_attribute(3, GL_FLOAT);
 shape::shape(unsigned int vertex_array_object,
 			 unsigned int vertex_buffer_object,
 			 n_vertices number_vertices,
-			 bool use_indices,
-			 const shape_specification& specification)
+			 bool use_indices
+)
 	: _vertex_array_object(vertex_array_object),
 	  _vertex_buffer_object(vertex_buffer_object),
 	  _number_vertices(number_vertices),
-	  _use_indices(use_indices),
-	  _specification(specification)
+	  _use_indices(use_indices)
 {}
 
 void shape::free_buffers() {
@@ -28,8 +25,7 @@ void shape::free_buffers() {
 shape shape::create(
 	const float* vertices,
 	n_vertices number_vertices,
-	const std::vector<attribute>& attributes,
-	const shape_specification& specification
+	const std::vector<attribute>& attributes
 ) {
 	unsigned int vao = create_vao();
 	unsigned int attributes_size = get_attributes_size(attributes);
@@ -37,7 +33,7 @@ shape shape::create(
 	vbo = buffer_vertices(vertices, number_vertices * attributes_size * sizeof(float));
 	create_attribute_pointer(attributes);
 
-	return shape(vao, vbo, number_vertices, false, specification);
+	return shape(vao, vbo, number_vertices, false);
 }
 
 void shape::bind() const {
@@ -96,8 +92,4 @@ void shape::create_attribute_pointer(const std::vector<attribute>& attributes) {
 		offset += attributes[i].size * sizeof(float);
 		glEnableVertexAttribArray(i);
 	}
-}
-
-shape_specification shape::get_specification() const {
-	return _specification;
 }

@@ -35,9 +35,9 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	mouse_manager::init(_window);
 	mouse_manager::add_controller(&_controller);
 
-	_player_shape = initialize::create_shape(sphere_specification(3));
-	_sheep_shape = initialize::create_shape(sheep_specification());
-	_hook_shape = initialize::create_shape(cube_specification());
+	_player_shape = initialize::sphere(3);
+	_sheep_shape = initialize::sheep();
+	_hook_shape = initialize::cube();
 }
 
 renderer::renderer(const renderer& v)

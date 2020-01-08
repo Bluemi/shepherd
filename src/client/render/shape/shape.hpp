@@ -4,8 +4,6 @@
 #include <vector>
 #include <variant>
 
-#include "shape_specification.hpp"
-
 /**
  * Type to define number of vertices.
  */
@@ -44,7 +42,6 @@ struct attribute {
  *   - Vertices
  *   - Indices if any
  *   - Attributepointers
- *   - An shape_specification
  */
 class shape {
 	public:
@@ -68,8 +65,7 @@ class shape {
 		static shape create(
 			const float* vertices,
 			n_vertices number_vertices,
-			const std::vector<attribute>& attributes,
-			const shape_specification& specification
+			const std::vector<attribute>& attributes
 		);
 
 		/**
@@ -82,7 +78,6 @@ class shape {
 		// Getter
 		bool use_indices() const;
 		n_vertices get_number_vertices() const;
-		shape_specification get_specification() const;
 
 		/**
 		 * Unbinds all shapes.
@@ -106,11 +101,12 @@ class shape {
 		 * @param number_vertices The number of vertices used by this shape
 		 * @param use_indices If true use glDrawElements otherwise glDrawArrays.
 		 */
-		shape(unsigned int vertex_array_object,
-			  unsigned int vertex_buffer_object,
-			  n_vertices number_vertices,
-			  bool use_indices,
-			  const shape_specification& specification);
+		shape(
+			unsigned int vertex_array_object,
+			unsigned int vertex_buffer_object,
+			n_vertices number_vertices,
+			bool use_indices
+		);
 
 		/**
 		 * Creates the vertex array object of this shape and binds it.
@@ -138,7 +134,6 @@ class shape {
 		unsigned int _vertex_buffer_object;
 		n_vertices _number_vertices;
 		bool _use_indices;
-		shape_specification _specification;
 };
 
 #endif
