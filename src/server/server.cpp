@@ -16,7 +16,7 @@ void server::init() {
 	srand(time(NULL));
 	_map_seed = rand();
 	_current_frame.blocks = block_container(block_container::create_field(_map_seed));
-	for (unsigned int i = 0; i < 10; i++) {
+	for (unsigned int i = 0; i < 40; i++) {
 		_current_frame.sheeps.push_back(sheep(_current_frame.blocks.get_respawn_position()));
 	}
 }
@@ -38,7 +38,7 @@ void server::run() {
 void server::check_new_peers() {
 	if (!_server_network_manager.get_connecting_endpoints().empty()) {
 		netsi::endpoint remote_endpoint = _server_network_manager.get_connecting_endpoints().pop();
-		std::shared_ptr<netsi::peer> remote_peer = _server_network_manager.endpoint_to_peer(remote_endpoint);
+		std::shared_ptr<netsi::peer<BUFFER_SIZE>> remote_peer = _server_network_manager.endpoint_to_peer(remote_endpoint);
 		_peers.push_back(server::peer_wrapper(remote_peer, -1));
 	}
 }
@@ -107,7 +107,11 @@ void server::send_game_update() {
 	for (const server::peer_wrapper& p : _peers) {
 		std::vector<char> buffer;
 		gup.write_to(&buffer);
-		p.peer->async_send(buffer);
+		if (buffer.size() > BUFFER_SIZE) {
+			std::cerr << "game update buffer size exceeded.\n\tpacketsize=" << buffer.size() << "\n\tbuffersize=" << BUFFER_SIZE << std::endl;
+		} else {
+			p.peer->async_send(buffer);
+		}
 	}
 	_current_frame.block_removes.clear();
 	_current_frame.block_additions.clear();

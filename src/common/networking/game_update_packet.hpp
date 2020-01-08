@@ -20,7 +20,6 @@ class game_update_packet {
 			char id;
 			glm::vec3 position;
 			glm::vec2 view_angles;
-			std::string name;
 
 			std::optional<glm::vec3> player_hook;
 		};

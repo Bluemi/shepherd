@@ -5,6 +5,7 @@
 #include <netsi/server/server_network_manager.hpp>
 
 #include "../common/frame.hpp"
+#include "../common/networking/buffer_size.hpp"
 
 class server {
 	public:
@@ -14,9 +15,9 @@ class server {
 		void run();
 	private:
 		struct peer_wrapper {
-			peer_wrapper(const std::shared_ptr<netsi::peer>& peer, const int player_id) : peer(peer), player_id(player_id), disconnected(false) {}
+			peer_wrapper(const std::shared_ptr<netsi::peer<BUFFER_SIZE>>& peer, const int player_id) : peer(peer), player_id(player_id), disconnected(false) {}
 
-			std::shared_ptr<netsi::peer> peer;
+			std::shared_ptr<netsi::peer<BUFFER_SIZE>> peer;
 			char player_id;
 			bool disconnected;
 		};
@@ -31,7 +32,7 @@ class server {
 
 		player* get_player(char player_id);
 
-		netsi::server_network_manager _server_network_manager;
+		netsi::server_network_manager<BUFFER_SIZE> _server_network_manager;
 		std::vector<peer_wrapper> _peers;
 		frame _current_frame;
 		unsigned int _next_player_id;

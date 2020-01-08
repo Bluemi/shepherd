@@ -8,8 +8,8 @@
 #include "../physics/forms.hpp"
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 128*2;
-constexpr unsigned int MAP_Z_SIZE = 32*2;
+constexpr unsigned int MAP_X_SIZE = 64;
+constexpr unsigned int MAP_Z_SIZE = 32;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;

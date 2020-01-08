@@ -13,7 +13,6 @@ namespace packet_helper {
 		packet_helper::read_from_buffer(&obj->id, buffer);
 		packet_helper::read_from_buffer(&obj->position, buffer);
 		packet_helper::read_from_buffer(&obj->view_angles, buffer);
-		packet_helper::read_from_buffer(&obj->name, buffer);
 		packet_helper::read_from_buffer(&obj->player_hook, buffer);
 	}
 
@@ -22,7 +21,6 @@ namespace packet_helper {
 		packet_helper::write_to_buffer(pi.id, buffer);
 		packet_helper::write_to_buffer(pi.position, buffer);
 		packet_helper::write_to_buffer(pi.view_angles, buffer);
-		packet_helper::write_to_buffer(pi.name, buffer);
 		packet_helper::write_to_buffer(pi.player_hook, buffer);
 	}
 
@@ -41,7 +39,7 @@ namespace packet_helper {
 game_update_packet::player_info::player_info() {}
 
 game_update_packet::player_info::player_info(const player& p)
-	: id(p.get_id()), position(p.get_position()), view_angles(p.get_view_angles()), name(p.get_name())
+	: id(p.get_id()), position(p.get_position()), view_angles(p.get_view_angles())
 {
 	if (p.get_hook()) {
 		player_hook = p.get_hook()->target_point;

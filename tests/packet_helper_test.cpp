@@ -6,7 +6,7 @@
 #include <common/sheep.hpp>
 
 std::ostream& operator<<(std::ostream& stream, const game_update_packet::player_info& player_info) {
-	stream << "player_info(id=" << (int)(player_info.id) << " name=" << player_info.name <<
+	stream << "player_info(id=" << (int)(player_info.id) <<
 			  " position=(" << player_info.position.x << ", " << player_info.position.y << ", " << player_info.position.z << ")" <<
 			  ", view_angles=(" << player_info.view_angles.x << ", " << player_info.view_angles.y << "))";
 	return stream;
@@ -16,6 +16,7 @@ void test_game_update_packet() {
 	std::vector<player> players;
 	players.push_back(player(0, "peter"));
 	players.push_back(player(1, "klaus"));
+	players.push_back(player(2, "hansi"));
 
 	for (player& p : players) {
 		p.set_position(glm::vec3(1.3f, 5.3f, 442.f));
@@ -47,7 +48,7 @@ void test_actions_packet() {
 }
 
 int main() {
-	// test_game_update_packet();
-	test_actions_packet();
+	test_game_update_packet();
+	// test_actions_packet();
 	return 0;
 }

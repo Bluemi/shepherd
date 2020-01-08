@@ -109,7 +109,6 @@ void client::apply_player_info(const game_update_packet::player_info& pi) {
 	bool new_player = true;
 	for (player& p : _current_frame.players) {
 		if (p.get_id() == pi.id) {
-			p.set_name(pi.name);
 			p.set_position(pi.position);
 			p.set_view_angles(pi.view_angles);
 			p.set_hook(hook(pi.player_hook));
@@ -119,7 +118,7 @@ void client::apply_player_info(const game_update_packet::player_info& pi) {
 	}
 
 	if (new_player) {
-		_current_frame.players.push_back(player(pi.id, pi.name, pi.position, pi.player_hook));
+		_current_frame.players.push_back(player(pi.id, "", pi.position, pi.player_hook));
 	}
 }
 

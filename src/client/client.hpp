@@ -5,6 +5,7 @@
 
 #include "../common/frame.hpp"
 #include "../common/networking/game_update_packet.hpp"
+#include "../common/networking/buffer_size.hpp"
 #include "render/renderer.hpp"
 
 class client {
@@ -27,9 +28,9 @@ class client {
 		void handle_init(const std::vector<char>& buffer);
 
 		frame _current_frame;
-		netsi::client_network_manager _network_manager;
+		netsi::client_network_manager<BUFFER_SIZE> _network_manager;
 		std::unique_ptr<renderer> _renderer;
-		std::shared_ptr<netsi::peer> _peer;
+		std::shared_ptr<netsi::peer<BUFFER_SIZE>> _peer;
 		std::uint16_t _last_actions;
 		char _local_player_id;
 };
