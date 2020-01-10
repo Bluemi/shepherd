@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <common/world/world_block.hpp>
 #include <common/networking/game_update_packet.hpp>
 #include <common/networking/actions_packet.hpp>
 #include <common/player.hpp>
@@ -48,7 +49,8 @@ void test_actions_packet() {
 }
 
 int main() {
-	test_game_update_packet();
+	std::cout << sizeof(block_type) << std::endl;
+	// test_game_update_packet();
 	// test_actions_packet();
 	return 0;
 }
