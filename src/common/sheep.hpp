@@ -12,8 +12,12 @@ class sheep {
 		const glm::vec3& get_position() const;
 
 		void tick(const block_container& blocks);
+		void apply_movements(const block_container& blocks);
 	private:
 		body _body;
+		float _forward;
+		float _turn;
+		bool _jump;
 };
 
 #endif

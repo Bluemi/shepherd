@@ -183,14 +183,11 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	if (_actions & JUMP_ACTION) {
 		if (!blocks.get_colliding_blocks(_body.get_bottom_collider()).empty()) {
-			_body.speed = body::get_up() * PLAYER_JUMP_SPEED;
+			_body.speed.y = PLAYER_JUMP_SPEED;
 		}
 	}
 
-	glm::vec3 tmp_direction = get_direction();
-	tmp_direction.y = 0.f;
-
-	tmp_direction = glm::normalize(tmp_direction);
+	glm::vec3 tmp_direction = glm::normalize(glm::vec3(get_direction().x, 0.f, get_direction().z));
 
 	_body.speed += (get_right()*right + tmp_direction*forward)*0.1f;
 
