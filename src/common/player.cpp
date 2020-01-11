@@ -200,20 +200,9 @@ void player::apply_player_movements(const block_container& blocks) {
 		tmp_speed *= HOOK_DRAG;
 		_body.speed = tmp_speed;
 	} else {
-		apply_drag(tmp_speed);
+		body::apply_drag(tmp_speed, PLAYER_DRAG, MAX_PLAYER_SPEED);
 		_body.speed.x = tmp_speed.x;
 		_body.speed.z = tmp_speed.z;
-	}
-}
-
-void player::apply_drag(glm::vec3& tmp_speed) {
-	if (glm::length(tmp_speed) <= PLAYER_DRAG) {
-		tmp_speed = glm::vec3();
-	} else {
-		tmp_speed += glm::normalize(tmp_speed) * -PLAYER_DRAG;
-		if (glm::length(tmp_speed) > MAX_PLAYER_SPEED) {
-			tmp_speed *= MAX_PLAYER_SPEED / glm::length(tmp_speed);
-		}
 	}
 }
 

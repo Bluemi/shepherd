@@ -45,7 +45,6 @@ class player {
 		void respawn(const glm::vec3& position);
 		bool tick(const block_container& blocks);
 		void apply_player_movements(const block_container& blocks);
-		void apply_drag(glm::vec3& speed);
 		void physics(const block_container& blocks);
 		void handle_hook(const block_container& blocks);
 		void handle_active_hook(const block_container& blocks);

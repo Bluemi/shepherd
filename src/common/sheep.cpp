@@ -1,6 +1,8 @@
 #include "sheep.hpp"
 
 constexpr float GRAVITY = 0.04f;
+constexpr float SHEEP_DRAG = 0.03f;
+constexpr float MAX_SHEEP_SPEED = 0.2f;
 
 sheep::sheep() {}
 
@@ -12,6 +14,7 @@ const glm::vec3& sheep::get_position() const {
 
 void sheep::tick(const block_container& blocks) {
 	_body.speed.y -= GRAVITY;
+	body::apply_drag(_body.speed, SHEEP_DRAG, MAX_SHEEP_SPEED);
 	_body.position += _body.speed;
 	_body.physics(blocks);
 }

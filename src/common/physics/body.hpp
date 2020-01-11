@@ -14,6 +14,7 @@ class body {
 		body(const glm::vec3& position, const glm::vec3& size, const glm::vec3 speed, const glm::vec2& view_angles, const float collider_dimension);
 
 		void physics(const block_container& blocks);
+		static void apply_drag(glm::vec3& tmp_speed, float drag, float max_speed);
 		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
 
 		static glm::vec3 get_up();

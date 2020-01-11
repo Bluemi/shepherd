@@ -26,6 +26,17 @@ void body::physics(const block_container& blocks) {
 	}
 }
 
+void body::apply_drag(glm::vec3& tmp_speed, float drag, float max_speed) {
+	if (glm::length(tmp_speed) <= drag) {
+		tmp_speed = glm::vec3();
+	} else {
+		tmp_speed += glm::normalize(tmp_speed) * -drag;
+		if (glm::length(tmp_speed) > max_speed) {
+			tmp_speed *= max_speed / glm::length(tmp_speed);
+		}
+	}
+}
+
 // direction = -1, if block is in negative direction to player
 void body::check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate) {
 	std::vector<world_block> colliding_blocks = blocks.get_colliding_blocks(collider);
