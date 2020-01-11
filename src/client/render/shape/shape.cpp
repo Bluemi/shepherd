@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 const attribute shape::position_attribute(3, GL_FLOAT);
+const attribute shape::position2_attribute(2, GL_FLOAT);
 const attribute shape::color_attribute(3, GL_FLOAT);
 const attribute shape::texture_coordinate_attribute(2, GL_FLOAT);
 const attribute shape::normale_attribute(3, GL_FLOAT);

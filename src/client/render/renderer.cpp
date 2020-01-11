@@ -19,11 +19,12 @@
 
 constexpr float HOOK_RENDER_STRENGTH = 0.027f;
 
-renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program sheep_shader_program, shader_program block_shader_program, shader_program hook_shader_program, unsigned int window_width, unsigned int window_height)
+renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program sheep_shader_program, shader_program block_shader_program, shader_program hook_shader_program, shader_program visor_shader_program, unsigned int window_width, unsigned int window_height)
 	: _player_shader_program(player_shader_program),
 	  _sheep_shader_program(sheep_shader_program),
 	  _block_shader_program(block_shader_program),
 	  _hook_shader_program(hook_shader_program),
+	  _visor_shader_program(visor_shader_program),
 	  _window(window),
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
@@ -38,6 +39,7 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	_player_shape = initialize::sphere(3);
 	_sheep_shape = initialize::sheep();
 	_hook_shape = initialize::cube();
+	_visor_shape = initialize::visor();
 }
 
 renderer::renderer(const renderer& v)
@@ -46,9 +48,11 @@ renderer::renderer(const renderer& v)
 	  _sheep_shader_program(v._sheep_shader_program),
 	  _block_shader_program(v._block_shader_program),
 	  _hook_shader_program(v._hook_shader_program),
+	  _visor_shader_program(v._visor_shader_program),
 	  _player_shape(v._player_shape),
 	  _sheep_shape(v._sheep_shape),
 	  _hook_shape(v._hook_shape),
+	  _visor_shape(v._visor_shape),
 	  _window(v._window),
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
@@ -96,6 +100,8 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	std::optional<shader_program> opt_player_shader_program = shader_program::from_code(shaders::player_vertex_shader(), shaders::player_fragment_shader());
@@ -126,7 +132,23 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 		return {};
 	}
 
-	return renderer(window, *opt_player_shader_program, *opt_sheep_shader_program, *opt_block_shader_program, *opt_hook_shader_program, window_width, window_height);
+	std::optional<shader_program> opt_visor_shader_program = shader_program::from_code(shaders::visor_vertex_shader(), shaders::visor_fragment_shader());
+
+	if (!opt_visor_shader_program) {
+		std::cerr << "failed to create visor shader program" << std::endl;
+		return {};
+	}
+
+	return renderer(
+		window,
+		*opt_player_shader_program,
+		*opt_sheep_shader_program,
+		*opt_block_shader_program,
+		*opt_hook_shader_program,
+		*opt_visor_shader_program,
+		window_width,
+		window_height
+	);
 }
 
 double renderer::get_delta_time() {
@@ -264,6 +286,19 @@ void renderer::render(frame& f, char local_player_id) {
 
 			glDrawArrays(GL_TRIANGLES, 0, rc.chunk_shape.get_number_vertices());
 		}
+
+		// render visor
+		glm::mat4 projection_2d = glm::ortho(0.0f, static_cast<float>(_window_width), static_cast<float>(_window_height), 0.0f, -1.0f, 1.0f); 
+		glm::mat4 visor_model(1.f);
+		visor_model = glm::translate(visor_model, glm::vec3(static_cast<float>(_window_width)/2.f, static_cast<float>(_window_height)/2.f, 0.f));
+		visor_model = glm::scale(visor_model, glm::vec3(30.f, 30.f, 0.f));
+
+		_visor_shader_program.use();
+		_visor_shader_program.set_4fv("projection", projection_2d);
+		_visor_shader_program.set_4fv("model", visor_model);
+
+		_visor_shape.bind();
+		glDrawArrays(GL_TRIANGLES, 0, _visor_shape.get_number_vertices());
 	}
 
 	glfwSwapBuffers(_window);
@@ -279,6 +314,7 @@ void renderer::close() {
 	_player_shape.free_buffers();
 	_sheep_shape.free_buffers();
 	_hook_shape.free_buffers();
+	_visor_shape.free_buffers();
 
 	for (render_chunk& rc : _render_chunks) {
 		rc.chunk_shape.free_buffers();

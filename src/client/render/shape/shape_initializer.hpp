@@ -75,6 +75,29 @@ namespace initialize {
 		triangle(glm::vec3( 0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f))
 	};
 
+	constexpr float VISOR_SMALL_SIZE = 1.0f;
+	constexpr float VISOR_BIG_SIZE = 0.03f;
+
+	const static float visor_vertices[] {
+		// —
+		-VISOR_BIG_SIZE, -VISOR_SMALL_SIZE, // bottom
+		 VISOR_BIG_SIZE, -VISOR_SMALL_SIZE,
+		-VISOR_BIG_SIZE,  VISOR_SMALL_SIZE,
+
+		-VISOR_BIG_SIZE,  VISOR_SMALL_SIZE, // top
+		 VISOR_BIG_SIZE,  VISOR_SMALL_SIZE,
+		 VISOR_BIG_SIZE, -VISOR_SMALL_SIZE,
+
+		// |
+		-VISOR_SMALL_SIZE, -VISOR_BIG_SIZE, // left
+		-VISOR_SMALL_SIZE,  VISOR_BIG_SIZE,
+		 VISOR_SMALL_SIZE,  VISOR_BIG_SIZE,
+
+		 VISOR_SMALL_SIZE,  VISOR_BIG_SIZE, // right
+		 VISOR_SMALL_SIZE, -VISOR_BIG_SIZE,
+		-VISOR_SMALL_SIZE, -VISOR_BIG_SIZE
+	};
+
 	struct triangle_coordinate_index {
 		triangle_coordinate_index(std::uint8_t c, std::int8_t d) : coord(c), direction(d) {}
 
@@ -107,6 +130,8 @@ namespace initialize {
 	shape sphere(unsigned int fineness);
 
 	shape sheep();
+
+	shape visor();
 }
 
 #endif

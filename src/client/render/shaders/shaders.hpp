@@ -15,6 +15,9 @@ namespace shaders {
 
 	const std::string hook_vertex_shader();
 	const std::string hook_fragment_shader();
+
+	const std::string visor_vertex_shader();
+	const std::string visor_fragment_shader();
 }
 
 #endif

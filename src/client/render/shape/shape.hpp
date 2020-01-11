@@ -88,6 +88,7 @@ class shape {
 		 * Attributes, which can be useful.
 		 */
 		static const attribute position_attribute;
+		static const attribute position2_attribute;
 		static const attribute color_attribute;
 		static const attribute texture_coordinate_attribute;
 		static const attribute normale_attribute;

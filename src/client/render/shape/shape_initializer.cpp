@@ -173,4 +173,9 @@ namespace initialize {
 
 		return shape::create(sheep_vertices.data(), sheep_vertices.size() / 6, attributes);
 	}
+
+	shape visor() {
+		std::vector<attribute> attributes = { shape::position2_attribute };
+		return shape::create(visor_vertices, sizeof(visor_vertices) / sizeof(float) / 2, attributes);
+	}
 }

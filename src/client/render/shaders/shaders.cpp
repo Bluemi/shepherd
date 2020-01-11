@@ -68,4 +68,18 @@ namespace shaders {
 		;
 		return VERSION_PREFIX + s;
 	}
+
+	const std::string visor_vertex_shader() {
+		std::string s =
+		#include "visor_vertex_shader.vs"
+		;
+		return VERSION_PREFIX + s;
+	}
+
+	const std::string visor_fragment_shader() {
+		std::string s =
+		#include "visor_fragment_shader.fs"
+		;
+		return VERSION_PREFIX + s;
+	}
 }
