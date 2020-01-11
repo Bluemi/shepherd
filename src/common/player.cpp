@@ -22,15 +22,15 @@ constexpr float HOOK_DRAG = 0.7f;
 constexpr glm::vec3 PLAYER_SIZE = glm::vec3(0.5f, 0.5f, 0.5f);
 
 player::player(unsigned int id, const std::string& name)
-	: _id(id), _name(name), _body(glm::vec3(), PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
+	: _id(id), _name(name), _body(glm::vec3(), PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook_range(HOOK_RANGE)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position)
-	: _id(id), _name(name), _body(position, PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
+	: _id(id), _name(name), _body(position, PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook_range(HOOK_RANGE)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position, const std::optional<glm::vec3>& h)
-	: _id(id), _name(name), _body(position, PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook(h)
+	: _id(id), _name(name), _body(position, PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook(h), _hook_range(HOOK_RANGE)
 {}
 
 char player::get_id() const {
@@ -169,11 +169,9 @@ bool player::tick(const block_container& blocks, std::vector<sheep>& sheeps) {
 
 	bool was_winning = false;
 
-	for (const world_block& wb : blocks.get_colliding_blocks(_body.get_bottom_collider())) {
-		if (wb.is_winning_block()) {
-			respawn(blocks.get_respawn_position(), sheeps);
-			was_winning = true;
-		}
+	if (_hook && _hook->target_sheep_index && sheeps[*(_hook->target_sheep_index)].get_position().x < 5.f) {
+		was_winning = true;
+		_hook_range = 1000.f;
 	}
 
 	if (_body.position.y < blocks.get_min_y() - 100.f) {
@@ -225,8 +223,8 @@ void player::physics(const block_container& blocks) {
 void player::handle_active_hook(const block_container& blocks, std::vector<sheep>& sheeps) {
 	if (!_hook->is_hooked()) {
 		_hook->range += HOOK_SPEED;
-		_hook->check_target(blocks, sheeps);
-		if ((!_hook->is_hooked()) && _hook->range >= HOOK_RANGE) {
+		_hook->check_target(blocks, sheeps, _hook_range);
+		if ((!_hook->is_hooked()) && _hook->range >= _hook_range) {
 			reset_hook(sheeps);
 		}
 	}

@@ -62,6 +62,7 @@ class player {
 		bool _on_right_mouse_pressed;
 
 		std::optional<hook> _hook;
+		float _hook_range;
 };
 
 #endif

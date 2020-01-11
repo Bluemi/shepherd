@@ -20,11 +20,11 @@ bool hook::is_hooked() const {
 	return target_point.has_value() || target_sheep_index.has_value();
 }
 
-void hook::check_target(const block_container& blocks, std::vector<sheep>& sheeps) {
+void hook::check_target(const block_container& blocks, std::vector<sheep>& sheeps, float hook_range) {
 	if (!is_hooked()) {
 		std::optional<glm::vec3> cp = blocks.get_collision_point(ray(position, direction), range);
 		if (cp) {
-			if (glm::distance2(*cp, position) <= HOOK_RANGE*HOOK_RANGE) {
+			if (glm::distance2(*cp, position) <= hook_range*hook_range) {
 				target_point = cp;
 			}
 		}
@@ -34,7 +34,7 @@ void hook::check_target(const block_container& blocks, std::vector<sheep>& sheep
 		for (unsigned int i = 0; i < sheeps.size(); i++) {
 			if (sheeps[i].is_colliding(ray(position, direction), range)) {
 				if ((sheep_index != -1) && glm::distance2(position, sheeps[i].get_position()) > glm::distance2(position, sheep_position)) continue;
-				if (glm::distance2(sheeps[i].get_position(), position) > HOOK_RANGE*HOOK_RANGE) continue;
+				if (glm::distance2(sheeps[i].get_position(), position) > hook_range*hook_range) continue;
 				sheep_position = sheeps[i].get_position();
 				sheep_index = i;
 			}

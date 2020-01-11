@@ -20,7 +20,7 @@ class hook {
 		hook(const std::optional<glm::vec3>& target_point);
 
 		bool is_hooked() const;
-		void check_target(const block_container& blocks, std::vector<sheep>& sheeps);
+		void check_target(const block_container& blocks, std::vector<sheep>& sheeps, float hook_range);
 
 		glm::vec3 position;
 		glm::vec3 direction;
