@@ -27,6 +27,7 @@ class player {
 		glm::vec3 get_color() const;
 		const std::optional<hook>& get_hook() const;
 		bool is_hooked() const;
+		bool is_block_hooked() const;
 
 		void set_name(const std::string& name);
 		void set_position(const glm::vec3& position);

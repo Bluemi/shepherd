@@ -81,6 +81,10 @@ bool player::is_hooked() const {
 	return _hook && _hook->is_hooked();
 }
 
+bool player::is_block_hooked() const {
+	return _hook && _hook->target_point;
+}
+
 void player::set_name(const std::string& name) {
 	_name = name;
 }
@@ -145,7 +149,7 @@ void player::respawn(const glm::vec3& position) {
 }
 
 bool player::tick(const block_container& blocks, std::vector<sheep>& sheeps) {
-	if (!is_hooked()) {
+	if (!(_hook && _hook->target_point)) {
 		_body.speed.y -= GRAVITY;
 	}
 	apply_player_movements(blocks);
@@ -195,7 +199,7 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	glm::vec3 tmp_speed = _body.speed;
 
-	if (is_hooked()) {
+	if (is_block_hooked()) {
 		tmp_speed *= HOOK_DRAG;
 		_body.speed = tmp_speed;
 	} else {
@@ -218,7 +222,7 @@ void player::handle_active_hook(const block_container& blocks, std::vector<sheep
 		}
 	}
 
-	if (is_hooked()) {
+	if (_hook) {
 		if (_hook->target_point) {
 			const glm::vec3 hook_direction = glm::normalize(*(_hook->target_point) - _body.position);
 			_body.speed += hook_direction*HOOK_ACCELERATION;

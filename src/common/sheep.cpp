@@ -60,6 +60,10 @@ void sheep::tick(const block_container& blocks) {
 	_body.speed.x = tmp_speed.x; _body.speed.z = tmp_speed.z;
 	_body.position += _body.speed;
 	_body.physics(blocks);
+
+	if (_body.position.y < blocks.get_min_y() - 100.f) {
+		_body.position = blocks.get_respawn_position();
+	}
 }
 
 void sheep::apply_movements(const block_container& blocks) {
