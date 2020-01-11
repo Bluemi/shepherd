@@ -140,6 +140,7 @@ void player::respawn(const glm::vec3& position) {
 	_body.position = position;
 	_body.speed = glm::vec3();
 	_body.view_angles = glm::vec2();
+	_hook.reset();
 }
 
 bool player::tick(const block_container& blocks) {
