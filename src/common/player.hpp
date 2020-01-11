@@ -36,7 +36,6 @@ class player {
 		void set_hook(const std::optional<hook>& h);
 		void update_direction(const glm::vec2& direction_update);
 
-		static glm::vec3 get_up();
 		glm::vec3 get_right() const;
 		glm::vec3 get_direction() const;
 		glm::vec3 get_top() const;

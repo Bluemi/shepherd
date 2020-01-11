@@ -116,29 +116,20 @@ void player::update_direction(const glm::vec2& direction_update) {
 	_body.view_angles.x = fmax(fmin(_body.view_angles.x, 89.f), -89.0f);
 }
 
-glm::vec3 player::get_up() {
-	return glm::vec3(0.0f, 1.0f, 0.0f);
-}
-
 glm::vec3 player::get_right() const {
-	return glm::normalize(glm::cross(get_direction(), player::get_up()));
+	return _body.get_right();
 }
 
 glm::vec3 player::get_direction() const {
-	return glm::normalize(glm::vec3(
-				cos(glm::radians(_body.view_angles.x)) * cos(glm::radians(_body.view_angles.y)),
-				sin(glm::radians(_body.view_angles.x)),
-				cos(glm::radians(_body.view_angles.x)) * sin(glm::radians(_body.view_angles.y))
-			));
+	return _body.get_direction();
 }
 
 glm::vec3 player::get_top() const {
-	return glm::normalize(glm::cross(get_right(), get_direction()));
+	return _body.get_top();
 }
 
 glm::mat4 player::get_look_at() const {
-	return glm::lookAt(get_camera_position(), _body.position + CAMERA_OFFSET + get_direction(), get_up());
-	// return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
+	return glm::lookAt(get_camera_position(), _body.position + CAMERA_OFFSET + get_direction(), body::get_up());
 }
 
 glm::vec3 player::get_camera_position() const {
@@ -192,7 +183,7 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	if (_actions & JUMP_ACTION) {
 		if (!blocks.get_colliding_blocks(_body.get_bottom_collider()).empty()) {
-			_body.speed = get_up() * PLAYER_JUMP_SPEED;
+			_body.speed = body::get_up() * PLAYER_JUMP_SPEED;
 		}
 	}
 

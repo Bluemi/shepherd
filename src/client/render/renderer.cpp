@@ -184,7 +184,7 @@ void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& ho
 	float up_angle = glm::sign(from_to.z) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.z) / range_wo_y);
 	float side_angle = glm::sign(from_to.y) * glm::sign(from_to.x) * glm::asin(glm::abs(from_to.y) / range);
 
-	model = glm::rotate(model, -up_angle, player::get_up());
+	model = glm::rotate(model, -up_angle, body::get_up());
 	model = glm::rotate(model, side_angle, glm::vec3(0.f, 0.f, 1.f));
 
 	model = glm::scale(model, glm::vec3(range, HOOK_RENDER_STRENGTH, HOOK_RENDER_STRENGTH));
@@ -220,7 +220,7 @@ void renderer::render(frame& f, char local_player_id) {
 			glm::mat4 model = glm::mat4(1.f);
 			model = glm::translate(model, p.get_position());
 			model = glm::rotate(model, glm::radians(p.get_view_angles().x), p.get_right());
-			model = glm::rotate(model, glm::radians(-p.get_view_angles().y), player::get_up());
+			model = glm::rotate(model, glm::radians(-p.get_view_angles().y), body::get_up());
 			_player_shader_program.set_4fv("model", model);
 
 			_player_shader_program.set_3f("color", p.get_color());

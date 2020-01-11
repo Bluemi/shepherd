@@ -41,6 +41,26 @@ void body::check_collider(const block_container& blocks, const cuboid& collider,
 	}
 }
 
+glm::vec3 body::get_up() {
+	return glm::vec3(0.0f, 1.0f, 0.0f);
+}
+
+glm::vec3 body::get_right() const {
+	return glm::normalize(glm::cross(get_direction(), body::get_up()));
+}
+
+glm::vec3 body::get_direction() const {
+	return glm::normalize(glm::vec3(
+				cos(glm::radians(view_angles.x)) * cos(glm::radians(view_angles.y)),
+				sin(glm::radians(view_angles.x)),
+				cos(glm::radians(view_angles.x)) * sin(glm::radians(view_angles.y))
+			));
+}
+
+glm::vec3 body::get_top() const {
+	return glm::normalize(glm::cross(get_right(), get_direction()));
+}
+
 cuboid body::get_bottom_collider() const {
 	return cuboid(
 		glm::vec3(position.x, position.y-0.4f, position.z),

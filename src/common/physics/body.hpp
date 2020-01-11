@@ -16,6 +16,11 @@ class body {
 		void physics(const block_container& blocks);
 		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
 
+		static glm::vec3 get_up();
+		glm::vec3 get_right() const;
+		glm::vec3 get_direction() const;
+		glm::vec3 get_top() const;
+
 		cuboid get_bottom_collider() const;
 		cuboid get_top_collider() const;
 		cuboid get_left_collider() const;

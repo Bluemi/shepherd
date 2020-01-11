@@ -2,6 +2,7 @@
 #define __SHEEP_CLASS__
 
 #include <glm/vec3.hpp>
+#include "physics/body.hpp"
 
 class sheep {
 	public:
@@ -10,9 +11,9 @@ class sheep {
 
 		const glm::vec3& get_position() const;
 
-		void tick();
+		void tick(const block_container& blocks);
 	private:
-		glm::vec3 _position;
+		body _body;
 };
 
 #endif
