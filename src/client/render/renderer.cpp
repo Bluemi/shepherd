@@ -63,15 +63,13 @@ renderer::~renderer() {
 	mouse_manager::remove_controller(&_controller);
 }
 
-void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height)
-{
+void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height) {
 	_window_width = width;
 	_window_height = height;
 	glViewport(0, 0, width, height);
 }
 
-void renderer::init()
-{
+void renderer::init() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -79,11 +77,9 @@ void renderer::init()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
 
-std::optional<renderer> renderer::create(unsigned int window_width, unsigned int window_height, const std::string& window_name)
-{
+std::optional<renderer> renderer::create(unsigned int window_width, unsigned int window_height, const std::string& window_name) {
 	GLFWwindow* window = glfwCreateWindow(window_width, window_height, window_name.c_str(), NULL, NULL);
-	if (window == NULL)
-	{
+	if (window == NULL) {
 		std::cerr << "failed to create window" << std::endl;
 		glfwTerminate();
 		return {};
@@ -91,8 +87,7 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 
 	glfwMakeContextCurrent(window);
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialize GLAD" << std::endl;
 		return {};
 	}
@@ -134,8 +129,7 @@ std::optional<renderer> renderer::create(unsigned int window_width, unsigned int
 	return renderer(window, *opt_player_shader_program, *opt_sheep_shader_program, *opt_block_shader_program, *opt_hook_shader_program, window_width, window_height);
 }
 
-double renderer::get_delta_time()
-{
+double renderer::get_delta_time() {
 	double delta_time = 0.0;
 	if (_last_frame_time == 0.0)
 	{
@@ -304,7 +298,6 @@ void renderer::clear_window() {
 		glClearColor(0.05f, 0.07f, 0.08f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-
 
 const controller& renderer::get_controller() const {
 	return _controller;

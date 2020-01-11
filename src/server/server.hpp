@@ -21,6 +21,7 @@ class server {
 			char player_id;
 			bool disconnected;
 		};
+
 		void check_new_peers();
 		void handle_clients();
 		void handle_message(const std::vector<char>& message, peer_wrapper*);

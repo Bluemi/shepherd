@@ -6,8 +6,7 @@
 
 #include "shape.hpp"
 
-namespace initialize
-{
+namespace initialize {
 	shape cube() {
 		std::vector<attribute> attributes = {shape::position_attribute};
 
