@@ -7,6 +7,7 @@
 
 #include "world/block_container.hpp"
 #include "physics/forms.hpp"
+#include "physics/body.hpp"
 #include "hook.hpp"
 
 class player {
@@ -47,23 +48,14 @@ class player {
 		void apply_player_movements(const block_container& blocks);
 		void apply_drag(glm::vec3& speed);
 		void physics(const block_container& blocks);
-		void check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate);
 		void handle_hook(const block_container& blocks);
 		void handle_active_hook(const block_container& blocks);
-
-		cuboid get_bottom_collider() const;
-		cuboid get_top_collider() const;
-		cuboid get_left_collider() const;
-		cuboid get_right_collider() const;
-		cuboid get_front_collider() const;
-		cuboid get_back_collider() const;
 	private:
 		char _id;
+
 		std::string _name;
-		glm::vec3 _position;
-		glm::vec3 _size;
-		glm::vec2 _view_angles;
-		glm::vec3 _speed;
+		body _body;
+
 		std::uint16_t _actions;
 		glm::vec3 _color;
 		bool _on_left_mouse_pressed;

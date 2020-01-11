@@ -18,17 +18,18 @@ constexpr float MAX_PLAYER_SPEED = 0.2f;
 constexpr unsigned int NUM_BLOCKS_TO_PLACE = 20;
 constexpr unsigned int NUM_BLOCKS_TO_DESTROY = 20;
 constexpr float HOOK_DRAG = 0.7f;
+constexpr glm::vec3 PLAYER_SIZE = glm::vec3(0.5f, 0.5f, 0.5f);
 
 player::player(unsigned int id, const std::string& name)
-	: _id(id), _name(name), _size(0.5f, 0.5f, 0.5f), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
+	: _id(id), _name(name), _body(glm::vec3(), PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position)
-	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
+	: _id(id), _name(name), _body(position, PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false)
 {}
 
 player::player(unsigned int id, const std::string& name, const glm::vec3& position, const std::optional<glm::vec3>& h)
-	: _id(id), _name(name), _position(position), _size(0.5f, 0.5f, 0.5f), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook(h)
+	: _id(id), _name(name), _body(position, PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.02, 0.02, 0.2), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook(h)
 {}
 
 char player::get_id() const {
@@ -40,15 +41,15 @@ const std::string& player::get_name() const {
 }
 
 const glm::vec3& player::get_position() const {
-	return _position;
+	return _body.position;
 }
 
 const glm::vec2& player::get_view_angles() const {
-	return _view_angles;
+	return _body.view_angles;
 }
 
 const glm::vec3& player::get_speed() const {
-	return _speed;
+	return _body.speed;
 }
 
 std::uint16_t player::get_actions() const {
@@ -84,15 +85,15 @@ void player::set_name(const std::string& name) {
 }
 
 void player::set_position(const glm::vec3& position) {
-	_position = position;
+	_body.position = position;
 }
 
 void player::set_view_angles(const glm::vec2& view_angles) {
-	_view_angles = view_angles;
+	_body.view_angles = view_angles;
 }
 
 void player::set_speed(const glm::vec3& speed) {
-	_speed = speed;
+	_body.speed = speed;
 }
 
 void player::set_actions(const std::uint16_t actions) {
@@ -110,9 +111,9 @@ void player::set_hook(const std::optional<hook>& h) {
 }
 
 void player::update_direction(const glm::vec2& direction_update) {
-	_view_angles.y += direction_update.x * PLAYER_ROTATE_SPEED;
-	_view_angles.x -= direction_update.y * PLAYER_ROTATE_SPEED;
-	_view_angles.x = fmax(fmin(_view_angles.x, 89.f), -89.0f);
+	_body.view_angles.y += direction_update.x * PLAYER_ROTATE_SPEED;
+	_body.view_angles.x -= direction_update.y * PLAYER_ROTATE_SPEED;
+	_body.view_angles.x = fmax(fmin(_body.view_angles.x, 89.f), -89.0f);
 }
 
 glm::vec3 player::get_up() {
@@ -125,9 +126,9 @@ glm::vec3 player::get_right() const {
 
 glm::vec3 player::get_direction() const {
 	return glm::normalize(glm::vec3(
-				cos(glm::radians(_view_angles.x)) * cos(glm::radians(_view_angles.y)),
-				sin(glm::radians(_view_angles.x)),
-				cos(glm::radians(_view_angles.x)) * sin(glm::radians(_view_angles.y))
+				cos(glm::radians(_body.view_angles.x)) * cos(glm::radians(_body.view_angles.y)),
+				sin(glm::radians(_body.view_angles.x)),
+				cos(glm::radians(_body.view_angles.x)) * sin(glm::radians(_body.view_angles.y))
 			));
 }
 
@@ -136,40 +137,40 @@ glm::vec3 player::get_top() const {
 }
 
 glm::mat4 player::get_look_at() const {
-	return glm::lookAt(get_camera_position(), _position + CAMERA_OFFSET + get_direction(), get_up());
+	return glm::lookAt(get_camera_position(), _body.position + CAMERA_OFFSET + get_direction(), get_up());
 	// return glm::lookAt(_position - get_direction()*5.f, _position, get_up());
 }
 
 glm::vec3 player::get_camera_position() const {
-	return _position + CAMERA_OFFSET;
+	return _body.position + CAMERA_OFFSET;
 }
 
 void player::respawn(const glm::vec3& position) {
-	_position = position;
-	_speed = glm::vec3();
-	_view_angles = glm::vec2();
+	_body.position = position;
+	_body.speed = glm::vec3();
+	_body.view_angles = glm::vec2();
 }
 
 bool player::tick(const block_container& blocks) {
 	if (!is_hooked()) {
-		_speed.y -= GRAVITY;
+		_body.speed.y -= GRAVITY;
 	}
 	apply_player_movements(blocks);
-	_position += _speed;
+	_body.position += _body.speed;
 
 	handle_hook(blocks);
-	physics(blocks);
+	_body.physics(blocks);
 
 	bool was_winning = false;
 
-	for (const world_block& wb : blocks.get_colliding_blocks(get_bottom_collider())) {
+	for (const world_block& wb : blocks.get_colliding_blocks(_body.get_bottom_collider())) {
 		if (wb.is_winning_block()) {
 			respawn(blocks.get_respawn_position());
 			was_winning = true;
 		}
 	}
 
-	if (_position.y < blocks.get_min_y() - 100.f) {
+	if (_body.position.y < blocks.get_min_y() - 100.f) {
 		respawn(blocks.get_respawn_position());
 	}
 
@@ -190,8 +191,8 @@ void player::apply_player_movements(const block_container& blocks) {
 		right++;
 
 	if (_actions & JUMP_ACTION) {
-		if (!blocks.get_colliding_blocks(get_bottom_collider()).empty()) {
-			_speed = get_up() * PLAYER_JUMP_SPEED;
+		if (!blocks.get_colliding_blocks(_body.get_bottom_collider()).empty()) {
+			_body.speed = get_up() * PLAYER_JUMP_SPEED;
 		}
 	}
 
@@ -200,17 +201,17 @@ void player::apply_player_movements(const block_container& blocks) {
 
 	tmp_direction = glm::normalize(tmp_direction);
 
-	_speed += (get_right()*right + tmp_direction*forward)*0.1f;
+	_body.speed += (get_right()*right + tmp_direction*forward)*0.1f;
 
-	glm::vec3 tmp_speed = _speed;
+	glm::vec3 tmp_speed = _body.speed;
 
 	if (is_hooked()) {
 		tmp_speed *= HOOK_DRAG;
-		_speed = tmp_speed;
+		_body.speed = tmp_speed;
 	} else {
 		apply_drag(tmp_speed);
-		_speed.x = tmp_speed.x;
-		_speed.z = tmp_speed.z;
+		_body.speed.x = tmp_speed.x;
+		_body.speed.z = tmp_speed.z;
 	}
 }
 
@@ -226,36 +227,7 @@ void player::apply_drag(glm::vec3& tmp_speed) {
 }
 
 void player::physics(const block_container& blocks) {
-	bool y_checked = false;
-	if (glm::abs(_speed.y) > 0.2f) {
-		check_collider(blocks, get_bottom_collider(), -1, 1);
-		check_collider(blocks, get_top_collider()   ,  1, 1);
-		y_checked = true;
-	}
-	check_collider(blocks, get_left_collider()  , -1, 2);
-	check_collider(blocks, get_right_collider() ,  1, 2);
-	check_collider(blocks, get_back_collider()  , -1, 0);
-	check_collider(blocks, get_front_collider() ,  1, 0);
-
-	if (!y_checked) {
-		check_collider(blocks, get_bottom_collider(), -1, 1);
-		check_collider(blocks, get_top_collider()   ,  1, 1);
-	}
-}
-
-// direction = -1, if block is in negative direction to player
-void player::check_collider(const block_container& blocks, const cuboid& collider, int direction, unsigned int coordinate) {
-	std::vector<world_block> colliding_blocks = blocks.get_colliding_blocks(collider);
-	if (!colliding_blocks.empty()) {
-		if (_speed[coordinate]*direction > 0.f) {
-			_speed[coordinate] = 0.f;
-		}
-		float min_coord = colliding_blocks[0].get_position()[coordinate]*direction;
-		for (const world_block& wb : colliding_blocks) {
-			min_coord = glm::min(min_coord, static_cast<float>(wb.get_position()[coordinate]*direction));
-		}
-		_position[coordinate] = (min_coord*direction) - (0.5f + _size.y - 0.01f)*direction;
-	}
+	_body.physics(blocks);
 }
 
 void player::handle_active_hook(const block_container& blocks) {
@@ -268,8 +240,8 @@ void player::handle_active_hook(const block_container& blocks) {
 	}
 
 	if (is_hooked()) {
-		const glm::vec3 hook_direction = glm::normalize(*(_hook->target_point) - _position);
-		_speed += hook_direction*HOOK_ACCELERATION;
+		const glm::vec3 hook_direction = glm::normalize(*(_hook->target_point) - _body.position);
+		_body.speed += hook_direction*HOOK_ACCELERATION;
 	}
 }
 
@@ -284,46 +256,4 @@ void player::handle_hook(const block_container& blocks) {
 			_hook.reset();
 		}
 	}
-}
-
-cuboid player::get_bottom_collider() const {
-	return cuboid(
-		glm::vec3(_position.x, _position.y-0.4f, _position.z),
-		glm::vec3(PLAYER_COLLIDER_DIMENSION, 0.1f, PLAYER_COLLIDER_DIMENSION)
-	);
-}
-
-cuboid player::get_top_collider() const {
-	return cuboid(
-		glm::vec3(_position.x, _position.y+0.4f, _position.z),
-		glm::vec3(PLAYER_COLLIDER_DIMENSION, 0.1f, PLAYER_COLLIDER_DIMENSION)
-	);
-}
-
-cuboid player::get_left_collider() const {
-	return cuboid(
-		glm::vec3(_position.x, _position.y, _position.z-0.4f),
-		glm::vec3(PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION, 0.1f)
-	);
-}
-
-cuboid player::get_right_collider() const {
-	return cuboid(
-		glm::vec3(_position.x, _position.y, _position.z+0.4f),
-		glm::vec3(PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION, 0.1f)
-	);
-}
-
-cuboid player::get_front_collider() const {
-	return cuboid(
-		glm::vec3(_position.x+0.4f, _position.y, _position.z),
-		glm::vec3(0.1f, PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION)
-	);
-}
-
-cuboid player::get_back_collider() const {
-	return cuboid(
-		glm::vec3(_position.x-0.4f, _position.y, _position.z),
-		glm::vec3(0.1f, PLAYER_COLLIDER_DIMENSION, PLAYER_COLLIDER_DIMENSION)
-	);
 }
