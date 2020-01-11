@@ -115,6 +115,15 @@ void player::set_hook(const std::optional<hook>& h) {
 	_hook = h;
 }
 
+void player::reset_hook(std::vector<sheep>& sheeps) {
+	if (_hook) {
+		if (_hook->target_sheep_index) {
+			sheeps[*(_hook->target_sheep_index)].set_is_hooked(false);
+		}
+		_hook.reset();
+	}
+}
+
 void player::update_direction(const glm::vec2& direction_update) {
 	_body.view_angles.y += direction_update.x * PLAYER_ROTATE_SPEED;
 	_body.view_angles.x -= direction_update.y * PLAYER_ROTATE_SPEED;
@@ -141,11 +150,11 @@ glm::vec3 player::get_camera_position() const {
 	return _body.position + CAMERA_OFFSET;
 }
 
-void player::respawn(const glm::vec3& position) {
+void player::respawn(const glm::vec3& position, std::vector<sheep>& sheeps) {
 	_body.position = position;
 	_body.speed = glm::vec3();
 	_body.view_angles = glm::vec2();
-	_hook.reset();
+	reset_hook(sheeps);
 }
 
 bool player::tick(const block_container& blocks, std::vector<sheep>& sheeps) {
@@ -162,13 +171,13 @@ bool player::tick(const block_container& blocks, std::vector<sheep>& sheeps) {
 
 	for (const world_block& wb : blocks.get_colliding_blocks(_body.get_bottom_collider())) {
 		if (wb.is_winning_block()) {
-			respawn(blocks.get_respawn_position());
+			respawn(blocks.get_respawn_position(), sheeps);
 			was_winning = true;
 		}
 	}
 
 	if (_body.position.y < blocks.get_min_y() - 100.f) {
-		respawn(blocks.get_respawn_position());
+		respawn(blocks.get_respawn_position(), sheeps);
 	}
 
 	return was_winning;
@@ -218,7 +227,7 @@ void player::handle_active_hook(const block_container& blocks, std::vector<sheep
 		_hook->range += HOOK_SPEED;
 		_hook->check_target(blocks, sheeps);
 		if ((!_hook->is_hooked()) && _hook->range >= HOOK_RANGE) {
-			_hook.reset();
+			reset_hook(sheeps);
 		}
 	}
 
@@ -242,7 +251,7 @@ void player::handle_hook(const block_container& blocks, std::vector<sheep>& shee
 		if (_actions & HOOK_ACTION) {
 			handle_active_hook(blocks, sheeps);
 		} else {
-			_hook.reset();
+			reset_hook(sheeps);
 		}
 	}
 }

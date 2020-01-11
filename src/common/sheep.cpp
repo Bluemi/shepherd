@@ -15,7 +15,7 @@ constexpr float SHEEP_ACCELERATION = 0.03f;
 constexpr float SHEEP_JUMP_SPEED = 0.3f;
 constexpr float TURN_SPEED = 0.15f;
 
-sheep::sheep() : _state(sheep_state::WAIT), _state_counter(0), _forward(0.f), _jump(false)  {}
+sheep::sheep() : _state(sheep_state::WAIT), _state_counter(0), _forward(0.f), _jump(false), _is_hooked(false) {}
 
 sheep::sheep(const glm::vec3& position, float yaw)
 	:   _body(
@@ -29,7 +29,8 @@ sheep::sheep(const glm::vec3& position, float yaw)
 		_state_counter(0),
 		_forward(1.0f),
 		_turn(0.4f),
-		_jump(false)
+		_jump(false),
+		_is_hooked(false)
 {}
 
 const glm::vec3& sheep::get_position() const {
@@ -38,6 +39,14 @@ const glm::vec3& sheep::get_position() const {
 
 float sheep::get_yaw() const {
 	return _body.view_angles.y;
+}
+
+bool sheep::is_hooked() const {
+	return _is_hooked;
+}
+
+void sheep::set_is_hooked(bool h) {
+	_is_hooked = h;
 }
 
 bool sheep::is_colliding(const ray& r, float range) const {
@@ -57,7 +66,12 @@ void sheep::tick(const block_container& blocks) {
 	glm::vec3 tmp_speed(_body.speed);
 
 	body::apply_drag(tmp_speed, SHEEP_DRAG, MAX_SHEEP_SPEED);
-	_body.speed.x = tmp_speed.x; _body.speed.z = tmp_speed.z;
+	if (_is_hooked) {
+		_body.speed = tmp_speed;
+	} else {
+		_body.speed.x = tmp_speed.x;
+		_body.speed.z = tmp_speed.z;
+	}
 	_body.position += _body.speed;
 	_body.physics(blocks);
 
@@ -97,13 +111,13 @@ void sheep::think(const block_container& blocks) {
 }
 
 void sheep::wait() {
-	if (_state_counter == 0) {
+	if (_state_counter <= 0) {
 		start_move();
 	}
 }
 
 void sheep::move(const block_container& blocks) {
-	if (_state_counter == 0) {
+	if (_state_counter <= 0) {
 		start_turn();
 	} else {
 		std::optional<world_block> front_block = blocks.get_colliding_block(ray(_body.position, _body.get_direction()), 0.7f);
@@ -114,7 +128,7 @@ void sheep::move(const block_container& blocks) {
 }
 
 void sheep::turn() {
-	if (_state_counter == 0) {
+	if (_state_counter <= 0) {
 		start_wait();
 	}
 }
@@ -141,5 +155,5 @@ void sheep::start_turn() {
 }
 
 void sheep::reset_state_counter() {
-	_state_counter = 10 + (rand() % 20);
+	_state_counter = rand() % 15;
 }

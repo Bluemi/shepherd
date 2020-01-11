@@ -21,6 +21,9 @@ class sheep {
 
 		const glm::vec3& get_position() const;
 		float get_yaw() const;
+		bool is_hooked() const;
+
+		void set_is_hooked(bool h);
 
 		bool is_colliding(const ray& r, float range) const;
 
@@ -41,11 +44,12 @@ class sheep {
 	private:
 		body _body;
 		sheep_state _state;
-		unsigned int _state_counter;
+		int _state_counter;
 
 		float _forward;
 		float _turn;
 		bool _jump;
+		bool _is_hooked;
 };
 
 #endif

@@ -35,6 +35,7 @@ class player {
 		void set_speed(const glm::vec3& speed);
 		void set_actions(const std::uint16_t actions);
 		void set_hook(const std::optional<hook>& h);
+		void reset_hook(std::vector<sheep>& sheeps);
 		void update_direction(const glm::vec2& direction_update);
 
 		glm::vec3 get_right() const;
@@ -43,7 +44,7 @@ class player {
 		glm::mat4 get_look_at() const;
 		glm::vec3 get_camera_position() const;
 
-		void respawn(const glm::vec3& position);
+		void respawn(const glm::vec3& position, std::vector<sheep>& sheeps);
 		bool tick(const block_container& blocks, std::vector<sheep>& sheeps);
 		void apply_player_movements(const block_container& blocks);
 		void physics(const block_container& blocks);
