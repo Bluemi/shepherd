@@ -198,6 +198,8 @@ void player::apply_player_movements(const block_container& blocks) {
 	glm::vec3 tmp_direction = get_direction();
 	tmp_direction.y = 0.f;
 
+	tmp_direction = glm::normalize(tmp_direction);
+
 	_speed += (get_right()*right + tmp_direction*forward)*0.1f;
 
 	glm::vec3 tmp_speed = _speed;
