@@ -4,7 +4,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-enum class block_type {
+enum class block_type: std::uint8_t {
 	VOID,
 	NORMAL,
 	GROUND,
