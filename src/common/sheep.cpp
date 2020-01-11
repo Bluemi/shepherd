@@ -4,6 +4,7 @@
 
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/intersect.hpp>
 
 #include "world/block_container.hpp"
 
@@ -37,6 +38,15 @@ const glm::vec3& sheep::get_position() const {
 
 float sheep::get_yaw() const {
 	return _body.view_angles.y;
+}
+
+bool sheep::is_colliding(const ray& r, float range) const {
+	glm::vec3 intersection_position, intersection_normal, intersection_position2, intersection_normal2;
+	return glm::intersectLineSphere(r.position, r.position + glm::normalize(r.direction) * range, _body.position, 0.5f, intersection_position, intersection_normal, intersection_position2, intersection_normal2);
+}
+
+void sheep::accelerate(const glm::vec3& acceleration) {
+	_body.speed += acceleration;
 }
 
 void sheep::tick(const block_container& blocks) {

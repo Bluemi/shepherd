@@ -7,6 +7,7 @@
 
 #include "networking/actions_packet.hpp"
 #include "physics/util.hpp"
+#include "sheep.hpp"
 
 const float PLAYER_ROTATE_SPEED = 0.05f;
 const glm::vec3 CAMERA_OFFSET = glm::vec3(0, 0.4f, 0);
@@ -143,14 +144,14 @@ void player::respawn(const glm::vec3& position) {
 	_hook.reset();
 }
 
-bool player::tick(const block_container& blocks) {
+bool player::tick(const block_container& blocks, std::vector<sheep>& sheeps) {
 	if (!is_hooked()) {
 		_body.speed.y -= GRAVITY;
 	}
 	apply_player_movements(blocks);
 	_body.position += _body.speed;
 
-	handle_hook(blocks);
+	handle_hook(blocks, sheeps);
 	_body.physics(blocks);
 
 	bool was_winning = false;
@@ -208,28 +209,34 @@ void player::physics(const block_container& blocks) {
 	_body.physics(blocks);
 }
 
-void player::handle_active_hook(const block_container& blocks) {
+void player::handle_active_hook(const block_container& blocks, std::vector<sheep>& sheeps) {
 	if (!_hook->is_hooked()) {
 		_hook->range += HOOK_SPEED;
-		_hook->check_target_point(blocks);
+		_hook->check_target(blocks, sheeps);
 		if ((!_hook->is_hooked()) && _hook->range >= HOOK_RANGE) {
 			_hook.reset();
 		}
 	}
 
 	if (is_hooked()) {
-		const glm::vec3 hook_direction = glm::normalize(*(_hook->target_point) - _body.position);
-		_body.speed += hook_direction*HOOK_ACCELERATION;
+		if (_hook->target_point) {
+			const glm::vec3 hook_direction = glm::normalize(*(_hook->target_point) - _body.position);
+			_body.speed += hook_direction*HOOK_ACCELERATION;
+		} else if (_hook->target_sheep_index) {
+			sheep& target_sheep = sheeps[*(_hook->target_sheep_index)];
+			const glm::vec3 hook_direction = glm::normalize(_body.position - target_sheep.get_position());
+			target_sheep.accelerate(hook_direction * HOOK_ACCELERATION);
+		}
 	}
 }
 
-void player::handle_hook(const block_container& blocks) {
+void player::handle_hook(const block_container& blocks, std::vector<sheep>& sheeps) {
 	if (!_hook && _actions & HOOK_ACTION) {
 		_hook = hook(get_camera_position(), get_direction());
 	}
 	if (_hook) {
 		if (_actions & HOOK_ACTION) {
-			handle_active_hook(blocks);
+			handle_active_hook(blocks, sheeps);
 		} else {
 			_hook.reset();
 		}

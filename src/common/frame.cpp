@@ -23,7 +23,7 @@ player* frame::get_player(char player_id) {
 
 bool frame::tick() {
 	for (player& p : players) {
-		if (p.tick(blocks)) {
+		if (p.tick(blocks, sheeps)) {
 			_blue_win_counter++;
 		}
 		check_destroy_block(&p);

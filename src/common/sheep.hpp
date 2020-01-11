@@ -1,6 +1,8 @@
 #ifndef __SHEEP_CLASS__
 #define __SHEEP_CLASS__
 
+#include <optional>
+
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
@@ -20,6 +22,9 @@ class sheep {
 		const glm::vec3& get_position() const;
 		float get_yaw() const;
 
+		bool is_colliding(const ray& r, float range) const;
+
+		void accelerate(const glm::vec3& acceleration);
 		void tick(const block_container& blocks);
 		void apply_movements(const block_container& blocks);
 		void think(const block_container& blocks);

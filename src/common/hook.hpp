@@ -7,6 +7,7 @@
 #include "world/world_block.hpp"
 
 class block_container;
+class sheep;
 
 constexpr float HOOK_RANGE = 15.f;
 constexpr float HOOK_SPEED = 250.f;
@@ -19,12 +20,13 @@ class hook {
 		hook(const std::optional<glm::vec3>& target_point);
 
 		bool is_hooked() const;
-		void check_target_point(const block_container& blocks);
+		void check_target(const block_container& blocks, const std::vector<sheep>& sheeps);
 
 		glm::vec3 position;
 		glm::vec3 direction;
 		float range;
 		std::optional<glm::vec3> target_point;
+		std::optional<unsigned int> target_sheep_index;
 };
 
 #endif

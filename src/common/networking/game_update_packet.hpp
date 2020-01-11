@@ -15,7 +15,7 @@ class game_update_packet {
 	public:
 		struct player_info {
 			player_info();
-			player_info(const player& p);
+			player_info(const player& p, const std::vector<sheep>& sheeps);
 
 			char id;
 			glm::vec3 position;

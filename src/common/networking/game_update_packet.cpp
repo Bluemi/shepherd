@@ -40,11 +40,15 @@ namespace packet_helper {
 // player info
 game_update_packet::player_info::player_info() {}
 
-game_update_packet::player_info::player_info(const player& p)
+game_update_packet::player_info::player_info(const player& p, const std::vector<sheep>& sheeps)
 	: id(p.get_id()), position(p.get_position()), view_angles(p.get_view_angles())
 {
 	if (p.get_hook()) {
-		player_hook = p.get_hook()->target_point;
+		if (p.get_hook()->target_point) {
+			player_hook = p.get_hook()->target_point;
+		} else if (p.get_hook()->target_sheep_index) {
+			player_hook = sheeps[*(p.get_hook()->target_sheep_index)].get_position();
+		}
 	}
 }
 
@@ -68,7 +72,7 @@ game_update_packet game_update_packet::from_game(
 ) {
 	game_update_packet packet;
 	for (const player& p : players) {
-		packet._player_infos.push_back(game_update_packet::player_info(p));
+		packet._player_infos.push_back(game_update_packet::player_info(p, sheeps));
 	}
 
 	for (const sheep& s : sheeps) {

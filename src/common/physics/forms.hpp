@@ -52,6 +52,10 @@ struct ray {
 	ray();
 	ray(const glm::vec3& p, const glm::vec3& d);
 
+	glm::vec3 get_tip() const {
+		return position + direction;
+	}
+
 	glm::vec3 position;
 	glm::vec3 direction;
 };

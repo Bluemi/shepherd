@@ -43,11 +43,11 @@ class player {
 		glm::vec3 get_camera_position() const;
 
 		void respawn(const glm::vec3& position);
-		bool tick(const block_container& blocks);
+		bool tick(const block_container& blocks, std::vector<sheep>& sheeps);
 		void apply_player_movements(const block_container& blocks);
 		void physics(const block_container& blocks);
-		void handle_hook(const block_container& blocks);
-		void handle_active_hook(const block_container& blocks);
+		void handle_hook(const block_container& blocks, std::vector<sheep>& sheeps);
+		void handle_active_hook(const block_container& blocks, std::vector<sheep>& sheeps);
 	private:
 		char _id;
 
