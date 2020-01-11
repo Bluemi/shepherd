@@ -17,7 +17,7 @@
 #include "../../common/frame.hpp"
 #include "../../common/physics/util.hpp"
 
-constexpr float HOOK_RENDER_STRENGTH = 0.03f;
+constexpr float HOOK_RENDER_STRENGTH = 0.027f;
 
 renderer::renderer(GLFWwindow* window, shader_program player_shader_program, shader_program sheep_shader_program, shader_program block_shader_program, shader_program hook_shader_program, unsigned int window_width, unsigned int window_height)
 	: _player_shader_program(player_shader_program),
