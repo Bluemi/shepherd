@@ -10,12 +10,16 @@
 
 constexpr float GRAVITY = 0.04f;
 constexpr float SHEEP_DRAG = 0.03f;
-constexpr float MAX_SHEEP_SPEED = 0.2f;
+constexpr float MAX_SHEEP_SPEED = 0.04f;
+constexpr float MAX_SHEEP_SPEED_HOOKED = 0.3f;
+constexpr float MAX_SHEEP_SPEED_JUMP = 0.2f;
 constexpr float SHEEP_ACCELERATION = 0.03f;
+constexpr float SHEEP_JUMP_ACCELERATION = 0.07f;
 constexpr float SHEEP_JUMP_SPEED = 0.3f;
 constexpr float TURN_SPEED = 0.15f;
+constexpr unsigned int JUMP_DURATION = 5;
 
-sheep::sheep() : _state(sheep_state::WAIT), _state_counter(0), _forward(0.f), _jump(false), _is_hooked(false) {}
+sheep::sheep() : _state(sheep_state::WAIT), _state_counter(0), _forward(0.f), _jump(0), _is_hooked(false) {}
 
 sheep::sheep(const glm::vec3& position, float yaw)
 	:   _body(
@@ -29,7 +33,7 @@ sheep::sheep(const glm::vec3& position, float yaw)
 		_state_counter(0),
 		_forward(1.0f),
 		_turn(0.4f),
-		_jump(false),
+		_jump(0),
 		_is_hooked(false)
 {}
 
@@ -69,7 +73,16 @@ void sheep::tick(const block_container& blocks) {
 
 	glm::vec3 tmp_speed(_body.speed);
 
-	body::apply_drag(tmp_speed, _is_hooked?SHEEP_DRAG*0.2f:SHEEP_DRAG, MAX_SHEEP_SPEED);
+	float max_sheep_speed = MAX_SHEEP_SPEED;
+	float sheep_drag = SHEEP_DRAG;
+	if (_is_hooked) {
+		max_sheep_speed = MAX_SHEEP_SPEED_HOOKED;
+		sheep_drag *= 0.2f;
+	} else if (_jump) {
+		max_sheep_speed = MAX_SHEEP_SPEED_JUMP;
+	}
+
+	body::apply_drag(tmp_speed, sheep_drag, max_sheep_speed);
 	if (_is_hooked) {
 		_body.speed = tmp_speed;
 	} else {
@@ -86,18 +99,24 @@ void sheep::tick(const block_container& blocks) {
 
 void sheep::apply_movements(const block_container& blocks) {
 	_body.view_angles.y += _turn;
-	_body.speed += _body.get_direction() * (_forward * SHEEP_ACCELERATION);
+	float sheep_acceleration = SHEEP_ACCELERATION;
+	if (_jump) {
+		sheep_acceleration = SHEEP_JUMP_ACCELERATION;
+	}
+	_body.speed += _body.get_direction() * (_forward * sheep_acceleration);
 
 	if (_jump) {
-		if (!blocks.get_colliding_blocks(_body.get_bottom_collider()).empty()) {
-			_body.speed.y = SHEEP_JUMP_SPEED;
+		if (_jump == JUMP_DURATION) {
+			if (!blocks.get_colliding_blocks(_body.get_bottom_collider()).empty()) {
+				_body.speed.y = SHEEP_JUMP_SPEED;
+			}
 		}
-		_jump = false;
+		_jump--;
 	}
 }
 
 void sheep::respawn(const block_container& blocks) {
-	_body.position = blocks.get_respawn_position();
+	_body.position = blocks.get_sheep_respawn_position();
 	_body.speed = glm::vec3();
 }
 
@@ -116,6 +135,28 @@ void sheep::think(const block_container& blocks) {
 			std::cout << "unknown sheep state" << std::endl;
 			break;
 	}
+
+	if (_body.position.x < 5.f && _body.get_direction().x < 0.f) {
+		reset_state_counter();
+		_turn = 1.f;
+		_forward = 0.f;
+		_state = sheep_state::TURN;
+	} else if (_body.position.x > MAP_X_SIZE - 5.f && _body.get_direction().x > 0.f) {
+		reset_state_counter();
+		_turn = 1.f;
+		_forward = 0.f;
+		_state = sheep_state::TURN;
+	} else if (_body.position.z < 5.f && _body.get_direction().z < 0.f) {
+		reset_state_counter();
+		_turn = 1.f;
+		_forward = 0.f;
+		_state = sheep_state::TURN;
+	} else if (_body.position.z > MAP_Z_SIZE - 5.f && _body.get_direction().z > 0.f) {
+		reset_state_counter();
+		_turn = 1.f;
+		_forward = 0.f;
+		_state = sheep_state::TURN;
+	}
 	_state_counter--;
 }
 
@@ -131,7 +172,7 @@ void sheep::move(const block_container& blocks) {
 	} else {
 		std::optional<world_block> front_block = blocks.get_colliding_block(ray(_body.position, _body.get_direction()), 0.7f);
 		if (front_block) {
-			_jump = true;
+			_jump = JUMP_DURATION;
 		}
 	}
 }
@@ -164,5 +205,5 @@ void sheep::start_turn() {
 }
 
 void sheep::reset_state_counter() {
-	_state_counter = rand() % 15;
+	_state_counter = 20 + rand() % 15;
 }

@@ -49,7 +49,7 @@ class sheep {
 
 		float _forward;
 		float _turn;
-		bool _jump;
+		unsigned int _jump;
 		bool _is_hooked;
 };
 

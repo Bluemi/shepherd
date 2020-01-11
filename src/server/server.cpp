@@ -17,7 +17,7 @@ void server::init() {
 	_map_seed = rand();
 	_current_frame.blocks = block_container(block_container::create_field(_map_seed));
 	for (unsigned int i = 0; i < 40; i++) {
-		_current_frame.sheeps.push_back(sheep(_current_frame.blocks.get_respawn_position(), 0.f));
+		_current_frame.sheeps.push_back(sheep(_current_frame.blocks.get_sheep_respawn_position(), 0.f));
 	}
 }
 

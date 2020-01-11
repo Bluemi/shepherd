@@ -8,8 +8,6 @@
 #include "../physics/forms.hpp"
 #include "../physics/util.hpp"
 
-constexpr unsigned int MAP_X_SIZE = 64;
-constexpr unsigned int MAP_Z_SIZE = 32;
 constexpr float WINNING_COLOR_WHITE = 0.3f;
 constexpr float WINNING_COLOR_BLACK = 0.03f;
 constexpr float NOISE_SCALE = 0.05f;
@@ -140,7 +138,21 @@ glm::ivec3 block_container::to_chunk_position(const glm::ivec3& position) {
 
 glm::vec3 block_container::get_respawn_position() const {
 	int x = (rand() % 5)+1;
-	int y = 10.f;
+	int y = 0.f;
+	int z = rand() % MAP_Z_SIZE;
+
+	for (int yi = -200; yi < 200; yi++) {
+		if (get_block(glm::ivec3(x, yi, z))) {
+			y = yi;
+		}
+	}
+
+	return glm::vec3(x, y+1.f, z);
+}
+
+glm::vec3 block_container::get_sheep_respawn_position() const {
+	int x = MAP_X_SIZE - ((rand() % 5)+5);
+	int y = 0.f;
 	int z = rand() % MAP_Z_SIZE;
 
 	for (int yi = -200; yi < 200; yi++) {

@@ -11,6 +11,8 @@ class cuboid;
 class ray;
 
 constexpr unsigned int BLOCK_CHUNK_SIZE = 16;
+constexpr unsigned int MAP_X_SIZE = 64*2;
+constexpr unsigned int MAP_Z_SIZE = 32*2;
 
 class block_chunk {
 	public:
@@ -48,6 +50,7 @@ class block_container {
 		static glm::vec3 get_winning_color(const glm::ivec3& position);
 
 		glm::vec3 get_respawn_position() const;
+		glm::vec3 get_sheep_respawn_position() const;
 
 		std::optional<world_block> get_block(const glm::ivec3& position) const;
 		const std::vector<std::shared_ptr<block_chunk>>& get_chunks() const;
