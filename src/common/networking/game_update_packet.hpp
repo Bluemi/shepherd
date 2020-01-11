@@ -31,6 +31,7 @@ class game_update_packet {
 			sheep create_sheep() const;
 
 			glm::vec3 position;
+			float yaw;
 		};
 
 		game_update_packet();

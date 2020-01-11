@@ -10,12 +10,12 @@ constexpr float SHEEP_JUMP_SPEED = 0.28f;
 
 sheep::sheep() : _forward(0.f), _jump(false) {}
 
-sheep::sheep(const glm::vec3& position)
+sheep::sheep(const glm::vec3& position, float yaw)
 	:   _body(
 			position,
 			glm::vec3(0.45f, 0.5f, 0.35f),
 			glm::vec3(0.01f, 0.0f, 0.0f),
-			glm::vec2(),
+			glm::vec2(0.f, yaw),
 			0.3f
 		),
 		_forward(1.0f),
@@ -25,6 +25,10 @@ sheep::sheep(const glm::vec3& position)
 
 const glm::vec3& sheep::get_position() const {
 	return _body.position;
+}
+
+float sheep::get_yaw() const {
+	return _body.view_angles.y;
 }
 
 void sheep::tick(const block_container& blocks) {

@@ -236,6 +236,7 @@ void renderer::render(frame& f, char local_player_id) {
 		for (const sheep& s : f.sheeps) {
 			glm::mat4 sheep_model = glm::mat4(1.f);
 			sheep_model = glm::translate(sheep_model, s.get_position());
+			sheep_model = glm::rotate(sheep_model, glm::radians(-s.get_yaw()), body::get_up());
 			_sheep_shader_program.set_4fv("model", sheep_model);
 			glDrawArrays(GL_TRIANGLES, 0, _sheep_shape.get_number_vertices());
 		}

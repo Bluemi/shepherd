@@ -27,11 +27,13 @@ namespace packet_helper {
 	template<>
 	void read_from_buffer<game_update_packet::sheep_info>(game_update_packet::sheep_info* si, const char** buffer) {
 		packet_helper::read_from_buffer(&si->position, buffer);
+		packet_helper::read_from_buffer(&si->yaw, buffer);
 	}
 
 	template<>
 	void write_to_buffer(const game_update_packet::sheep_info& si, std::vector<char>* buffer) {
 		packet_helper::write_to_buffer(si.position, buffer);
+		packet_helper::write_to_buffer(si.yaw, buffer);
 	}
 }
 
@@ -48,11 +50,11 @@ game_update_packet::player_info::player_info(const player& p)
 
 // sheep info
 game_update_packet::sheep_info::sheep_info() {}
-game_update_packet::sheep_info::sheep_info(const sheep& s) : position(s.get_position()) {}
+game_update_packet::sheep_info::sheep_info(const sheep& s) : position(s.get_position()), yaw(s.get_yaw()) {}
 
 
 sheep game_update_packet::sheep_info::create_sheep() const {
-	return sheep(position);
+	return sheep(position, yaw);
 }
 
 // game update packet
