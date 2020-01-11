@@ -30,6 +30,7 @@ class sheep {
 		void accelerate(const glm::vec3& acceleration);
 		void tick(const block_container& blocks);
 		void apply_movements(const block_container& blocks);
+		void respawn(const block_container& blocks);
 		void think(const block_container& blocks);
 
 		void wait();

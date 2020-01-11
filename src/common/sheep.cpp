@@ -59,13 +59,17 @@ void sheep::accelerate(const glm::vec3& acceleration) {
 }
 
 void sheep::tick(const block_container& blocks) {
-	_body.speed.y -= GRAVITY;
+	if (_is_hooked) {
+		_body.speed.y -= GRAVITY*0.4f;
+	} else {
+		_body.speed.y -= GRAVITY;
+	}
 	think(blocks);
 	apply_movements(blocks);
 
 	glm::vec3 tmp_speed(_body.speed);
 
-	body::apply_drag(tmp_speed, SHEEP_DRAG, MAX_SHEEP_SPEED);
+	body::apply_drag(tmp_speed, _is_hooked?SHEEP_DRAG*0.2f:SHEEP_DRAG, MAX_SHEEP_SPEED);
 	if (_is_hooked) {
 		_body.speed = tmp_speed;
 	} else {
@@ -76,7 +80,7 @@ void sheep::tick(const block_container& blocks) {
 	_body.physics(blocks);
 
 	if (_body.position.y < blocks.get_min_y() - 100.f) {
-		_body.position = blocks.get_respawn_position();
+		respawn(blocks);
 	}
 }
 
@@ -90,6 +94,11 @@ void sheep::apply_movements(const block_container& blocks) {
 		}
 		_jump = false;
 	}
+}
+
+void sheep::respawn(const block_container& blocks) {
+	_body.position = blocks.get_respawn_position();
+	_body.speed = glm::vec3();
 }
 
 void sheep::think(const block_container& blocks) {
