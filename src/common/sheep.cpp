@@ -55,7 +55,11 @@ void sheep::set_is_hooked(bool h) {
 
 bool sheep::is_colliding(const ray& r, float range) const {
 	glm::vec3 intersection_position, intersection_normal, intersection_position2, intersection_normal2;
-	return glm::intersectLineSphere(r.position, r.position + glm::normalize(r.direction) * range, _body.position, 0.5f, intersection_position, intersection_normal, intersection_position2, intersection_normal2);
+	bool intersect = glm::intersectLineSphere(r.position, r.position + glm::normalize(r.direction) * range, _body.position, 0.5f, intersection_position, intersection_normal, intersection_position2, intersection_normal2);
+	if (intersect) {
+		return glm::dot(r.direction, intersection_position - r.position) > 0.f;
+	}
+	return false;
 }
 
 void sheep::accelerate(const glm::vec3& acceleration) {
