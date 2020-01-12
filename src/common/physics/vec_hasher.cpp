@@ -1,5 +1,8 @@
 #include "vec_hasher.hpp"
 
+// MurmurHash taken from https://sites.google.com/site/murmurhash/
+// MurmurHash, by Austin Appleby
+
 std::uint64_t MurmurHash64(const void * key, std::int32_t len, std::uint32_t seed) {
 	const std::uint64_t m = 0xc6a4a7935bd1e995;
 	const std::int32_t r = 47;
@@ -43,7 +46,7 @@ std::uint64_t MurmurHash64(const void * key, std::int32_t len, std::uint32_t see
 } 
 
 
-// MurmurHash2, by Austin Appleby
+// MurmurHash, by Austin Appleby
 
 std::uint32_t MurmurHash32(const void * key, std::int32_t len, std::uint32_t seed) {
 	const std::uint32_t m = 0x5bd1e995;
