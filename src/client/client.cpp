@@ -128,8 +128,8 @@ void client::handle_init(const std::vector<char>& buffer) {
 
 	_current_frame.blocks = block_container(block_container::create_field(packet.map_seed));
 
-	for (const std::shared_ptr<block_chunk>& bc : _current_frame.blocks.get_chunks()) {
-		_renderer->load_chunk(*bc);
+	for (const auto& bc : _current_frame.blocks.get_chunks()) {
+		_renderer->load_chunk(*(bc.second));
 	}
 }
 

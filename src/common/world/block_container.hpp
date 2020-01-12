@@ -1,18 +1,20 @@
 #ifndef __BLOCK_CONTAINER_CLASS__
 #define __BLOCK_CONTAINER_CLASS__
 
+#include <unordered_map>
 #include <vector>
 #include <optional>
 #include <memory>
 
 #include "world_block.hpp"
+#include "../physics/vec_hasher.hpp"
 
 class cuboid;
 class ray;
 
 constexpr unsigned int BLOCK_CHUNK_SIZE = 16;
-constexpr unsigned int MAP_X_SIZE = 64*2;
-constexpr unsigned int MAP_Z_SIZE = 32*2;
+constexpr unsigned int MAP_X_SIZE = 128;
+constexpr unsigned int MAP_Z_SIZE = 64;
 
 class block_chunk {
 	public:
@@ -41,6 +43,8 @@ class block_chunk {
 
 class block_container {
 	public:
+		using chunk_map_type = std::unordered_map<glm::ivec3, std::shared_ptr<block_chunk>, vec_hasher>;
+
 		block_container();
 		block_container(const std::vector<world_block>& blocks);
 
@@ -53,7 +57,7 @@ class block_container {
 		glm::vec3 get_sheep_respawn_position() const;
 
 		std::optional<world_block> get_block(const glm::ivec3& position) const;
-		const std::vector<std::shared_ptr<block_chunk>>& get_chunks() const;
+		const chunk_map_type& get_chunks() const;
 		const block_chunk* get_containing_chunk(const glm::ivec3& position) const;
 		block_chunk* get_containing_chunk(const glm::ivec3& position);
 		std::vector<world_block> get_colliding_blocks(const cuboid&) const;
@@ -68,7 +72,7 @@ class block_container {
 		bool remove_block(const glm::ivec3& position);
 
 	private:
-		std::vector<std::shared_ptr<block_chunk>> _block_chunks;
+		chunk_map_type _block_chunks;
 		int _min_y;
 };
 

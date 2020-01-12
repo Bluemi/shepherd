@@ -175,16 +175,18 @@ std::optional<world_block> block_container::get_block(const glm::ivec3& position
 	return {};
 }
 
-const std::vector<std::shared_ptr<block_chunk>>& block_container::get_chunks() const {
+const block_container::chunk_map_type& block_container::get_chunks() const {
 	return _block_chunks;
 }
 
 const block_chunk* block_container::get_containing_chunk(const glm::ivec3& position) const {
-	for (const std::shared_ptr<block_chunk>& bc : _block_chunks) {
-		if (bc->contains(position)) {
-			return &(*bc);
-		}
+	const glm::ivec3 chunk_origin = to_chunk_position(position);
+
+	auto c = _block_chunks.find(chunk_origin);
+	if (c != _block_chunks.end()) {
+		return c->second.get();
 	}
+
 	return nullptr;
 }
 
@@ -207,7 +209,7 @@ void block_container::add_block(const glm::ivec3& position, block_type bt) {
 block_chunk* block_container::add_chunk(const glm::ivec3& position) {
 	glm::ivec3 chunk_origin = to_chunk_position(position);
 	std::shared_ptr<block_chunk> chunk = std::make_shared<block_chunk>(chunk_origin);
-	_block_chunks.push_back(chunk);
+	_block_chunks.emplace(chunk_origin, chunk);
 	return &(*chunk);
 }
 
