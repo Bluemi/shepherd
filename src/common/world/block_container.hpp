@@ -12,7 +12,7 @@
 class cuboid;
 class ray;
 
-constexpr unsigned int BLOCK_CHUNK_SIZE = 16;
+constexpr unsigned int BLOCK_CHUNK_SIZE = 32;
 constexpr unsigned int MAP_X_SIZE = 128;
 constexpr unsigned int MAP_Z_SIZE = 64;
 
