@@ -32,7 +32,6 @@ class renderer {
 		void run_shape_loader();
 		void load_chunk(const block_chunk& bc);
 		void load_next_chunk();
-		void tick();
 		void render_hook(const glm::vec3& player_position, const glm::vec3& hook_tip);
 		void render(frame& f, char player_id);
 		void close();
@@ -41,6 +40,7 @@ class renderer {
 		double get_time() const;
 
 		void framebuffer_size_callback(GLFWwindow*, int width, int height);
+		GLFWwindow* get_window();
 
 		const controller& get_controller() const;
 		controller& get_controller();

@@ -27,15 +27,19 @@ void client::init(const std::string& hostname, const std::string& player_name) {
 }
 
 void client::run() {
+	bool got_game_update_packet = false;
 	while (!_renderer->should_close()) {
-		_renderer->tick();
-		if (_local_player_id != -1) {
+		if (_local_player_id != -1 && got_game_update_packet) {
 			_renderer->render(_current_frame, _local_player_id);
 		}
 
+		got_game_update_packet = false;
+
 		while (!_peer->messages().empty()) {
 			const std::vector<char> msg = _peer->messages().pop();
-			handle_message(msg);
+			if (handle_message(msg)) {
+				got_game_update_packet = true;
+			}
 		}
 
 		send_actions_update();
@@ -61,6 +65,7 @@ void client::send_logout() {
 }
 
 void client::send_actions_update() {
+	_renderer->get_controller().process_user_input(_renderer->get_window());
 	std::uint16_t current_actions(0);
 	controller& ctrl = _renderer->get_controller();
 	if (ctrl.is_key_pressed(controller::CAMERA_FORWARD_KEY))
@@ -84,17 +89,21 @@ void client::send_actions_update() {
 
 	glm::vec2 mouse_changes = ctrl.poll_mouse_changes();
 
-	std::vector<char> buffer;
-	actions_packet packet(current_actions, mouse_changes);
-	packet.write_to(&buffer);
-	_peer->async_send(buffer);
+	if (_last_actions != current_actions || mouse_changes != glm::vec2()) {
+		std::vector<char> buffer;
+		actions_packet packet(current_actions, mouse_changes);
+		packet.write_to(&buffer);
+		_peer->async_send(buffer);
+	}
 	_last_actions = current_actions;
 }
 
-void client::handle_message(const std::vector<char>& buffer) {
+bool client::handle_message(const std::vector<char>& buffer) {
+	bool got_game_update_packet = false;
 	switch (buffer[0]) {
 		case packet_ids::GAME_UPDATE_PACKET:
 			handle_game_update(buffer);
+			got_game_update_packet = true;
 			break;
 		case packet_ids::INIT_PACKET:
 			handle_init(buffer);
@@ -103,6 +112,7 @@ void client::handle_message(const std::vector<char>& buffer) {
 			std::cerr << "could not handle packet with id: " << (int)(buffer[0]) << std::endl;
 			break;
 	}
+	return got_game_update_packet;
 }
 
 void client::apply_player_info(const game_update_packet::player_info& pi) {

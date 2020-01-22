@@ -18,7 +18,7 @@ class client {
 		void send_logout();
 		void send_actions_update();
 
-		void handle_message(const std::vector<char>& buffer);
+		bool handle_message(const std::vector<char>& buffer);
 		void handle_game_update(const std::vector<char>& buffer);
 		void handle_player_infos(const std::vector<game_update_packet::player_info>& pis);
 		void handle_sheep_infos(const std::vector<game_update_packet::sheep_info>& sis);

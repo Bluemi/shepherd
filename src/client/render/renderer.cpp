@@ -74,6 +74,10 @@ void renderer::framebuffer_size_callback(GLFWwindow*, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+GLFWwindow* renderer::get_window() {
+	return _window;
+}
+
 void renderer::init() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -188,10 +192,6 @@ void renderer::load_next_chunk() {
 		render_chunk rc = do_load_chunk(cr);
 		_render_chunks.push_back(rc);
 	}
-}
-
-void renderer::tick() {
-	_controller.process_user_input(_window);
 }
 
 void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& hook_tip) {
