@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include "shape/shape_initializer.hpp"
 #include "controller/mouse_manager.hpp"
@@ -228,9 +229,23 @@ void renderer::render(frame& f, char local_player_id) {
 
 		glm::mat4 proj_view = projection * local_player->get_look_at();
 
+		// render blocks
+		_block_shader_program.use();
+		_block_shader_program.set_4fv("proj_view", proj_view);
+
+		for (const render_chunk& rc : _render_chunks) {
+			rc.chunk_shape.bind();
+			glm::mat4 model = glm::mat4(1.f);
+			model = glm::translate(model, glm::vec3(rc.origin));
+			_block_shader_program.set_4fv("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, rc.chunk_shape.get_number_vertices());
+		}
+
 		// render players
 		_player_shader_program.use();
 		_player_shader_program.set_4fv("proj_view", proj_view);
+		_player_shader_program.set_3f("player_position", local_player->get_camera_position());
 
 		_player_shape.bind();
 
@@ -250,19 +265,6 @@ void renderer::render(frame& f, char local_player_id) {
 			glDrawArrays(GL_TRIANGLES, 0, _player_shape.get_number_vertices());
 		}
 
-		// render sheep
-		_sheep_shader_program.use();
-		_sheep_shader_program.set_4fv("proj_view", proj_view);
-
-		_sheep_shape.bind();
-		for (const sheep& s : f.sheeps) {
-			glm::mat4 sheep_model = glm::mat4(1.f);
-			sheep_model = glm::translate(sheep_model, s.get_position());
-			sheep_model = glm::rotate(sheep_model, glm::radians(-s.get_yaw()), body::get_up());
-			_sheep_shader_program.set_4fv("model", sheep_model);
-			glDrawArrays(GL_TRIANGLES, 0, _sheep_shape.get_number_vertices());
-		}
-
 		// render hooks
 		_hook_shader_program.use();
 		_hook_shader_program.set_4fv("proj_view", proj_view);
@@ -272,19 +274,6 @@ void renderer::render(frame& f, char local_player_id) {
 			if (!p.get_hook()) continue;
 			if (!p.get_hook()->target_point) continue;
 			render_hook(p.get_position(), *p.get_hook()->target_point);
-		}
-
-		// render blocks
-		_block_shader_program.use();
-		_block_shader_program.set_4fv("proj_view", proj_view);
-
-		for (const render_chunk& rc : _render_chunks) {
-			rc.chunk_shape.bind();
-			glm::mat4 model = glm::mat4(1.f);
-			model = glm::translate(model, glm::vec3(rc.origin));
-			_block_shader_program.set_4fv("model", model);
-
-			glDrawArrays(GL_TRIANGLES, 0, rc.chunk_shape.get_number_vertices());
 		}
 
 		// render visor
@@ -299,6 +288,20 @@ void renderer::render(frame& f, char local_player_id) {
 
 		_visor_shape.bind();
 		glDrawArrays(GL_TRIANGLES, 0, _visor_shape.get_number_vertices());
+
+		// render sheep
+		_sheep_shader_program.use();
+		_sheep_shader_program.set_4fv("proj_view", proj_view);
+		_sheep_shader_program.set_3f("player_position", local_player->get_camera_position());
+
+		_sheep_shape.bind();
+		for (const sheep& s : f.sheeps) {
+			glm::mat4 sheep_model = glm::mat4(1.f);
+			sheep_model = glm::translate(sheep_model, s.get_position());
+			sheep_model = glm::rotate(sheep_model, glm::radians(-s.get_yaw()), body::get_up());
+			_sheep_shader_program.set_4fv("model", sheep_model);
+			glDrawArrays(GL_TRIANGLES, 0, _sheep_shape.get_number_vertices());
+		}
 	}
 
 	glfwSwapBuffers(_window);
