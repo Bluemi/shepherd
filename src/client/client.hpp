@@ -1,6 +1,8 @@
 #ifndef __CLIENT_CLASS__
 #define __CLIENT_CLASS__
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <netsi/client/client_network_manager.hpp>
 
 #include "../common/frame.hpp"

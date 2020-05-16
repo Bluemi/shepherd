@@ -1,5 +1,7 @@
 #include "hook.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtx/norm.hpp>
 
 #include "world/block_container.hpp"

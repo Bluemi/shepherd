@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtc/noise.hpp>
 #include <glm/gtx/norm.hpp>
 

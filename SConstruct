@@ -49,7 +49,8 @@ def copy_tree(src_directory, destination_directory, dry=False):
             if not os.path.isdir(build_root):
                 print('mkdir {}'.format(build_root))
         else:
-            os.makedirs(build_root, exist_ok=True)
+            if not os.path.isdir(build_root):
+                os.makedirs(build_root)
 
         # create directories
         for d in directories:
@@ -105,11 +106,11 @@ def get_source_files(env, home, exclude=[]):
 
 def my_print_command():
     print('hey')
-env = Environment(parse_flags='-lboost_thread.a -std=c++17')
+env = Environment(parse_flags='-lboost_thread -lboost_system -std=c++17 -I/usr/local/include -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -I../../util/netsi/build')
 env['CXXCOMSTR'] =  'compiling   $TARGET'
 env['LINKCOMSTR'] = 'linking     $TARGET'
 env['ENV']['TERM'] = os.environ['TERM']
-env.Append(LIBS=['pthread', 'GLU', 'glfw3', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
+env.Append(LIBS=['pthread', 'GLU', 'glfw', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
 if MODE == 'debug':
     env.Append(CCFLAGS='-g')
 else:

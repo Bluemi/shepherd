@@ -1,5 +1,7 @@
 #include "client.hpp"
 
+// #define GLM_ENABLE_EXPERIMENTAL
+
 #include "../common/networking/login_packet.hpp"
 #include "../common/networking/init_packet.hpp"
 #include "../common/networking/actions_packet.hpp"
