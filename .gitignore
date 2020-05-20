@@ -1,3 +1,6 @@
 /.sconsign.dblite
 /build
 /core.*
+/docker/libnetsi.so
+/docker/netsi_includes
+/docker/server
