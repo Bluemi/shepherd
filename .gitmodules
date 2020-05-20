@@ -1,0 +1,3 @@
+[submodule "netsi"]
+	path = netsi
+	url = https://github.com/Bluemi/netsi
