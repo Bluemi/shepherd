@@ -1,13 +1,14 @@
 #include "client.hpp"
 
 // #define GLM_ENABLE_EXPERIMENTAL
+#include <iostream>
 
 #include "../common/networking/login_packet.hpp"
 #include "../common/networking/init_packet.hpp"
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
-client::client() : _local_player_id(-1) {}
+client::client() : _network_manager(BUFFER_SIZE), _local_player_id(-1) {}
 
 void client::init(const std::string& hostname, const std::string& player_name) {
 	renderer::init();
@@ -20,10 +21,8 @@ void client::init(const std::string& hostname, const std::string& player_name) {
 
 	_renderer = std::make_unique<renderer>(*opt_renderer);
 
-	netsi::endpoint init_endpoint = _network_manager.resolve(hostname, "1350");
+	netsi::Endpoint init_endpoint = _network_manager.resolve(hostname, 1350);
 	_peer = _network_manager.create_peer(init_endpoint);
-
-	_network_manager.run();
 
 	send_login(player_name);
 }
@@ -37,8 +36,8 @@ void client::run() {
 
 		got_game_update_packet = false;
 
-		while (!_peer->messages().empty()) {
-			const std::vector<char> msg = _peer->messages().pop();
+		while (_peer.has_message()) {
+			const std::vector<char> msg = _peer.pop_message();
 			if (handle_message(msg)) {
 				got_game_update_packet = true;
 			}
@@ -50,20 +49,19 @@ void client::run() {
 	send_logout();
 
 	_renderer->close();
-	_network_manager.stop();
 }
 
 void client::send_login(const std::string& player_name) {
 	login_packet packet(player_name);
 	std::vector<char> buffer;
 	packet.write_to(&buffer);
-	_peer->async_send(buffer);
+	_peer.send(buffer);
 }
 
 void client::send_logout() {
 	std::vector<char> buffer;
 	buffer.push_back(packet_ids::LOGOUT_PACKET);
-	_peer->send(buffer);
+	_peer.send(buffer);
 }
 
 void client::send_actions_update() {
@@ -95,7 +93,7 @@ void client::send_actions_update() {
 		std::vector<char> buffer;
 		actions_packet packet(current_actions, mouse_changes);
 		packet.write_to(&buffer);
-		_peer->async_send(buffer);
+		_peer.send(buffer);
 	}
 	_last_actions = current_actions;
 }

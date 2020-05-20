@@ -8,11 +8,11 @@
 #include "../common/networking/game_update_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 #include "../common/networking/init_packet.hpp"
+#include <netsi/util/cycle.hpp>
 
-server::server() : _next_player_id(0) {}
+server::server() : _server_network_manager(1350, BUFFER_SIZE), _next_player_id(0) {}
 
 void server::init() {
-	_server_network_manager.run(1350);
 	srand(time(NULL));
 	_map_seed = rand();
 	_current_frame.blocks = block_container(block_container::create_field(_map_seed));
@@ -24,7 +24,7 @@ void server::init() {
 void server::run() {
 	std::cout << "server is running on port 1350" << std::endl;
 
-	for (netsi::cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40));; c.next()) {
+	for (netsi::Cycle c(_server_network_manager.get_context(), boost::posix_time::milliseconds(40));; c.next()) {
 		check_new_peers();
 		handle_clients();
 		_current_frame.tick();
@@ -32,14 +32,15 @@ void server::run() {
 	}
 
 	std::cout << "server is offline" << std::endl;
-	_server_network_manager.stop();
 }
 
 void server::check_new_peers() {
-	if (!_server_network_manager.get_connecting_endpoints().empty()) {
-		netsi::endpoint remote_endpoint = _server_network_manager.get_connecting_endpoints().pop();
-		std::shared_ptr<netsi::peer<BUFFER_SIZE>> remote_peer = _server_network_manager.endpoint_to_peer(remote_endpoint);
-		_peers.push_back(server::peer_wrapper(remote_peer, -1));
+	if (_server_network_manager.has_client_request()) {
+		netsi::ClientRequest client_request = _server_network_manager.pop_client_request();
+		netsi::Peer remote_peer = _server_network_manager.create_peer(client_request.endpoint);
+		server::peer_wrapper new_peer_wrapper(remote_peer, -1);
+		handle_login(client_request.message, &new_peer_wrapper);
+		_peers.push_back(new_peer_wrapper);
 	}
 }
 
@@ -55,7 +56,7 @@ void server::handle_login(const std::vector<char>& login_message, server::peer_w
 }
 
 void server::handle_logout(server::peer_wrapper* peer_wrapper) {
-	peer_wrapper->peer->disconnect();
+	// peer_wrapper->peer.disconnect(); TODO
 	peer_wrapper->disconnected = true;
 
 	for (auto it = _current_frame.players.begin(); it != _current_frame.players.end(); ++it) {
@@ -93,8 +94,8 @@ void server::handle_message(const std::vector<char>& message, server::peer_wrapp
 
 void server::handle_clients() {
 	for (server::peer_wrapper& p : _peers) {
-		while (!p.peer->messages().empty()) {
-			std::vector<char> m = p.peer->messages().pop();
+		while (p.peer.has_message()) {
+			std::vector<char> m = p.peer.pop_message();
 			handle_message(m, &p);
 		}
 	}
@@ -104,13 +105,13 @@ void server::handle_clients() {
 
 void server::send_game_update() {
 	game_update_packet gup = game_update_packet::from_game(_current_frame.players, _current_frame.sheeps, _current_frame.block_removes, _current_frame.block_additions);
-	for (const server::peer_wrapper& p : _peers) {
+	for (server::peer_wrapper& p : _peers) {
 		std::vector<char> buffer;
 		gup.write_to(&buffer);
 		if (buffer.size() > BUFFER_SIZE) {
 			std::cerr << "game update buffer size exceeded.\n\tpacketsize=" << buffer.size() << "\n\tbuffersize=" << BUFFER_SIZE << std::endl;
 		} else {
-			p.peer->async_send(buffer);
+			p.peer.send(buffer);
 		}
 	}
 	_current_frame.block_removes.clear();
@@ -121,7 +122,7 @@ void server::send_init(char player_id, peer_wrapper* pw) const {
 	init_packet packet(player_id, _map_seed);
 	std::vector<char> buffer;
 	packet.write_to(&buffer);
-	pw->peer->async_send(buffer);
+	pw->peer.send(buffer);
 }
 
 int main() {

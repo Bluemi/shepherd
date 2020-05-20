@@ -3,7 +3,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include <netsi/client/client_network_manager.hpp>
+#include <netsi/client.hpp>
 
 #include "../common/frame.hpp"
 #include "../common/networking/game_update_packet.hpp"
@@ -30,9 +30,9 @@ class client {
 		void handle_init(const std::vector<char>& buffer);
 
 		frame _current_frame;
-		netsi::client_network_manager<BUFFER_SIZE> _network_manager;
+		netsi::ClientNetworkManager _network_manager;
 		std::unique_ptr<renderer> _renderer;
-		std::shared_ptr<netsi::peer<BUFFER_SIZE>> _peer;
+		netsi::Peer _peer;
 		std::uint16_t _last_actions;
 		char _local_player_id;
 };

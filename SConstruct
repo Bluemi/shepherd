@@ -106,7 +106,7 @@ def get_source_files(env, home, exclude=[]):
 
 def my_print_command():
     print('hey')
-env = Environment(parse_flags='-lboost_thread -lboost_system -std=c++17 -I/usr/local/include -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -I../../util/netsi/build')
+env = Environment(parse_flags='-lboost_thread -lboost_system -lnetsi -std=c++17 -I/usr/local/include -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -I./netsi/build/release/include -L./netsi/build/release/lib')
 env['CXXCOMSTR'] =  'compiling   $TARGET'
 env['LINKCOMSTR'] = 'linking     $TARGET'
 env['ENV']['TERM'] = os.environ['TERM']
