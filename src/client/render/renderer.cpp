@@ -219,16 +219,32 @@ void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& ho
 	glDrawArrays(GL_TRIANGLES, 0, _hook_shape.get_number_vertices());
 }
 
+static int frame_counter = 0;
+
 void renderer::render(frame& f, char local_player_id) {
 	clear_window();
 	player* local_player = f.get_player(local_player_id);
 
 	if (local_player != nullptr) {
+		/*
 		glm::mat4 projection = glm::perspective(
 			glm::radians(60.0f),
+			// _window_width/static_cast<float>(_window_height * (glm::sin(frame_counter / 30.f) + 1.1f)),
 			_window_width/static_cast<float>(_window_height),
-			0.1f, 600.f
+			0.001f, 6000.f
 		);
+		*/
+		glm::mat4 projection = basis_perspective(
+			glm::radians(75.0f),
+			// _window_width/static_cast<float>(_window_height * (glm::sin(frame_counter / 30.f) + 1.1f)),
+			_window_width/static_cast<float>(_window_height),
+			0.01f, 600.f,
+			glm::vec3(sin(frame_counter*0.01f), 0.f, 0.f)
+			// glm::vec3(0.f, 0.f, (sin(frame_counter*0.05f)+2.f)*0.1f)
+			// glm::vec3()
+		);
+
+		frame_counter++;
 
 		glm::mat4 proj_view = projection * local_player->get_look_at();
 
@@ -248,7 +264,7 @@ void renderer::render(frame& f, char local_player_id) {
 		// render players
 		_player_shader_program.use();
 		_player_shader_program.set_4fv("proj_view", proj_view);
-		_player_shader_program.set_3f("player_position", local_player->get_camera_position());
+		_player_shader_program.set_3f("player_position", local_player->get_root_camera_position());
 
 		_player_shape.bind();
 
@@ -295,7 +311,7 @@ void renderer::render(frame& f, char local_player_id) {
 		// render sheep
 		_sheep_shader_program.use();
 		_sheep_shader_program.set_4fv("proj_view", proj_view);
-		_sheep_shader_program.set_3f("player_position", local_player->get_camera_position());
+		_sheep_shader_program.set_3f("player_position", local_player->get_root_camera_position());
 
 		_sheep_shape.bind();
 		for (const sheep& s : f.sheeps) {

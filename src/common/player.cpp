@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/projection.hpp>
 #include <glad/glad.h>
 
 #include "networking/actions_packet.hpp"
@@ -10,7 +11,7 @@
 #include "sheep.hpp"
 
 const float PLAYER_ROTATE_SPEED = 0.05f;
-const glm::vec3 CAMERA_OFFSET = glm::vec3(0, 0.4f, 0);
+const glm::vec3 ROOT_CAMERA_OFFSET = glm::vec3(0, 0.4f, 0);
 constexpr float GRAVITY = 0.04f;
 constexpr float PLAYER_JUMP_SPEED = 0.28f;
 constexpr float PLAYER_COLLIDER_DIMENSION = 0.2f;
@@ -20,6 +21,7 @@ constexpr unsigned int NUM_BLOCKS_TO_PLACE = 20;
 constexpr unsigned int NUM_BLOCKS_TO_DESTROY = 20;
 constexpr float HOOK_DRAG = 0.7f;
 constexpr glm::vec3 PLAYER_SIZE = glm::vec3(0.5f, 0.5f, 0.5f);
+constexpr float SCREEN_WIDTH = 0.5;
 
 player::player(unsigned int id, const std::string& name)
 	: _id(id), _name(name), _body(glm::vec3(), PLAYER_SIZE, glm::vec3(), glm::vec2(), PLAYER_COLLIDER_DIMENSION), _color(0.1, 0.1, 0.4), _on_left_mouse_pressed(false), _on_right_mouse_pressed(false), _hook_range(HOOK_RANGE)
@@ -143,11 +145,42 @@ glm::vec3 player::get_top() const {
 }
 
 glm::mat4 player::get_look_at() const {
-	return glm::lookAt(get_camera_position(), _body.position + CAMERA_OFFSET + get_direction(), body::get_up());
+	return glm::lookAt(get_root_camera_position(), get_target_point(), body::get_up());
+}
+
+glm::vec3 player::get_root_camera_position() const {
+	return _body.position + ROOT_CAMERA_OFFSET;
 }
 
 glm::vec3 player::get_camera_position() const {
-	return _body.position + CAMERA_OFFSET;
+	return get_root_camera_position() + _camera_offset;
+}
+
+glm::vec3 player::get_p_dash() const {
+	glm::vec3 target_to_camera_position = get_camera_position() - get_target_point();
+	glm::vec3 proj_to_right = glm::proj(target_to_camera_position, get_right());
+	return get_target_point() + proj_to_right;
+}
+
+glm::vec3 player::get_target_point() const {
+	return get_root_camera_position() + get_direction();
+}
+
+glm::vec3 player::get_left_screen_point() const {
+}
+
+glm::vec3 player::get_right_screen_point() const {
+}
+
+glm::vec3 player::get_top_screen_point() const {
+	return get_target_point() + _body.get_top()*0.5f;
+}
+
+glm::vec3 player::get_bottom_screen_point() const {
+}
+
+float player::get_fov() const {
+
 }
 
 void player::respawn(const glm::vec3& position, std::vector<sheep>& sheeps) {
@@ -243,7 +276,7 @@ void player::handle_active_hook(const block_container& blocks, std::vector<sheep
 
 void player::handle_hook(const block_container& blocks, std::vector<sheep>& sheeps) {
 	if (!_hook && _actions & HOOK_ACTION) {
-		_hook = hook(get_camera_position(), get_direction());
+		_hook = hook(get_root_camera_position(), get_direction());
 	}
 	if (_hook) {
 		if (_actions & HOOK_ACTION) {

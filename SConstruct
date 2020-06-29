@@ -110,7 +110,8 @@ env = Environment(parse_flags='-lboost_thread -lboost_system -lnetsi -std=c++17 
 env['CXXCOMSTR'] =  'compiling   $TARGET'
 env['LINKCOMSTR'] = 'linking     $TARGET'
 env['ENV']['TERM'] = os.environ['TERM']
-env.Append(LIBS=['pthread', 'GLU', 'glfw', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
+# env.Append(LIBS=['pthread', 'GLU', 'glfw', 'X11', 'Xxf86vm', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
+env.Append(LIBS=['pthread', 'GLU', 'glfw', 'X11', 'Xrandr', 'pthread', 'Xi', 'dl', 'Xinerama', 'Xcursor']),
 if MODE == 'debug':
     env.Append(CCFLAGS='-g')
 else:

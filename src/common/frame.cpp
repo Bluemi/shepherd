@@ -39,7 +39,7 @@ bool frame::tick() {
 
 void frame::check_destroy_block(player* p) {
 	if (p->poll_left_mouse_pressed()) {
-		std::optional<world_block> block_to_destroy = blocks.get_colliding_block(ray(p->get_camera_position(), p->get_direction()), DESTROY_RANGE);
+		std::optional<world_block> block_to_destroy = blocks.get_colliding_block(ray(p->get_root_camera_position(), p->get_direction()), DESTROY_RANGE);
 		if (block_to_destroy && world_block::destroyable(block_to_destroy->get_type())) {
 			blocks.remove_block(block_to_destroy->get_position());
 			block_removes.push_back(block_to_destroy->get_position());
@@ -49,7 +49,7 @@ void frame::check_destroy_block(player* p) {
 
 void frame::check_add_block(player* p) {
 	if (p->poll_right_mouse_pressed()) {
-		std::optional<glm::ivec3> block_placement_position = blocks.get_addition_position(ray(p->get_camera_position(), p->get_direction()), BUILD_RANGE);
+		std::optional<glm::ivec3> block_placement_position = blocks.get_addition_position(ray(p->get_root_camera_position(), p->get_direction()), BUILD_RANGE);
 		if (block_placement_position) {
 			blocks.add_block(*block_placement_position, block_type::NORMAL);
 			block_additions.push_back(*block_placement_position);
