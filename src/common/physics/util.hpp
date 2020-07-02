@@ -7,6 +7,7 @@
 
 std::ostream& operator<<(std::ostream& stream, const glm::vec3& v);
 
-glm::mat4 basis_perspective(float fovy, float aspect_ratio, float near, float far, const glm::vec3& basis);
+glm::mat4 basis_perspective(float screen_width, float screen_height, float near, float far, const glm::vec3& screen_position);
+glm::mat4 frustum_perspective(float near, float far, float left, float right, float top, float bottom);
 
 #endif

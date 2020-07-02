@@ -44,7 +44,8 @@ class player {
 		glm::mat4 get_look_at() const;
 		glm::vec3 get_root_camera_position() const;
 		glm::vec3 get_camera_position() const;
-		float get_fov() const;
+		glm::vec3 get_camera_offset() const;
+		glm::vec3& get_camera_offset();
 
 		void respawn(const glm::vec3& position, std::vector<sheep>& sheeps);
 		bool tick(const block_container& blocks, std::vector<sheep>& sheeps);
@@ -53,12 +54,7 @@ class player {
 		void handle_hook(const block_container& blocks, std::vector<sheep>& sheeps);
 		void handle_active_hook(const block_container& blocks, std::vector<sheep>& sheeps);
 	private:
-		glm::vec3 get_p_dash() const;
 		glm::vec3 get_target_point() const;
-		glm::vec3 get_left_screen_point() const;
-		glm::vec3 get_right_screen_point() const;
-		glm::vec3 get_top_screen_point() const;
-		glm::vec3 get_bottom_screen_point() const;
 
 		char _id;
 

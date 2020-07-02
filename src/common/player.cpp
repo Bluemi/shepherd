@@ -145,7 +145,7 @@ glm::vec3 player::get_top() const {
 }
 
 glm::mat4 player::get_look_at() const {
-	return glm::lookAt(get_root_camera_position(), get_target_point(), body::get_up());
+	return glm::lookAt(get_camera_position(), get_target_point(), body::get_up());
 }
 
 glm::vec3 player::get_root_camera_position() const {
@@ -153,34 +153,19 @@ glm::vec3 player::get_root_camera_position() const {
 }
 
 glm::vec3 player::get_camera_position() const {
-	return get_root_camera_position() + _camera_offset;
+	return get_root_camera_position() - _camera_offset.x * get_right() - _camera_offset.y * get_top() + _camera_offset.z * get_direction();
 }
 
-glm::vec3 player::get_p_dash() const {
-	glm::vec3 target_to_camera_position = get_camera_position() - get_target_point();
-	glm::vec3 proj_to_right = glm::proj(target_to_camera_position, get_right());
-	return get_target_point() + proj_to_right;
+glm::vec3 player::get_camera_offset() const {
+	return _camera_offset;
+}
+
+glm::vec3& player::get_camera_offset() {
+	return _camera_offset;
 }
 
 glm::vec3 player::get_target_point() const {
-	return get_root_camera_position() + get_direction();
-}
-
-glm::vec3 player::get_left_screen_point() const {
-}
-
-glm::vec3 player::get_right_screen_point() const {
-}
-
-glm::vec3 player::get_top_screen_point() const {
-	return get_target_point() + _body.get_top()*0.5f;
-}
-
-glm::vec3 player::get_bottom_screen_point() const {
-}
-
-float player::get_fov() const {
-
+	return get_camera_position() + get_direction();
 }
 
 void player::respawn(const glm::vec3& position, std::vector<sheep>& sheeps) {
