@@ -240,7 +240,8 @@ void renderer::render(frame& f, char local_player_id) {
 		} else {
 			*/
 
-		local_player->get_camera_offset().y = glm::sin(frame_counter*0.03f)*0.4f;
+		local_player->get_camera_offset().z = glm::sin(frame_counter*0.01f)*1.5f;
+		// local_player->get_camera_offset().z = glm::cos(frame_counter*0.03f)*0.5f;
 
 		projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _screen_position + local_player->get_camera_offset());
 		// }

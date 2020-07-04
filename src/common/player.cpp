@@ -153,7 +153,7 @@ glm::vec3 player::get_root_camera_position() const {
 }
 
 glm::vec3 player::get_camera_position() const {
-	return get_root_camera_position() - _camera_offset.x * get_right() - _camera_offset.y * get_top() + _camera_offset.z * get_direction();
+	return get_root_camera_position() - _camera_offset.x * get_right() - _camera_offset.y * get_top() - _camera_offset.z * get_direction();
 }
 
 glm::vec3 player::get_camera_offset() const {
