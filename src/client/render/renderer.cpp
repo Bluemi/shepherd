@@ -32,8 +32,7 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	  _window(window),
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
-	  _window_height(window_height),
-	  _screen_position(0.f, 0.f, 1.6f)
+	  _window_height(window_height)
 {
 	std::cout << "listing to 1351" << std::endl;
 	resize_manager::init(_window);
@@ -63,7 +62,6 @@ renderer::renderer(const renderer& v)
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
 	  _window_height(v._window_height),
-	  _screen_position(v._screen_position),
 	  _camera_offset(v._camera_offset)
 {
 	resize_manager::add_renderer(this);
@@ -245,7 +243,7 @@ void renderer::render(frame& f, char local_player_id) {
 		// _camera_offset.x = glm::sin(frame_counter*0.02f)*1.5f;
 		// _camera_offset.z = glm::cos(frame_counter*0.03f)*0.5f;
 
-		projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _screen_position + _camera_offset);
+		projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _camera_offset);
 		// }
 		/*
 		glm::mat4 projection = basis_perspective(
