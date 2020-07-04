@@ -2,6 +2,9 @@
 #define __RENDERER_CLASS__
 
 #include <deque>
+#include <optional>
+
+#include <netsi/server.hpp>
 
 #include "controller/controller.hpp"
 #include "shader_program.hpp"
@@ -45,6 +48,8 @@ class renderer {
 		const controller& get_controller() const;
 		controller& get_controller();
 
+		glm::vec3& get_camera_offset();
+
 	private:
 		double get_delta_time();
 		void clear_window();
@@ -70,6 +75,8 @@ class renderer {
 		unsigned int _window_width;
 		unsigned int _window_height;
 		glm::vec3 _screen_position;
+		glm::vec3 _camera_offset;
+
 };
 
 #endif

@@ -4,6 +4,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <netsi/client.hpp>
+#include <netsi/server.hpp>
 
 #include "../common/frame.hpp"
 #include "../common/networking/game_update_packet.hpp"
@@ -28,6 +29,7 @@ class client {
 		void handle_block_additions(const std::vector<glm::ivec3>& block_additions);
 		void apply_player_info(const game_update_packet::player_info& pi);
 		void handle_init(const std::vector<char>& buffer);
+		void handle_eye_tracking();
 
 		frame _current_frame;
 		netsi::ClientNetworkManager _network_manager;
@@ -35,6 +37,9 @@ class client {
 		netsi::Peer _peer;
 		std::uint16_t _last_actions;
 		char _local_player_id;
+
+		netsi::ServerNetworkManager _eye_track_server;
+		std::vector<netsi::Peer> _eye_track_peers;
 };
 
 #endif

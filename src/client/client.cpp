@@ -8,7 +8,7 @@
 #include "../common/networking/actions_packet.hpp"
 #include "../common/networking/packet_ids.hpp"
 
-client::client() : _network_manager(BUFFER_SIZE), _local_player_id(-1) {}
+client::client() : _network_manager(BUFFER_SIZE), _local_player_id(-1), _eye_track_server(1351, 256) {}
 
 void client::init(const std::string& hostname, const std::string& player_name) {
 	renderer::init();
@@ -44,6 +44,8 @@ void client::run() {
 		}
 
 		send_actions_update();
+
+		handle_eye_tracking();
 	}
 
 	send_logout();
@@ -140,6 +142,27 @@ void client::handle_init(const std::vector<char>& buffer) {
 
 	for (const auto& bc : _current_frame.blocks.get_chunks()) {
 		_renderer->load_chunk(*(bc.second));
+	}
+}
+
+void client::handle_eye_tracking() {
+	while (_eye_track_server.has_client_request()) {
+		netsi::ClientRequest client_request = _eye_track_server.pop_client_request();
+		netsi::Peer new_peer = _eye_track_server.create_peer(client_request.endpoint);
+		_eye_track_peers.push_back(new_peer);
+	}
+
+	for (netsi::Peer& peer : _eye_track_peers) {
+		while (peer.has_message()) {
+			const std::vector<char> message = peer.pop_message();
+			if (message.size() != 12) {
+				std::cerr << "got message of invalid size: " << message.size() << std::endl;
+				continue;
+			}
+			const float* const f = reinterpret_cast<const float* const>(message.data());
+			glm::vec3 v(f[0], f[1], f[2]);
+			_renderer->get_camera_offset() = v;
+		}
 	}
 }
 

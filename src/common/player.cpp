@@ -144,28 +144,20 @@ glm::vec3 player::get_top() const {
 	return _body.get_top();
 }
 
-glm::mat4 player::get_look_at() const {
-	return glm::lookAt(get_camera_position(), get_target_point(), body::get_up());
+glm::mat4 player::get_look_at(const glm::vec3& camera_offset) const {
+	return glm::lookAt(get_camera_position(camera_offset), get_target_point(camera_offset), body::get_up());
 }
 
 glm::vec3 player::get_root_camera_position() const {
 	return _body.position + ROOT_CAMERA_OFFSET;
 }
 
-glm::vec3 player::get_camera_position() const {
-	return get_root_camera_position() - _camera_offset.x * get_right() - _camera_offset.y * get_top() - _camera_offset.z * get_direction();
+glm::vec3 player::get_camera_position(const glm::vec3 camera_offset) const {
+	return get_root_camera_position() - camera_offset.x * get_right() - camera_offset.y * get_top() - camera_offset.z * get_direction();
 }
 
-glm::vec3 player::get_camera_offset() const {
-	return _camera_offset;
-}
-
-glm::vec3& player::get_camera_offset() {
-	return _camera_offset;
-}
-
-glm::vec3 player::get_target_point() const {
-	return get_camera_position() + get_direction();
+glm::vec3 player::get_target_point(const glm::vec3& camera_offset) const {
+	return get_camera_position(camera_offset) + get_direction();
 }
 
 void player::respawn(const glm::vec3& position, std::vector<sheep>& sheeps) {

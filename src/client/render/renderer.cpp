@@ -35,6 +35,7 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	  _window_height(window_height),
 	  _screen_position(0.f, 0.f, 1.6f)
 {
+	std::cout << "listing to 1351" << std::endl;
 	resize_manager::init(_window);
 	resize_manager::add_renderer(this);
 
@@ -62,7 +63,8 @@ renderer::renderer(const renderer& v)
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
 	  _window_height(v._window_height),
-	  _screen_position(v._screen_position)
+	  _screen_position(v._screen_position),
+	  _camera_offset(v._camera_offset)
 {
 	resize_manager::add_renderer(this);
 	mouse_manager::add_controller(&_controller);
@@ -240,10 +242,10 @@ void renderer::render(frame& f, char local_player_id) {
 		} else {
 			*/
 
-		local_player->get_camera_offset().z = glm::sin(frame_counter*0.01f)*1.5f;
-		// local_player->get_camera_offset().z = glm::cos(frame_counter*0.03f)*0.5f;
+		// _camera_offset.x = glm::sin(frame_counter*0.02f)*1.5f;
+		// _camera_offset.z = glm::cos(frame_counter*0.03f)*0.5f;
 
-		projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _screen_position + local_player->get_camera_offset());
+		projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _screen_position + _camera_offset);
 		// }
 		/*
 		glm::mat4 projection = basis_perspective(
@@ -269,7 +271,7 @@ void renderer::render(frame& f, char local_player_id) {
 
 		frame_counter++;
 
-		glm::mat4 proj_view = projection * local_player->get_look_at();
+		glm::mat4 proj_view = projection * local_player->get_look_at(_camera_offset);
 
 		// render blocks
 		_block_shader_program.use();
@@ -383,6 +385,10 @@ void renderer::clear_window() {
 
 const controller& renderer::get_controller() const {
 	return _controller;
+}
+
+glm::vec3& renderer::get_camera_offset() {
+	return _camera_offset;
 }
 
 controller& renderer::get_controller() {

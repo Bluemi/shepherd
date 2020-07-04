@@ -1,4 +1,7 @@
 #include <iostream>
+
+#include <optional>
+
 #include <glm/vec3.hpp>
 #include <glm/gtx/projection.hpp>
 
@@ -14,5 +17,6 @@ int main() {
 	glm::vec3 result = glm::proj(d, r);
 
 	std::cout << str(result) << std::endl;
+
 	return 0;
 }
