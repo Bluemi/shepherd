@@ -32,9 +32,9 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	  _window(window),
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
-	  _window_height(window_height)
+	  _window_height(window_height),
+	  _camera_offset(0.f, 0.f, 1.f)
 {
-	std::cout << "listing to 1351" << std::endl;
 	resize_manager::init(_window);
 	resize_manager::add_renderer(this);
 
