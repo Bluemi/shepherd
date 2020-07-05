@@ -75,7 +75,7 @@ class renderer {
 		unsigned int _window_width;
 		unsigned int _window_height;
 		glm::vec3 _camera_offset;
-
+		glm::vec3 _screen_distance;
 };
 
 #endif

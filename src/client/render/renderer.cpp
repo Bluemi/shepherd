@@ -33,7 +33,8 @@ renderer::renderer(GLFWwindow* window, shader_program player_shader_program, sha
 	  _last_frame_time(0.0),
 	  _window_width(window_width),
 	  _window_height(window_height),
-	  _camera_offset(0.f, 0.f, 1.f)
+	  _camera_offset(0.f, 0.f, 0.f),
+	  _screen_distance(0.f, 0.f, 2.f)
 {
 	resize_manager::init(_window);
 	resize_manager::add_renderer(this);
@@ -62,7 +63,8 @@ renderer::renderer(const renderer& v)
 	  _last_frame_time(v._last_frame_time),
 	  _window_width(v._window_width),
 	  _window_height(v._window_height),
-	  _camera_offset(v._camera_offset)
+	  _camera_offset(v._camera_offset),
+	  _screen_distance(v._screen_distance)
 {
 	resize_manager::add_renderer(this);
 	mouse_manager::add_controller(&_controller);
@@ -221,55 +223,14 @@ void renderer::render_hook(const glm::vec3& player_position, const glm::vec3& ho
 	glDrawArrays(GL_TRIANGLES, 0, _hook_shape.get_number_vertices());
 }
 
-static int frame_counter = 0;
-
 void renderer::render(frame& f, char local_player_id) {
 	clear_window();
 	player* local_player = f.get_player(local_player_id);
 
 	if (local_player != nullptr) {
-		glm::mat4 projection;
-		/*
-		if ((frame_counter/5) % 2) {
-			projection = glm::perspective(
-				glm::radians(60.0f),
-				// _window_width/static_cast<float>(_window_height * (glm::sin(frame_counter / 30.f) + 1.1f)),
-				_window_width/static_cast<float>(_window_height),
-				0.001f, 6000.f
-			);
-		} else {
-			*/
+		glm::mat4 projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _camera_offset);
 
-		// _camera_offset.x = glm::sin(frame_counter*0.02f)*1.5f;
-		// _camera_offset.z = glm::cos(frame_counter*0.03f)*0.5f;
-
-		projection = basis_perspective(_window_width/static_cast<float>(_window_height), 1.f, 0.001f, 600.f, _camera_offset);
-		// }
-		/*
-		glm::mat4 projection = basis_perspective(
-			glm::radians(75.0f),
-			// _window_width/static_cast<float>(_window_height * (glm::sin(frame_counter / 30.f) + 1.1f)),
-			_window_width/static_cast<float>(_window_height),
-			0.01f, 600.f,
-			glm::vec3(sin(frame_counter*0.01f), 0.f, 0.f)
-			// glm::vec3(0.f, 0.f, (sin(frame_counter*0.05f)+2.f)*0.1f)
-			// glm::vec3()
-		);
-		*/
-		/*
-		float near = 0.01f;
-		float top = glm::tan(glm::radians(60.f) / 2.f)*near;
-		float aspect_ratio = _window_width/static_cast<float>(_window_height);
-		projection = frustum_perspective(
-				near, 600.f,
-				-top*aspect_ratio, top*aspect_ratio,
-				top, -top
-		);
-		*/
-
-		frame_counter++;
-
-		glm::mat4 proj_view = projection * local_player->get_look_at(_camera_offset);
+		glm::mat4 proj_view = projection * local_player->get_look_at(_camera_offset-_screen_distance);
 
 		// render blocks
 		_block_shader_program.use();
