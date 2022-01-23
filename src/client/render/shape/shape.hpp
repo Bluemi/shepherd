@@ -7,7 +7,7 @@
 /**
  * Type to define number of vertices.
  */
-using n_vertices = size_t;
+using n_vertices = std::size_t;
 
 /**
  * Type to define number of floats.
@@ -123,7 +123,7 @@ class shape {
 		 * @param vertices_size The size number of all vertices added together in bytes
 		 * @return The id of the new vbo
 		 */
-		static unsigned int buffer_vertices(const float* vertices, size_t vertices_size);
+		static unsigned int buffer_vertices(const float* vertices, std::size_t vertices_size);
 
 		/**
 		 * @return The sum of the number of floats used by all attributes.

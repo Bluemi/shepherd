@@ -60,7 +60,7 @@ unsigned int shape::create_vao() {
 	return vao;
 }
 
-unsigned int shape::buffer_vertices(const float* vertices, size_t vertices_size) {
+unsigned int shape::buffer_vertices(const float* vertices, std::size_t vertices_size) {
 	unsigned int vbo;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -78,9 +78,9 @@ n_floats shape::get_attributes_size(const std::vector<attribute>& attributes) {
 }
 
 void shape::create_attribute_pointer(const std::vector<attribute>& attributes) {
-	size_t attributes_stride = get_attributes_size(attributes) * sizeof(float);
+	std::size_t attributes_stride = get_attributes_size(attributes) * sizeof(float);
 
-	size_t offset = 0;
+	std::size_t offset = 0;
 	for (unsigned int i = 0; i < attributes.size(); i++) {
 		glVertexAttribPointer(
 			i,
